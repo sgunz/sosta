@@ -20,7 +20,7 @@ simulateTissueBlobs <- function(size, seedNumber, clumpSize){
   image[indices] <- 1
 
   # Use a Gaussian filter to create the tissue clumps
-  image <- gblur(image, sigma = clumpSize)
+  image <- EBImage::gblur(image, sigma = clumpSize)
 
   # Threshold the final image to get a binary image
   image <- image > mean(image)
