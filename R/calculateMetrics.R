@@ -3,19 +3,21 @@
 #' @param sfPoly POLYGON of class sf
 #'
 #' @return list; list of shape metrics
+#'
+#' @import sf
 #' @export
 #'
 #' @examples
 
 shapeMetrics <- function(sfPoly){
   # Area
-  shapeArea <- sf::st_area(sfPoly)
+  shapeArea <- st_area(sfPoly)
   # Perimeter
-  shapePerimeter <- sf::st_length(sf::st_boundary(sfPoly))
+  shapePerimeter <- st_length(st_boundary(sfPoly))
   # Convex Hull
-  shapeConvexHull <- sf::st_convex_hull(sfPoly)
+  shapeConvexHull <- st_convex_hull(sfPoly)
   # Perimeter of convex hull
-  shapeConvexPerimeter <- sf::st_length(sf::st_boundary(shapeConvexHull))
+  shapeConvexPerimeter <- st_length(st_boundary(shapeConvexHull))
   # Feature axes
   FeatureAxes <- st_feature_axes(sfPoly)
   # Compactness: 0 and 1 (circle)
@@ -29,15 +31,15 @@ shapeMetrics <- function(sfPoly){
   #  Curl
   shapeCurl <- st_calculateShapeCurl(sfPoly)
   # Solidity: measures the density of an object
-  shapeSolidity <- shapeArea / sf::st_area(shapeConvexHull)
+  shapeSolidity <- shapeArea / st_area(shapeConvexHull)
   # Max. inscribed circle
-  areaInscribedCricle <- max(sf::st_area(sf::st_inscribed_circle(sf::st_geometry(sfPoly))))
+  areaInscribedCricle <- max(st_area(st_inscribed_circle((sfPoly))))
   # Curvature
   curvature <- st_calculateCurvature(sfPoly)
   # Area of holes
-  AreaHoles <- abs(sf::st_area(sf::st_multipolygon(
-    lapply(sf::st_union(sfPoly), function(x) x[1]))) -
-      sf::st_area(sfPoly))
+  AreaHoles <- abs(st_area(st_multipolygon(
+    lapply(st_union(sfPoly), function(x) x[1]))) -
+      st_area(sfPoly))
   # Return all metrics in a list
   return(list(
     Area = shapeArea,

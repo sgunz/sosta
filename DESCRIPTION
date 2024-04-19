@@ -1,19 +1,22 @@
-Package: sunspot
-Title: Spatial Structure Analysis in Spatial Omics Data
+Package: sosta
+Title: Spatial omics structure analysis
 Version: 0.0.0.9000
 Authors@R: 
     person("Samuel", "Gunz", , "samuel.gunz@uzh.ch", role = c("aut", "cre"),
            comment = c(ORCID = "000-0002-8909-0932"))
-Description: Reconstruction, quantification and comparison of spatial structures 
-    from spatial omics data.
+Description: A framework to reconstruct, characterise and compare spatial structures from spatial omics data.
 License: GPL (>= 3)
 Encoding: UTF-8
 Roxygen: list(markdown = TRUE)
 RoxygenNote: 7.3.0
-URL: https://github.com/sgunz/sunspot
-BugReports: https://github.com/sgunz/sunspot/issues
+URL: https://github.com/sgunz/sosta
+BugReports: https://github.com/sgunz/sosta/issues
 Imports: 
+    dplyr,
     EBImage,
+    ggplot2,
     sf,
     smoothr,
+    spatstat.explore,
+    spatstat.geom,
     stats
