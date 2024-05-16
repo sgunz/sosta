@@ -13,20 +13,20 @@ knitr::opts_chunk$set(
 )
 ```
 
-# sunspot
+# sosta
 
 <!-- badges: start -->
 <!-- badges: end -->
 
-The goal of sunspot is to ...
+The goal of sosta is to ...
 
 ## Installation
 
-You can install the development version of sunspot from [GitHub](https://github.com/) with:
+You can install the development version of sosta from [GitHub](https://github.com/) with:
 
 ``` r
 # install.packages("devtools")
-devtools::install_github("sgunz/sunspot")
+devtools::install_github("sgunz/sosta")
 ```
 
 ## Example
@@ -34,7 +34,7 @@ devtools::install_github("sgunz/sunspot")
 This is a basic example which shows you how to solve a common problem:
 
 ```{r example}
-library(sunspot)
+library(sosta)
 ## basic example code
 ```
 
