@@ -72,16 +72,17 @@ shapeMetrics <- function(sfPoly){
 #' @param sfInput `MULTIPOLYGON` of class sf
 #'
 #' @return matrix; matrix of shape metrics
+#' @import sf
 #' @export
 #'
 #' @examples
 totalShapeMetrics <- function(sfInput){
   # cast into different objects, i.e the substructures
-  cast_sf <- suppressWarnings(sf::st_cast(sfInput,  "POLYGON"))
+  cast_sf <- suppressWarnings(st_cast(sfInput,  "POLYGON"))
   # calculate tissue metrics on all substructures
   if (length(cast_sf) > 1) {
-    shapeStruct <- sapply(sf::st_geometry(cast_sf),
-                          function(x) shapeMetrics(sf::st_sfc(x)))
+    shapeStruct <- sapply(st_geometry(cast_sf),
+                          function(x) shapeMetrics(st_sfc(x)))
   }
   else {shapeStruct <- t(data.frame(shapeMetrics(cast_sf)))}
   # matrix of metrics of all substructures
@@ -98,6 +99,7 @@ totalShapeMetrics <- function(sfInput){
 #' @param totalShapeMetricMatrix matrix of shape metrics
 #'
 #' @return matrix; matrix of mean shape metrics
+#' @import stats
 #' @export
 #'
 #' @examples
@@ -106,8 +108,8 @@ meanShapeMetrics <- function(totalShapeMetricMatrix){
   meanShapeMat <- rowMeans(totalShapeMetricMatrix)
   meanShapeMat['numberStructures'] <- dim(totalShapeMetricMatrix)[2]
   meanShapeMat['totalArea'] <- sum(totalShapeMetricMatrix['Area',])
-  meanShapeMat['sdMeanCurvature'] <- stats::sd(totalShapeMetricMatrix['meanAbsCurvature',])
-  meanShapeMat['sdEccentricity'] <- stats::sd(totalShapeMetricMatrix['Eccentricity',])
+  meanShapeMat['sdMeanCurvature'] <- sd(totalShapeMetricMatrix['meanAbsCurvature',])
+  meanShapeMat['sdEccentricity'] <- sd(totalShapeMetricMatrix['Eccentricity',])
 
   meanShapeMat <- as.matrix(meanShapeMat)
   meanShapeMat[is.na(meanShapeMat)] <- 0
