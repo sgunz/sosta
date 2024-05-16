@@ -46,6 +46,7 @@ reconstructShapeDensity <- function(ppp,
 #'
 #' @return
 #' @import spatstat.explore spatstat.geom sf
+#' @importFrom EBImage resize
 #' @export
 #'
 #'
@@ -89,20 +90,3 @@ reconstructShapeLRT <- function(ppp,
   # this ensures that we have single polygons
   return(st_cast(st_union(stWinResc), "POLYGON"))
 }
-
-# function to get the dimension based on dim of y axis
-#' Title
-#'
-#' @param ppp point pattern object of class `ppp`
-#' @param ydim dimension of y axis
-#'
-#' @return
-#' @export
-#'
-#' @examples
-getDimXY <- function(ppp, ydim){
-  xratio <- abs(diff(ppp$window$xrange)) / abs(diff(ppp$window$yrange))
-  dimyx <- c(ydim, round(xratio*ydim))
-  return(dimyx)
-}
-

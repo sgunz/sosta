@@ -12,12 +12,13 @@ RoxygenNote: 7.3.0
 URL: https://github.com/sgunz/sosta
 BugReports: https://github.com/sgunz/sosta/issues
 Imports: 
-    dplyr,
     EBImage,
-    ggplot2,
+    terra,
     sf,
     smoothr,
     spatstat.explore,
     spatstat.geom,
     stats,
-    terra
+Suggests:
+    dplyr,
+    ggplot2
