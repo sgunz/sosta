@@ -1,5 +1,5 @@
 Package: sosta
-Title: Spatial omics structure analysis
+Title: Spatial Omics Structure Analysis
 Version: 0.0.0.9000
 Authors@R: 
     person("Samuel", "Gunz", , "samuel.gunz@uzh.ch", role = c("aut", "cre"),
