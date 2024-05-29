@@ -4,7 +4,7 @@
 \name{sosta-package}
 \alias{sosta}
 \alias{sosta-package}
-\title{sosta: Spatial omics structure analysis}
+\title{sosta: Spatial Omics Structure Analysis}
 \description{
 A framework to reconstruct, characterise and compare spatial structures from spatial omics data.
 }

@@ -2,7 +2,7 @@
 #'
 #' @param sfPoly `POLYGON ` of class `sf`
 #'
-#' @return list;  with the major and minor axis lengths
+#' @return list; list containing the major and minor axis lengths
 #' @export
 #'
 #' @examples

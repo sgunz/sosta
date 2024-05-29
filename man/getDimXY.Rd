@@ -2,7 +2,7 @@
 % Please edit documentation in R/utils.R
 \name{getDimXY}
 \alias{getDimXY}
-\title{function to get the dimension based on dim of y axis}
+\title{Function to get the dimension based on dim of y axis}
 \usage{
 getDimXY(ppp, ydim)
 }
@@ -15,5 +15,5 @@ getDimXY(ppp, ydim)
 vector; vector with x and y dimension
 }
 \description{
-function to get the dimension based on dim of y axis
+Function to get the dimension based on dim of y axis
 }

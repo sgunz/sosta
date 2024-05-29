@@ -67,7 +67,7 @@ normalizeCoordinates <- function(coords) {
 
 
 
-#' function to get the dimension based on dim of y axis
+#' Function to get the dimension based on dim of y axis
 #'
 #' @param ppp point pattern object of class `ppp`
 #' @param ydim dimension of y axis
@@ -81,4 +81,35 @@ getDimXY <- function(ppp, ydim){
   dimyx <- c(ydim, round(xratio*ydim))
   return(dimyx)
 }
+
+#' Function to convert spatial coordinates of a `SpatialExperiment` object to a `ppp` object
+#'
+#' @param spe SpatialExperiment; a object of class `SpatialExperiment`
+#' @param marks character; name of column in `colData` that will correspond to the `ppp` marks
+#' @param sample_col character; name of a column in `colData` that corresponds to the sample
+#' @param sample_id character; sample id, must be present in sample_col
+#'
+#' @return ppp; object of type `ppp`
+#' @export
+#' @import SpatialExperiment
+#'
+#' @examples
+SPE2ppp <- function(spe, marks,
+                    sample_col = NULL,
+                    sample_id = NULL){
+
+  if (!is.null(sample_col) & !is.null(sample_id)) {
+    spe <- spe[,colData(spe)[[sample_col]] == sample_id]
+  }
+
+  ppp <- as.ppp(spatialCoords(spe),
+                c(min(spatialCoords(spe)[,1]),
+                  max(spatialCoords(spe)[,1]),
+                  min(spatialCoords(spe)[,2]),
+                  max(spatialCoords(spe)[,2])))
+  marks(ppp) <- colData(spe)[[marks]]
+  return(ppp)
+}
+
+
 

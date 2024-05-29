@@ -10,7 +10,7 @@ st_feature_axes(sfPoly)
 \item{sfPoly}{\code{POLYGON } of class \code{sf}}
 }
 \value{
-list;  with the major and minor axis lengths
+list; list containing the major and minor axis lengths
 }
 \description{
 Calculate the length of feature axes of an sf polygon
