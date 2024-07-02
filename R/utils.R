@@ -9,18 +9,17 @@
 #' @export
 #'
 #' @examples
-
-binaryImageToSF <- function(binaryMatrix){
-  # turn 90 degrees anti clockwise for correspondance with spatstat
-  binaryMatrix <- apply(t(binaryMatrix),2,rev)
-  # get raster
-  r <- rast(binaryMatrix)
-  # convert to polygons
-  poly <- as.polygons(r)
-  # polygons is a SpatVector. Convert it to an sf object
-  polygonsSF <- st_as_sf(poly)
-  # Merge polygons to a single multipolygon
-  return(st_union(polygonsSF[polygonsSF$lyr.1 == 1,]))
+binaryImageToSF <- function(binaryMatrix) {
+    # turn 90 degrees anti clockwise for correspondance with spatstat
+    binaryMatrix <- apply(t(binaryMatrix), 2, rev)
+    # get raster
+    r <- rast(binaryMatrix)
+    # convert to polygons
+    poly <- as.polygons(r)
+    # polygons is a SpatVector. Convert it to an sf object
+    polygonsSF <- st_as_sf(poly)
+    # Merge polygons to a single multipolygon
+    return(st_union(polygonsSF[polygonsSF$lyr.1 == 1, ]))
 }
 
 
@@ -34,9 +33,9 @@ binaryImageToSF <- function(binaryMatrix){
 #'
 #' @examples
 xyCoordinates <- function(inputMatrix) {
-  indices <- which(inputMatrix == 1, arr.ind = TRUE)
-  colnames(indices) <- c('x', 'y')
-  return(as.matrix(indices))
+    indices <- which(inputMatrix == 1, arr.ind = TRUE)
+    colnames(indices) <- c("x", "y")
+    return(as.matrix(indices))
 }
 
 #' Function to normalize coodinates between zero and one while keep scaling
@@ -48,21 +47,21 @@ xyCoordinates <- function(inputMatrix) {
 #'
 #' @examples
 normalizeCoordinates <- function(coords) {
-  # Calculate the range of x and y coordinates
-  xRange <- max(coords[,1]) - min(coords[,1])
-  yRange <- max(coords[,2]) - min(coords[,2])
+    # Calculate the range of x and y coordinates
+    xRange <- max(coords[, 1]) - min(coords[, 1])
+    yRange <- max(coords[, 2]) - min(coords[, 2])
 
-  # Determine which axis is longer
-  if (xRange >= yRange) {
-    # Normalize x while maintaining the aspect ratio
-    coords[,1] <- (coords[,1] - min(coords[,1])) / xRange
-    coords[,2] <- (coords[,2] - min(coords[,2])) / xRange
-  } else {
-    # Normalize y while maintaining the aspect ratio
-    coords[,1] <- (coords[,1] - min(coords[,1])) / yRange
-    coords[,2] <- (coords[,2] - min(coords[,2])) / yRange
-  }
-  return(coords)
+    # Determine which axis is longer
+    if (xRange >= yRange) {
+        # Normalize x while maintaining the aspect ratio
+        coords[, 1] <- (coords[, 1] - min(coords[, 1])) / xRange
+        coords[, 2] <- (coords[, 2] - min(coords[, 2])) / xRange
+    } else {
+        # Normalize y while maintaining the aspect ratio
+        coords[, 1] <- (coords[, 1] - min(coords[, 1])) / yRange
+        coords[, 2] <- (coords[, 2] - min(coords[, 2])) / yRange
+    }
+    return(coords)
 }
 
 
@@ -76,10 +75,10 @@ normalizeCoordinates <- function(coords) {
 #' @export
 #'
 #' @examples
-getDimXY <- function(ppp, ydim){
-  xratio <- abs(diff(ppp$window$xrange)) / abs(diff(ppp$window$yrange))
-  dimyx <- c(ydim, round(xratio*ydim))
-  return(dimyx)
+getDimXY <- function(ppp, ydim) {
+    xratio <- abs(diff(ppp$window$xrange)) / abs(diff(ppp$window$yrange))
+    dimyx <- c(ydim, round(xratio * ydim))
+    return(dimyx)
 }
 
 #' Function to convert spatial coordinates of a `SpatialExperiment` object to a `ppp` object
@@ -95,21 +94,21 @@ getDimXY <- function(ppp, ydim){
 #'
 #' @examples
 SPE2ppp <- function(spe, marks,
-                    sample_col = NULL,
-                    sample_id = NULL){
+    sample_col = NULL,
+    sample_id = NULL) {
+    if (!is.null(sample_col) & !is.null(sample_id)) {
+        spe <- spe[, colData(spe)[[sample_col]] == sample_id]
+    }
 
-  if (!is.null(sample_col) & !is.null(sample_id)) {
-    spe <- spe[,colData(spe)[[sample_col]] == sample_id]
-  }
-
-  ppp <- as.ppp(spatialCoords(spe),
-                c(min(spatialCoords(spe)[,1]),
-                  max(spatialCoords(spe)[,1]),
-                  min(spatialCoords(spe)[,2]),
-                  max(spatialCoords(spe)[,2])))
-  marks(ppp) <- colData(spe)[[marks]]
-  return(ppp)
+    ppp <- as.ppp(
+        spatialCoords(spe),
+        c(
+            min(spatialCoords(spe)[, 1]),
+            max(spatialCoords(spe)[, 1]),
+            min(spatialCoords(spe)[, 2]),
+            max(spatialCoords(spe)[, 2])
+        )
+    )
+    marks(ppp) <- colData(spe)[[marks]]
+    return(ppp)
 }
-
-
-
