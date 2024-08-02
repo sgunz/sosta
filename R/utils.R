@@ -1,6 +1,10 @@
 #' Converts a binary matrix to an sf polygon
 #'
 #' @param binaryMatrix matrix; binary matrix
+#' @param xmin integer; minimum x coordinate of the window
+#' @param xmax integer; maximum x coordinate of the window
+#' @param ymin integer; minimum y coordinate of the window
+#' @param ymax integer; maximum y coordinate of the window
 #'
 #' @return sf object
 #' @import sf
@@ -9,11 +13,17 @@
 #' @export
 #'
 #' @examples
-binaryImageToSF <- function(binaryMatrix) {
+binaryImageToSF <- function(binaryMatrix, xmin, xmax,
+                            ymin, ymax) {
     # turn 90 degrees anti clockwise for correspondance with spatstat
     binaryMatrix <- apply(t(binaryMatrix), 2, rev)
     # get raster
     r <- rast(binaryMatrix)
+    # rescale to correct windwow
+    xmin(r) =  xmin
+    xmax(r) = xmax
+    ymin(r) = ymin
+    ymax(r) = ymax
     # convert to polygons
     poly <- as.polygons(r)
     # polygons is a SpatVector. Convert it to an sf object
@@ -112,3 +122,6 @@ SPE2ppp <- function(spe, marks,
     marks(ppp) <- colData(spe)[[marks]]
     return(ppp)
 }
+
+
+

@@ -26,16 +26,20 @@ reconstructShapeDensity <- function(ppp,
     # construct spatstat window from matrix with true false entries
     mat <- ifelse(t(as.matrix(density_image)) > thres, TRUE, FALSE)
     shapeWin <- owin(mask = mat)
-    # rescale based on original ppp
-    rescaleShapeWin <- rescale.owin(
-        shapeWin,
-        diff(shapeWin$xrange) / diff(ppp$window$xrange)
-    )
 
-    # TODO: rescaling directly using sf objects
     # using custom function
-    stCast <- st_cast(st_make_valid(binaryImageToSF(as.matrix(rescaleShapeWin))), "POLYGON") # make valid is important!!
+    stCast <- st_cast(st_make_valid(
+      binaryImageToSF(
+        as.matrix(shapeWin),
+        xmin = ppp$window$xrange[1],
+        xmax = ppp$window$xrange[2],
+        ymin = ppp$window$yrange[1],
+        ymax = ppp$window$yrange[2]
+      )
+    )
+    , "POLYGON") # make valid is important!!
     stCast <- stCast[!st_is_empty(stCast), drop = FALSE]
+
     # return sf object
     return(st_sf(st_cast(stCast, "POLYGON")))
 }
