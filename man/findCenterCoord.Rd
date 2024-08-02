@@ -9,7 +9,7 @@ findCenterCoord(sfe, m, mark, targetMark)
 \arguments{
 \item{sfe}{SpatialFeatureExperiment}
 
-\item{m}{vector; vector of TRUE/FALSE indicating the indeces of the cells of interest}
+\item{m}{vector; vector of TRUE/FALSE defininf indeces of the cells of interest}
 
 \item{mark}{character; name of a column in \code{colData} that corresponds to the marks of interest}
 

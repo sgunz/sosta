@@ -8,8 +8,8 @@
 #'
 #' @return sf object
 #' @import sf
-#' @importFrom terra rast
-#' @importFrom terra as.polygons
+#' @importFrom terra rast as.polygons
+#' @importFrom terra xmin xmax ymin ymax
 #' @export
 #'
 #' @examples
@@ -20,10 +20,10 @@ binaryImageToSF <- function(binaryMatrix, xmin, xmax,
     # get raster
     r <- rast(binaryMatrix)
     # rescale to correct windwow
-    xmin(r) =  xmin
-    xmax(r) = xmax
-    ymin(r) = ymin
-    ymax(r) = ymax
+    terra::xmin(r) = xmin
+    terra::xmax(r) = xmax
+    terra::ymin(r) = ymin
+    terra::ymax(r) = ymax
     # convert to polygons
     poly <- as.polygons(r)
     # polygons is a SpatVector. Convert it to an sf object
@@ -95,8 +95,8 @@ getDimXY <- function(ppp, ydim) {
 #'
 #' @param spe SpatialExperiment; a object of class `SpatialExperiment`
 #' @param marks character; name of column in `colData` that will correspond to the `ppp` marks
-#' @param sample_col character; name of a column in `colData` that corresponds to the sample
-#' @param sample_id character; sample id, must be present in sample_col
+#' @param image_col character; name of a column in `colData` that corresponds to the image
+#' @param image_id character; image id, must be present in image_col
 #'
 #' @return ppp; object of type `ppp`
 #' @export
@@ -104,10 +104,10 @@ getDimXY <- function(ppp, ydim) {
 #'
 #' @examples
 SPE2ppp <- function(spe, marks,
-    sample_col = NULL,
-    sample_id = NULL) {
-    if (!is.null(sample_col) & !is.null(sample_id)) {
-        spe <- spe[, colData(spe)[[sample_col]] == sample_id]
+    image_col = NULL,
+    image_id = NULL) {
+    if (!is.null(image_col) & !is.null(image_id)) {
+        spe <- spe[, colData(spe)[[image_col]] == image_id]
     }
 
     ppp <- as.ppp(

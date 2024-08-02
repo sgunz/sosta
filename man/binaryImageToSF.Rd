@@ -4,10 +4,18 @@
 \alias{binaryImageToSF}
 \title{Converts a binary matrix to an sf polygon}
 \usage{
-binaryImageToSF(binaryMatrix)
+binaryImageToSF(binaryMatrix, xmin, xmax, ymin, ymax)
 }
 \arguments{
 \item{binaryMatrix}{matrix; binary matrix}
+
+\item{xmin}{integer; minimum x coordinate of the window}
+
+\item{xmax}{integer; maximum x coordinate of the window}
+
+\item{ymin}{integer; minimum y coordinate of the window}
+
+\item{ymax}{integer; maximum y coordinate of the window}
 }
 \value{
 sf object

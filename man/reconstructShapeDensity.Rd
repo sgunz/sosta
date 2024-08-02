@@ -2,7 +2,7 @@
 % Please edit documentation in R/reconstructShapePPP.R
 \name{reconstructShapeDensity}
 \alias{reconstructShapeDensity}
-\title{Reconstruct shape from point pattern density}
+\title{Reconstruct structure from point pattern density}
 \usage{
 reconstructShapeDensity(ppp, bndw, thres, dimyx)
 }
@@ -11,13 +11,13 @@ reconstructShapeDensity(ppp, bndw, thres, dimyx)
 
 \item{bndw}{banddwith of kernel density estimator}
 
-\item{thres}{intensity threshold}
+\item{thres}{intensity threshold for the reconstruction}
 
-\item{dimyx}{pixel dimension of the output image}
+\item{dimyx}{pixel dimensions of the output image}
 }
 \value{
 sf object of class \code{POLYGON}
 }
 \description{
-Reconstruct shape from point pattern density
+Reconstruct structure from point pattern density
 }

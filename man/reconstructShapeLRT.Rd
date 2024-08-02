@@ -2,7 +2,7 @@
 % Please edit documentation in R/reconstructShapePPP.R
 \name{reconstructShapeLRT}
 \alias{reconstructShapeLRT}
-\title{Reconstruction of shape from point pattern using likelihood ratio test}
+\title{Reconstruct structure from point pattern using likelihood ratio test}
 \usage{
 reconstructShapeLRT(ppp, r = bw.diggle(ppp), dimyx)
 }
@@ -13,6 +13,9 @@ reconstructShapeLRT(ppp, r = bw.diggle(ppp), dimyx)
 
 \item{dimyx}{pixel dimension of the output image}
 }
+\value{
+sf object of class \code{POLYGON}
+}
 \description{
-Reconstruction of shape from point pattern using likelihood ratio test
+Reconstruct structure from point pattern using likelihood ratio test
 }

@@ -11,6 +11,9 @@ st_calculateCurvature(sfPoly, smoothness = 5)
 
 \item{smoothness}{list; curvature measures}
 }
+\value{
+list; list of curvatures values
+}
 \description{
 Title
 }

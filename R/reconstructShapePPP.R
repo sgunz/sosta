@@ -1,9 +1,9 @@
-#' Reconstruct shape from point pattern density
+#' Reconstruct structure from point pattern density
 #'
 #' @param ppp point pattern object of class `ppp`
 #' @param bndw banddwith of kernel density estimator
-#' @param thres intensity threshold
-#' @param dimyx pixel dimension of the output image
+#' @param thres intensity threshold for the reconstruction
+#' @param dimyx pixel dimensions of the output image
 #'
 #' @return sf object of class `POLYGON`
 #' @import spatstat.explore spatstat.geom sf
@@ -44,13 +44,13 @@ reconstructShapeDensity <- function(ppp,
     return(st_sf(st_cast(stCast, "POLYGON")))
 }
 
-#' Reconstruction of shape from point pattern using likelihood ratio test
+#' Reconstruct structure from point pattern using likelihood ratio test
 #'
 #' @param ppp point pattern object of class `ppp`
 #' @param r radius of the circle to use in the function `scanLRTS`
 #' @param dimyx pixel dimension of the output image
 #'
-#' @return
+#' @return sf object of class `POLYGON`
 #' @import spatstat.explore spatstat.geom sf
 #' @importFrom EBImage resize
 #' @export
@@ -101,3 +101,93 @@ reconstructShapeLRT <- function(ppp,
     # this ensures that we have single polygons
     return(st_cast(st_union(stWinResc), "POLYGON"))
 }
+
+
+
+
+#' Reconstruct structure from spe object with given image id
+#'
+#' @param spe SpatialExperiment; a object of class `SpatialExperiment`
+#' @param marks character; name of column in `colData` that will correspond to the `ppp` marks
+#' @param image_col character; name of a column in `colData` that corresponds to the image
+#' @param image_id character; image id, must be present in image_col
+#' @param mark_select character; name of mark that is to be selected for the reconstruction
+#' @param dim numeric; x dimension of the final reconstruction. Default = 500
+#' @param bndw numeric; bandwith of the sigma parameter in the density estimation,
+#' if no value is given the bandwith is estimated using cross validation with the `bw.diggle` function.
+#' @param thres numeric; intensity threshold for the reconstruction
+#'
+#' @return sf object of class `POLYGON`
+#' @export
+#'
+#' @examples
+reconstructShapeDensityImage <- function(spe, marks,
+                                         image_col, image_id, mark_select,
+                                         dim = 500, bndw = NULL,
+                                         thres){
+
+  # Convert the spe object to a point pattern object
+  pp <- SPE2ppp(spe,
+                marks,
+                image_col,
+                image_id)
+
+  # Extract the islet cells
+  pp.islet <- subset(pp, marks == mark_select)
+
+  # Get dimension of reconstruction
+  dimyx <- getDimXY(pp.islet, dim)
+
+  # Set default of sigma bandwith
+  if (is.null(bndw)) bndw <- bw.diggle(pp.islet)
+
+  # Get the structure
+  struct <- reconstructShapeDensity(pp.islet,
+                                    bndw = bndw,
+                                    thres = thres,
+                                    dimyx = dimyx)
+
+  return(struct)
+}
+
+
+#' Reconstruct structure from spatial experiment object per image id
+#'
+#' @param spe SpatialExperiment; a object of class `SpatialExperiment`
+#' @param marks character; name of column in `colData` that will correspond to the `ppp` marks
+#' @param image_col character; name of a column in `colData` that corresponds to the image
+#' @param mark_select character; name of mark that is to be selected for the reconstruction
+#' @param dim numeric; x dimension of the final reconstruction. Default = 500
+#' @param bndw numeric; bandwith of the sigma parameter in the density estimation,
+#' if no value is given the bandwith is estimated using cross validation with the `bw.diggle` function.
+#' @param thres numeric; intensity threshold for the reconstruction
+#' @param ncores numeric; nimer of cores for parallel processing using `mclapply`. Default = 1
+#'
+#' @importFrom parallel mclapply
+#' @importFrom dplyr bind_rows
+#'
+#' @return simple feature collection
+#' @export
+#'
+#' @examples
+reconstructShapeDensitySPE <- function(spe, marks,
+                                       image_col, mark_select,
+                                       dim = 500, bndw = NULL, thres,
+                                       ncores = 1){
+  # Get all unique image ids
+  all_images <- spe[[image_col]] |> unique()
+  # Calculate polygon for each id using multiple cores
+  res_all <- mclapply(all_images, function(x){
+    res <- reconstructShapeDensityImage(spe, marks, image_col,
+                                        x, mark_select,
+                                        dim = 500, bndw = NULL,
+                                        thres)
+    # assign image_id
+    res$image_id <- x
+    return(res)
+  }, mc.cores = ncores
+  )
+  # return data frame with all structures
+  return(bind_rows(res_all))
+}
+

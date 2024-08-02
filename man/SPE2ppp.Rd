@@ -4,16 +4,16 @@
 \alias{SPE2ppp}
 \title{Function to convert spatial coordinates of a \code{SpatialExperiment} object to a \code{ppp} object}
 \usage{
-SPE2ppp(spe, marks, sample_col = NULL, sample_id = NULL)
+SPE2ppp(spe, marks, image_col = NULL, image_id = NULL)
 }
 \arguments{
 \item{spe}{SpatialExperiment; a object of class \code{SpatialExperiment}}
 
 \item{marks}{character; name of column in \code{colData} that will correspond to the \code{ppp} marks}
 
-\item{sample_col}{character; name of a column in \code{colData} that corresponds to the sample}
+\item{image_col}{character; name of a column in \code{colData} that corresponds to the image}
 
-\item{sample_id}{character; sample id, must be present in sample_col}
+\item{image_id}{character; image id, must be present in image_col}
 }
 \value{
 ppp; object of type \code{ppp}

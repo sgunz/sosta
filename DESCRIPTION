@@ -1,14 +1,16 @@
 Package: sosta
 Title: Spatial Omics Structure Analysis
 Version: 0.0.0.9000
-Authors@R: 
+Authors@R: c(
     person("Samuel", "Gunz", , "samuel.gunz@uzh.ch", role = c("aut", "cre"),
-           comment = c(ORCID = "000-0002-8909-0932"))
+           comment = c(ORCID = "000-0002-8909-0932")),
+    person("Mark D.", "Robinson", role=c("aut", "fnd"), 
+	    email="mark.robinson@uzh.ch"))
 Description: A framework to reconstruct, characterise and compare spatial structures from spatial omics data.
 License: GPL (>= 3)
 Encoding: UTF-8
 Roxygen: list(markdown = TRUE)
-RoxygenNote: 7.3.0
+RoxygenNote: 7.3.2
 URL: https://github.com/sgunz/sosta
 BugReports: https://github.com/sgunz/sosta/issues
 Imports: 
@@ -20,7 +22,14 @@ Imports:
     spatstat.geom,
     stats,
     SpatialExperiment,
-    SpatialFeatureExperiment
-Suggests:
+    SpatialFeatureExperiment,
     dplyr,
-    ggplot2
+    raster,
+    imcdatasets
+Suggests:
+    ggplot2,
+    knitr,
+    rmarkdown,
+    ggspavis,
+    BiocStyle
+VignetteBuilder: knitr

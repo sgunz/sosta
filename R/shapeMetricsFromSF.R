@@ -31,7 +31,7 @@ st_feature_axes <- function(sfPoly) {
 #' @param sfPoly `POLYGON ` of class `sf`
 #' @param smoothness list; curvature measures
 #'
-#' @return
+#' @return list; list of curvatures values
 #' @export
 #'
 #' @references https://stackoverflow.com/questions/62250151/calculate-curvature-of-a-closed-object-in-r
