@@ -26,7 +26,8 @@ reconstructShapeDensityImage(
 
 \item{mark_select}{character; name of mark that is to be selected for the reconstruction}
 
-\item{dim}{numeric; x dimension of the final reconstruction. Default = 500}
+\item{dim}{numeric; x dimension of the final reconstruction.
+A lower resolution speed up computation but lead to less exact reconstruction. Default = 500}
 
 \item{bndw}{numeric; bandwith of the sigma parameter in the density estimation,
 if no value is given the bandwith is estimated using cross validation with the \code{bw.diggle} function.}
