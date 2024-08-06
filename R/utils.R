@@ -124,4 +124,37 @@ SPE2ppp <- function(spe, marks,
 }
 
 
+#' Estimate the intensity threshold for the reconstruction of spatial strucutres
+#'
+#' @param ppp point pattern object of class `ppp`
+#' @param bndw numeric; bandwith of the sigma parameter in the density estimation,
+#' if no value is given the bandwith is estimated using cross validation with the `bw.diggle` function.
+#' @param dimyx vector; pixel dimensions of the kernel density image
+#' @param breaks numeric; number of bins of the intensity estimates
+#'
+#' @return numeric; estimated intensity threshold
+#' @import spatstat.explore
+#' @export
+#'
+#' @examples
+findIntensityThreshold <- function(ppp, bndw = NULL, dimyx,
+                                   breaks = 1000) {
+  # define default of the sigma threshold
+  if(is.null(bndw)) bndw <- bw.diggle(ppp)
+  # create data frame
+  den_df <- as.data.frame(density(ppp, sigma = bndw, dimyx = dimyx))
+  # bin the value to get better estimates of the peaks
+  cuts <- cut(den_df$value, breaks = breaks)
+  # take all densities bigger than first bin
+  # TODO: this has to be improved
+  new_den <- density(den_df$value[cuts != levels(cuts)[1]])
+  # define the peaks
+  peaks <- new_den$x[which(diff(sign(diff(new_den$y))) == -2)]
+  # for simplicity the threshold is the mean between the first and second peak,
+  # we could in the future find a better estimation
+  if(length(peaks) == 1){thres <- peaks}
+  else {thres <- (peaks[2] - peaks[1]) / 2}
+  return(thres)
+
+}
 

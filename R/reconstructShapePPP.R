@@ -117,6 +117,8 @@ reconstructShapeLRT <- function(ppp,
 #' @param dim numeric; x dimension of the final reconstruction.
 #' A lower resolution speed up computation but lead to less exact reconstruction. Default = 500
 #' @return ggplot object with intensity image and histogram
+#' @importFrom ggplot2 ggplot aes geom_histogram theme_light geom_tile
+#' labs coord_equal theme_classic scale_color_viridis_c
 #' @export
 #'
 #' @examples
@@ -159,7 +161,7 @@ shapeIntensityImage <- function(spe, marks,
     theme_light()
 
 
-  p <- den_im + den_hist
+  p <- patchwork::wrap_plots(den_im, den_hist, ncol = 2)
 
   return(p)
 }
@@ -185,7 +187,7 @@ shapeIntensityImage <- function(spe, marks,
 reconstructShapeDensityImage <- function(spe, marks,
                                          image_col, image_id, mark_select,
                                          dim = 500, bndw = NULL,
-                                         thres){
+                                         thres = NULL) {
 
   # Convert the spe object to a point pattern object
   pp <- SPE2ppp(spe,
@@ -194,16 +196,20 @@ reconstructShapeDensityImage <- function(spe, marks,
                 image_id)
 
   # Extract the islet cells
-  pp.islet <- subset(pp, marks %in% mark_select)
+  pp_sel <- subset(pp, marks %in% mark_select)
 
   # Get dimension of reconstruction
-  dimyx <- getDimXY(pp.islet, dim)
+  dimyx <- getDimXY(pp_sel, dim)
 
   # Set default of sigma bandwith
-  if (is.null(bndw)) bndw <- bw.diggle(pp.islet)
+  if (is.null(bndw)) bndw <- bw.diggle(pp_sel)
 
+  # Find the threshold for the structure if not set
+  if (is.null(thres)) thres <- findIntensityThreshold(pp_sel,
+                                                      bndw = bndw,
+                                                      dimyx = dimyx)
   # Get the structure
-  struct <- reconstructShapeDensity(pp.islet,
+  struct <- reconstructShapeDensity(pp_sel,
                                     bndw = bndw,
                                     thres = thres,
                                     dimyx = dimyx)
@@ -253,6 +259,8 @@ reconstructShapeDensitySPE <- function(spe, marks,
   return(bind_rows(res_all))
 }
 
+#TODO: for one image
+
 #' Title
 #'
 #' @param spe SpatialExperiment; a object of class `SpatialExperiment`
@@ -261,31 +269,38 @@ reconstructShapeDensitySPE <- function(spe, marks,
 #' @param mark_select character; name of mark that is to be selected for the reconstruction
 #' @param nimages integer; number of images for the estimation. Will be randomly sampled
 #' @param fun character; function to estimate the kernel density. Default bw.diggle.
+#' @param dim numeric; x dimension of the final reconstruction.
+#' A lower resolution speed up computation but lead to less exact reconstruction. Default = 500
 #' @param ncores numeric; number of cores for parallel processing using `mclapply`. Default = 1
-#' @param plot_hist logical; if histogram of estimated densities shoul be plotted. Default = TRUE
+#' @param plot_hist logical; if histogram of estimated densities and thresholds should be plotted. Default = TRUE
 #'
 #' @importFrom parallel mclapply
+#' @importFrom dplyr bind_rows
 #' @import spatstat.explore
+#' @importFrom patchwork wrap_plots
+#' @importFrom ggplot2 ggplot aes geom_histogram theme_light
 #' @return list; list of estimated intensities
 #' @export
 #'
 #' @examples
-estimateKernelDensitySPE <- function(spe,
+estimateReconstructionParametersSPE <- function(spe,
                                      marks,
                                      image_col,
                                      mark_select = NULL,
                                      nimages = NULL,
                                      fun = "bw.diggle",
-                                     ncores = 5,
+                                     dim = 500,
+                                     ncores = 1,
                                      plot_hist = TRUE) {
 
+  # get the id's of all images
   all_images <- colData(spe)[[image_col]] |> unique()
-
+  # default is to take all values
   if(is.null(nimages)) nimages <- length(all_images)
-
+  # alternitavely we sample some images
   sample_images <- sample(all_images, nimages)
-
-  bndws <- parallel::mclapply(sample_images, function(x) {
+  # we calculate the bandwiths and thresholds
+  res <- parallel::mclapply(sample_images, function(x) {
     pp <- SPE2ppp(spe,
                   marks = marks,
                   image_col = image_col,
@@ -294,20 +309,33 @@ estimateKernelDensitySPE <- function(spe,
     if(!is.null(mark_select)) pp <- subset(pp, marks %in% mark_select)
     # Estimate the bandwidth for the kernel estimation of point process intensity
     bndw <- do.call(fun, args = list(X = pp, warn = FALSE))
-    return(bndw)
+
+    # Estimate the theshold for the recinstruction
+    # Get dimension of reconstruction
+    dimyx <- getDimXY(pp, dim)
+    thres <- findIntensityThreshold(pp, bndw = bndw, dimyx = dimyx)
+
+    return(c("img" = x, "bndw" = as.numeric(bndw), "thres" = as.numeric(thres)))
   }, mc.cores = ncores)
+
+  res <- dplyr::bind_rows(res)
+  res$thres <- as.numeric(res$thres)
+  res$bndw <- as.numeric(res$bndw)
 
   if (plot_hist == TRUE & nimages > 1){
 
-    df <- as.data.frame(unlist(bndws))
-    colnames(df) <- "densities"
-
-    p <- df |>
-      ggplot(aes(x = densities)) +
+    p1 <- res |>
+      ggplot(aes(x = bndw)) +
       geom_histogram(bins = nimages/2) +
-      theme_classic()
-    print(p)
+      theme_light()
+
+    p2 <- res |>
+      ggplot(aes(x = thres)) +
+      geom_histogram(bins = nimages/2) +
+      theme_light()
+
+    print(patchwork::wrap_plots(p1, p2, ncol = 2))
   }
 
-  return(unlist(bndws))
+  return(res)
 }

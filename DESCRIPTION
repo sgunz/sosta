@@ -24,12 +24,13 @@ Imports:
     SpatialExperiment,
     SpatialFeatureExperiment,
     dplyr,
-    raster,
-    imcdatasets
-Suggests:
+    terra,
     ggplot2,
+    patchwork
+Suggests:
     knitr,
     rmarkdown,
     ggspavis,
-    BiocStyle
+    BiocStyle,
+    imcdatasets,
 VignetteBuilder: knitr
