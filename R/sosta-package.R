@@ -13,6 +13,7 @@
 #' @importFrom ggplot2 theme_classic
 #' @importFrom ggplot2 theme_light
 #' @importFrom patchwork wrap_plots
+#' @importFrom terra ext
 #' @importFrom terra xmax
 #' @importFrom terra xmin
 #' @importFrom terra ymax

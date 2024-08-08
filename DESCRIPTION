@@ -24,7 +24,6 @@ Imports:
     SpatialExperiment,
     SpatialFeatureExperiment,
     dplyr,
-    terra,
     ggplot2,
     patchwork
 Suggests:

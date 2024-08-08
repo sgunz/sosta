@@ -25,12 +25,11 @@ reconstructShapeDensity <- function(ppp,
 
     # construct spatstat window from matrix with true false entries
     mat <- ifelse(t(as.matrix(density_image)) > thres, TRUE, FALSE)
-    shapeWin <- owin(mask = mat)
 
     # using custom function
     stCast <- st_cast(st_make_valid(
       binaryImageToSF(
-        as.matrix(shapeWin),
+        mat,
         xmin = ppp$window$xrange[1],
         xmax = ppp$window$xrange[2],
         ymin = ppp$window$yrange[1],

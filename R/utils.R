@@ -8,8 +8,7 @@
 #'
 #' @return sf object
 #' @import sf
-#' @importFrom terra rast as.polygons
-#' @importFrom terra xmin xmax ymin ymax
+#' @importFrom terra rast as.polygons ext
 #' @export
 #'
 #' @examples
@@ -20,10 +19,8 @@ binaryImageToSF <- function(binaryMatrix, xmin, xmax,
     # get raster
     r <- rast(binaryMatrix)
     # rescale to correct windwow
-    terra::xmin(r) = xmin
-    terra::xmax(r) = xmax
-    terra::ymin(r) = ymin
-    terra::ymax(r) = ymax
+    ext(r) <- c(xmin, xmax,
+                ymin, ymax)
     # convert to polygons
     poly <- as.polygons(r)
     # polygons is a SpatVector. Convert it to an sf object
