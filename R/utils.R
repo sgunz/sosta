@@ -19,7 +19,7 @@ binaryImageToSF <- function(binaryMatrix, xmin, xmax,
     # get raster
     r <- rast(binaryMatrix)
     # rescale to correct windwow
-    ext(r) <- c(xmin, xmax,
+    terra::ext(r) <- c(xmin, xmax,
                 ymin, ymax)
     # convert to polygons
     poly <- as.polygons(r)
@@ -135,7 +135,7 @@ SPE2ppp <- function(spe, marks,
 #'
 #' @examples
 findIntensityThreshold <- function(ppp, bndw = NULL, dimyx,
-                                   breaks = 1000) {
+                                   breaks = 50) {
   # define default of the sigma threshold
   if(is.null(bndw)) bndw <- bw.diggle(ppp)
   # create data frame

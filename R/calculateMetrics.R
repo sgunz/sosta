@@ -20,8 +20,7 @@ shapeMetrics <- function(sfPoly) {
     # Feature axes
     FeatureAxes <- st_feature_axes(sfPoly)
     # Compactness: 0 and 1 (circle)
-    shapeCompactness <- (shapePerimeter)^2 /
-      (4 * pi * shapeArea)
+    shapeCompactness <- (shapePerimeter)^2 / (4 * pi * shapeArea)
     # Eccentricity: between 0 and 1
     shapeEccentricity <- FeatureAxes$minorAxis /
         FeatureAxes$majorAxis

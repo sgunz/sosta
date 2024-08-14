@@ -125,7 +125,7 @@ shapeIntensityImage <- function(spe, marks,
                               image_col,
                               image_id,
                               mark_select,
-                              bndw,
+                              bndw = NULL,
                               dim = 500){
 
   # Convert the spe object to a point pattern object
@@ -255,6 +255,7 @@ reconstructShapeDensitySPE <- function(spe, marks,
   }, mc.cores = ncores
   )
   # return data frame with all structures
+  # TODO: do.call(rbind, a)
   return(bind_rows(res_all))
 }
 
@@ -317,6 +318,7 @@ estimateReconstructionParametersSPE <- function(spe,
     return(c("img" = x, "bndw" = as.numeric(bndw), "thres" = as.numeric(thres)))
   }, mc.cores = ncores)
 
+  #TODO: do.call(rbind, a) ?
   res <- dplyr::bind_rows(res)
   res$thres <- as.numeric(res$thres)
   res$bndw <- as.numeric(res$bndw)

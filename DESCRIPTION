@@ -11,7 +11,7 @@ License: GPL (>= 3)
 Encoding: UTF-8
 Roxygen: list(markdown = TRUE)
 RoxygenNote: 7.3.2
-URL: https://github.com/sgunz/sosta
+URL: https://github.com/sgunz/sosta, https://sgunz.github.io/sosta/
 BugReports: https://github.com/sgunz/sosta/issues
 Imports: 
     EBImage,

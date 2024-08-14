@@ -117,7 +117,7 @@ In this example we will reconstruct the density based on the point pattern densi
 
 
 ```{r, eval=FALSE}
-n <- estimateKernelDensitySPE(
+n <- estimateReconstructionParametersSPE(
   spe,
   marks = "cell_category",
   image_col = "image_name",
