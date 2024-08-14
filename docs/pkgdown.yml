@@ -1,0 +1,10 @@
+pandoc: '3.2'
+pkgdown: 2.0.9
+pkgdown_sha: ~
+articles:
+  IMC_DiabetesIslands_Vignette: IMC_DiabetesIslands_Vignette.html
+last_built: 2024-08-14T09:55Z
+urls:
+  reference: https://sgunz.github.io/sosta/reference
+  article: https://sgunz.github.io/sosta/articles
+
