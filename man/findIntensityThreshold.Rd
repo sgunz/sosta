@@ -4,7 +4,7 @@
 \alias{findIntensityThreshold}
 \title{Estimate the intensity threshold for the reconstruction of spatial strucutres}
 \usage{
-findIntensityThreshold(ppp, bndw = NULL, dimyx, breaks = 1000)
+findIntensityThreshold(ppp, bndw = NULL, dimyx, breaks = 50)
 }
 \arguments{
 \item{ppp}{point pattern object of class \code{ppp}}

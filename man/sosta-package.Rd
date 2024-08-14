@@ -12,6 +12,7 @@ A framework to reconstruct, characterise and compare spatial structures from spa
 Useful links:
 \itemize{
   \item \url{https://github.com/sgunz/sosta}
+  \item \url{https://sgunz.github.io/sosta/}
   \item Report bugs at \url{https://github.com/sgunz/sosta/issues}
 }
 

@@ -10,7 +10,7 @@ shapeIntensityImage(
   image_col,
   image_id,
   mark_select,
-  bndw,
+  bndw = NULL,
   dim = 500
 )
 }
