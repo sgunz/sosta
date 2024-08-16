@@ -4,6 +4,7 @@
 # Spatial Omic Structure Analysis
 
 <!-- badges: start -->
+
 <!-- badges: end -->
 
 `sosta` (spatial omics structure analysis) is a framework to
@@ -11,8 +12,10 @@ reconstruct, characterise and compare spatial structures from spatial
 omics data.
 
 `sosta` builds on existing R packages for spatial analysis such as
-`spatstat`, `sf` and `SpatialFeatureExperiment`, which facilitates the
-implementation of additional custom metrics that fit the needs of users.
+`spatstat`, `sf` and the [Bioconductor](https://bioconductor.org/)
+environment by integrating with packages `SpatialExperiment` and
+`SpatialFeatureExperiment`, which facilitates the implementation of
+additional custom metrics that fit the needs of users.
 
 ## Installation
 
@@ -24,11 +27,8 @@ You can install the development version of `sosta` from
 devtools::install_github("sgunz/sosta")
 ```
 
-## Example
+## Feedback
 
-This is a basic example which shows you how to solve a common problem:
-
-``` r
-library(sosta)
-## basic example code
-```
+We are happy to get your feedback. Please send it via email to [Samuel
+Gunz](https://www.mls.uzh.ch/en/research/robinson/groupmembers/samuel-gunz.html)
+or open a issue on [GitHub](https://github.com/sgunz/sosta/issues).

@@ -250,7 +250,7 @@ reconstructShapeDensitySPE <- function(spe, marks,
                                         dim = 500, bndw = NULL,
                                         thres)
     # assign image_id
-    res$image_id <- x
+    res[[image_col]] <- x
     return(res)
   }, mc.cores = ncores
   )
