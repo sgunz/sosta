@@ -41,9 +41,7 @@ library("ggspavis")
 library("spatstat.explore")
 library("spatstat.geom")
 library("imcdatasets")
-
 ```
-
 
 # Introduction
 
@@ -243,7 +241,7 @@ all_islets <- reconstructShapeDensitySPE(spe, marks = "cell_category",
                              mark_select = "islet", 
                              bndw = sigma,
                              thres = 0.0025,
-                             ncores = 4)
+                             ncores = 2)
 ```
 
 # Calculation of structure metrics
@@ -277,7 +275,10 @@ patient_data <- colData(spe) |>
                   "patient_id", "patient_disease_duration", "patient_age",
                   "patient_gender", "patient_ethnicity", "patient_BMI", "sample_id"))) |>
   unique()
+```
 
+
+```{r}
 all_islets <- dplyr::left_join(all_islets, patient_data, by = "image_name")
 ```
 

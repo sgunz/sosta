@@ -4,6 +4,7 @@
 ## usethis namespace: start
 #' @importFrom dplyr bind_rows
 #' @importFrom ggplot2 aes
+#' @importFrom ggplot2 aes_string
 #' @importFrom ggplot2 coord_equal
 #' @importFrom ggplot2 geom_histogram
 #' @importFrom ggplot2 geom_tile

@@ -116,7 +116,7 @@ reconstructShapeLRT <- function(ppp,
 #' @param dim numeric; x dimension of the final reconstruction.
 #' A lower resolution speed up computation but lead to less exact reconstruction. Default = 500
 #' @return ggplot object with intensity image and histogram
-#' @importFrom ggplot2 ggplot aes geom_histogram theme_light geom_tile
+#' @importFrom ggplot2 ggplot aes_string geom_histogram theme_light geom_tile
 #' labs coord_equal theme_classic scale_color_viridis_c
 #' @export
 #'
@@ -145,7 +145,7 @@ shapeIntensityImage <- function(spe, marks,
 
   # plot density image
   den_im <- im_df |>
-    ggplot(aes(x = x, y = y, color = value)) +
+    ggplot(aes_string(x = "x", y = "y", color = "value")) +
     geom_tile() +
     scale_color_viridis_c(option = "C") +
     coord_equal() +
@@ -154,7 +154,7 @@ shapeIntensityImage <- function(spe, marks,
 
   # plot histogram
   den_hist <- im_df |>
-    ggplot(aes(x = value)) +
+    ggplot(aes_string(x = "value")) +
     geom_histogram(bins = 50) +
     labs(x = "pixel intensity") +
     theme_light()
@@ -278,7 +278,7 @@ reconstructShapeDensitySPE <- function(spe, marks,
 #' @importFrom dplyr bind_rows
 #' @import spatstat.explore
 #' @importFrom patchwork wrap_plots
-#' @importFrom ggplot2 ggplot aes geom_histogram theme_light
+#' @importFrom ggplot2 ggplot aes_string geom_histogram theme_light
 #' @return list; list of estimated intensities
 #' @export
 #'
@@ -326,12 +326,12 @@ estimateReconstructionParametersSPE <- function(spe,
   if (plot_hist == TRUE & nimages > 1){
 
     p1 <- res |>
-      ggplot(aes(x = bndw)) +
+      ggplot(aes_string(x = "bndw")) +
       geom_histogram(bins = nimages/2) +
       theme_light()
 
     p2 <- res |>
-      ggplot(aes(x = thres)) +
+      ggplot(aes_string(x = "thres")) +
       geom_histogram(bins = nimages/2) +
       theme_light()
 
