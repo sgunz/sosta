@@ -5,12 +5,12 @@
 <meta charset="utf-8">
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-<title>Reconstrucion and analysis of diabetes island from IMC data • sosta</title>
+<title>Reconstrucion and analysis of pancreatic island from IMC data • sosta</title>
 <script src="../deps/jquery-3.6.0/jquery-3.6.0.min.js"></script><meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 <link href="../deps/bootstrap-5.3.1/bootstrap.min.css" rel="stylesheet">
 <script src="../deps/bootstrap-5.3.1/bootstrap.bundle.min.js"></script><link href="../deps/font-awesome-6.4.2/css/all.min.css" rel="stylesheet">
 <link href="../deps/font-awesome-6.4.2/css/v4-shims.min.css" rel="stylesheet">
-<script src="../deps/headroom-0.11.0/headroom.min.js"></script><script src="../deps/headroom-0.11.0/jQuery.headroom.min.js"></script><script src="../deps/bootstrap-toc-1.0.1/bootstrap-toc.min.js"></script><script src="../deps/clipboard.js-2.0.11/clipboard.min.js"></script><script src="../deps/search-1.0.0/autocomplete.jquery.min.js"></script><script src="../deps/search-1.0.0/fuse.min.js"></script><script src="../deps/search-1.0.0/mark.min.js"></script><!-- pkgdown --><script src="../pkgdown.js"></script><meta property="og:title" content="Reconstrucion and analysis of diabetes island from IMC data">
+<script src="../deps/headroom-0.11.0/headroom.min.js"></script><script src="../deps/headroom-0.11.0/jQuery.headroom.min.js"></script><script src="../deps/bootstrap-toc-1.0.1/bootstrap-toc.min.js"></script><script src="../deps/clipboard.js-2.0.11/clipboard.min.js"></script><script src="../deps/search-1.0.0/autocomplete.jquery.min.js"></script><script src="../deps/search-1.0.0/fuse.min.js"></script><script src="../deps/search-1.0.0/mark.min.js"></script><!-- pkgdown --><script src="../pkgdown.js"></script><meta property="og:title" content="Reconstrucion and analysis of pancreatic island from IMC data">
 </head>
 <body>
     <a href="#main" class="visually-hidden-focusable">Skip to contents</a>
@@ -33,7 +33,7 @@
 <li class="active nav-item dropdown">
   <button class="nav-link dropdown-toggle" type="button" id="dropdown-articles" data-bs-toggle="dropdown" aria-expanded="false" aria-haspopup="true">Articles</button>
   <ul class="dropdown-menu" aria-labelledby="dropdown-articles">
-<li><a class="dropdown-item" href="../articles/IMC_DiabetesIslands_Vignette.html">Reconstrucion and analysis of diabetes island from IMC data</a></li>
+<li><a class="dropdown-item" href="../articles/IMC_DiabetesIslands_Vignette.html">Reconstrucion and analysis of pancreatic island from IMC data</a></li>
   </ul>
 </li>
       </ul>
@@ -55,7 +55,7 @@
 <div class="row">
   <main id="main" class="col-md-9"><div class="page-header">
 
-      <h1>Reconstrucion and analysis of diabetes island from IMC data</h1>
+      <h1>Reconstrucion and analysis of pancreatic island from IMC data</h1>
                         <h4 data-toc-skip class="author">Samuel
 Gunz</h4>
             <address class="author_afil">
@@ -80,9 +80,9 @@ Switzerland<br><small class="dont-index">Source: <a href="https://github.com/sgu
       using the <code>sosta</code> package</p>
     </div>
     
-<div class="section level2">
-<h2 id="setup">Setup<a class="anchor" aria-label="anchor" href="#setup"></a>
-</h2>
+<div class="section level3">
+<h3 id="setup">Setup<a class="anchor" aria-label="anchor" href="#setup"></a>
+</h3>
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="st"><a href="https://github.com/sgunz/sosta" class="external-link">"sosta"</a></span><span class="op">)</span></span>
 <span><span class="co">#&gt; Warning: replacing previous import 'SpatialFeatureExperiment::rotate' by</span></span>
@@ -90,6 +90,7 @@ Switzerland<br><small class="dont-index">Source: <a href="https://github.com/sgu
 <span><span class="co">#&gt; Warning: replacing previous import 'SpatialFeatureExperiment::affine' by</span></span>
 <span><span class="co">#&gt; 'spatstat.geom::affine' when loading 'sosta'</span></span>
 <span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="st"><a href="https://dplyr.tidyverse.org" class="external-link">"dplyr"</a></span><span class="op">)</span></span>
+<span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="st"><a href="https://tidyr.tidyverse.org" class="external-link">"tidyr"</a></span><span class="op">)</span></span>
 <span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="st"><a href="https://ggplot2.tidyverse.org" class="external-link">"ggplot2"</a></span><span class="op">)</span></span>
 <span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="st"><a href="https://patchwork.data-imaginist.com" class="external-link">"patchwork"</a></span><span class="op">)</span></span>
 <span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="st"><a href="https://github.com/lmweber/ggspavis" class="external-link">"ggspavis"</a></span><span class="op">)</span></span>
@@ -103,20 +104,13 @@ Switzerland<br><small class="dont-index">Source: <a href="https://github.com/sgu
 <p>In this vignette we will use data from the package <em><a href="https://bioconductor.org/packages/3.19/imcdatasets" class="external-link">imcdatasets</a></em>.
 The dataset contains imaging mass cytometry (IMC) data of pancreatic
 islets human donors at different stages of type 1 diabetes (T1D) <span class="citation">[@damondMapHumanType2019]</span>.</p>
-<p>From the manual of <em><a href="https://bioconductor.org/packages/3.19/imcdatasets" class="external-link">imcdatasets</a></em>
-and the original publication by <span class="citation">@damondMapHumanType2019</span> we know that</p>
-<blockquote>
-<p>The three donors in the subset present the following
-characteristics:</p>
-<p>6126 is a non-diabetic donor, with large islets containing many beta
-cells, severe infiltration of the exocrine pancreas with myeloid cells
-but limited infiltration of islets.</p>
-<p>6414 is a donor with recent T1D onset (shortly after diagnosis)
-showing partial beta cell destruction and mild infiltration of islets
-with T cells. 6180 is a donor with long-duration T1D (11 years after
-diagnosis), showing near-total beta cell destruction and limited immune
-cell infiltration in both the islets and the pancreas.</p>
-</blockquote>
+<!-- From the manual of *[imcdatasets](https://bioconductor.org/packages/3.19/imcdatasets)* and the original publication by @damondMapHumanType2019 we know that -->
+<!-- >The three donors in the subset present the following characteristics: -->
+<!-- > -->
+<!-- > 6126 is a non-diabetic donor, with large islets containing many beta cells, severe infiltration of the exocrine pancreas with myeloid cells but limited infiltration of islets. -->
+<!-- > -->
+<!-- > 6414 is a donor with recent T1D onset (shortly after diagnosis) showing partial beta cell destruction and mild infiltration of islets with T cells. -->
+<!-- > 6180 is a donor with long-duration T1D (11 years after diagnosis), showing near-total beta cell destruction and limited immune cell infiltration in both the islets and the pancreas. -->
 <div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># load the data</span></span>
 <span><span class="va">spe</span> <span class="op">&lt;-</span> <span class="fu">imcdatasets</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/imcdatasets/man/Damond_2019_Pancreas.html" class="external-link">Damond_2019_Pancreas</a></span><span class="op">(</span><span class="st">"spe"</span>, full_dataset <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span>
@@ -147,57 +141,47 @@ per patient we will subset one patient and a few slides.</p>
 <span>          sample_id <span class="op">=</span> <span class="st">"image_name"</span>,</span>
 <span>          in_tissue <span class="op">=</span> <span class="cn">NULL</span><span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/facet_wrap.html" class="external-link">facet_wrap</a></span><span class="op">(</span><span class="op">~</span> <span class="va">image_name</span><span class="op">)</span></span></code></pre></div>
-<p><img src="IMC_DiabetesIslands_Vignette_files/figure-html/unnamed-chunk-2-1.png" width="700">
-# Reconstruction of diabetes islets</p>
-<div class="section level3">
-<h3 id="reconstruction-of-diabetes-islets-for-one-image">Reconstruction of diabetes islets for one image<a class="anchor" aria-label="anchor" href="#reconstruction-of-diabetes-islets-for-one-image"></a>
-</h3>
-<p>In this example we will reconstruct the density based on the point
-pattern density of the islet cells. For this we use functions from the
-package <em><a href="https://CRAN.R-project.org/package=spatstat" class="external-link">spatstat</a></em>
-which is a convenient package for point pattern analysis. We show the
-workflow for one image, before continuing to all do it for all
-images.</p>
-<p>First we will create a <code>ppp</code> object using
-<code>SPE2ppp</code></p>
-<div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="co"># Convert the spe object to a point pattern object</span></span>
-<span><span class="va">pp</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/SPE2ppp.html">SPE2ppp</a></span><span class="op">(</span><span class="va">spe</span>, marks <span class="op">=</span> <span class="st">"cell_category"</span>, image_col <span class="op">=</span> <span class="st">"image_name"</span>, image_id <span class="op">=</span> <span class="st">"E04"</span><span class="op">)</span></span>
-<span></span>
-<span><span class="co"># Extract the islet cells</span></span>
-<span><span class="va">pp.islet</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/subset.html" class="external-link">subset</a></span><span class="op">(</span><span class="va">pp</span>, <span class="va">marks</span> <span class="op">==</span> <span class="st">"islet"</span><span class="op">)</span></span></code></pre></div>
-<p>Next we will set the default dimension for the resulting image. A
-lower resolution speed up computation but lead to less exact
-reconstruction. We set a default of 500 pixels for the x dimension, the
-corresponding y dimension gets directly calculated.</p>
-<div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="co"># Set the dimensions of the resulting reconstruction</span></span>
-<span><span class="va">dimyx</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/getDimXY.html">getDimXY</a></span><span class="op">(</span><span class="va">pp.islet</span>, <span class="fl">500</span><span class="op">)</span></span></code></pre></div>
-<p>To select the threshold for the reconstruction we look at the density
-of one image. The function <code>bw.diggle</code> estimates the bandwith
-for the smoothing kernel. The result is a image (m x n matrix with
-density values).</p>
-<div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="co"># plot the density of the image</span></span>
-<span><span class="va">im</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/density.html" class="external-link">density</a></span><span class="op">(</span><span class="va">pp.islet</span>, sigma <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/pkg/spatstat.explore/man/bw.diggle.html" class="external-link">bw.diggle</a></span><span class="op">(</span><span class="va">pp.islet</span><span class="op">)</span>, dimyx <span class="op">=</span> <span class="va">dimyx</span><span class="op">)</span></span>
-<span></span>
-<span><span class="fu"><a href="https://rdrr.io/r/graphics/par.html" class="external-link">par</a></span><span class="op">(</span>mfrow <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">1</span>, <span class="fl">2</span><span class="op">)</span><span class="op">)</span></span>
-<span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">im</span><span class="op">)</span></span>
-<span><span class="fu"><a href="https://rdrr.io/r/graphics/hist.html" class="external-link">hist</a></span><span class="op">(</span><span class="va">im</span><span class="op">)</span></span></code></pre></div>
-<p><img src="IMC_DiabetesIslands_Vignette_files/figure-html/unnamed-chunk-5-1.png" width="700"></p>
-<p>From the histogram and the density image we can see that there are a
-lot of pixels with 0 density. To set the threshold at 0.0025 to include
-as many cells as possible in the estimation of the islets. We then use
-the function <code>reconstructShapeDensity</code> to reconstruct the
-image. The result is a <em><a href="https://CRAN.R-project.org/package=sf" class="external-link">sf</a></em> polygon.</p>
+<p><img src="IMC_DiabetesIslands_Vignette_files/figure-html/unnamed-chunk-2-1.png" width="700"></p>
 </div>
+<div class="section level2">
+<h2 id="reconstruction-of-pancreatic-islets">Reconstruction of pancreatic islets<a class="anchor" aria-label="anchor" href="#reconstruction-of-pancreatic-islets"></a>
+</h2>
+<!-- ## Reconstruction of pancreatic islets for one image -->
+<!-- In this example we will reconstruct the density based on the point pattern density of the islet cells. For this we use functions from the package *[spatstat](https://CRAN.R-project.org/package=spatstat)* which is a convenient package for point pattern analysis. We show the workflow for one image, before continuing to all do it for all images. -->
+<!-- First we will create a `ppp` object using `SPE2ppp` -->
+<!-- ```{r} -->
+<!-- # Convert the spe object to a point pattern object -->
+<!-- pp <- SPE2ppp(spe, marks = "cell_category", image_col = "image_name", image_id = "E04") -->
+<!-- # Extract the islet cells -->
+<!-- pp.islet <- subset(pp, marks == "islet") -->
+<!-- ``` -->
+<!-- Next we will set the default dimension for the resulting image. A lower resolution speed up computation but lead to less exact reconstruction. We set a default of 500 pixels for the x dimension, the corresponding y dimension gets directly calculated. -->
+<!-- ```{r} -->
+<!-- # Set the dimensions of the resulting reconstruction -->
+<!-- dimyx <- getDimXY(pp.islet, 500) -->
+<!-- ``` -->
+<!-- To select the threshold for the reconstruction we look at the density of one image. The function `bw.diggle` estimates the bandwith for the smoothing kernel. The result is a image (m x n matrix with density values). -->
+<!-- ```{r} -->
+<!-- # plot the density of the image -->
+<!-- im <- density(pp.islet, sigma = bw.diggle(pp.islet), dimyx = dimyx) -->
+<!-- par(mfrow = c(1, 2)) -->
+<!-- plot(im) -->
+<!-- hist(im) -->
+<!-- ``` -->
+<!-- From the histogram and the density image we can see that there are a lot of pixels with 0 density. To set the threshold at 0.0025 to include as many cells as possible in the estimation of the islets. We then use the function `reconstructShapeDensity` to reconstruct the image. The result is a *[sf](https://CRAN.R-project.org/package=sf)* polygon. -->
 <div class="section level3">
-<h3 id="reconstruction-of-diabetes-islets-for-one-image-1">Reconstruction of diabetes islets for one image<a class="anchor" aria-label="anchor" href="#reconstruction-of-diabetes-islets-for-one-image-1"></a>
+<h3 id="reconstruction-of-pancreatic-islets-for-one-image">Reconstruction of pancreatic islets for one image<a class="anchor" aria-label="anchor" href="#reconstruction-of-pancreatic-islets-for-one-image"></a>
 </h3>
 <p>In this example we will reconstruct the density based on the point
-pattern density of the islet cells. We will start with a few images to
-set the necessary parameters.</p>
-<div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
+pattern density of the islet cells. We will start with estimating the
+parameters that we use for reconstruction afterwards.</p>
+<p>The function <code>estimateReconstructionParametersSPE</code> returns
+two plots with the estimated parameters for each image. The parameter
+<code>bndw</code> is the bandwidth parameter that is used for estimating
+the intensity profile of the point pattern. The parameter
+<code>thres</code> is the estimated parameter for the denisty threshold
+for reconstruction.</p>
+<div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">n</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/estimateReconstructionParametersSPE.html">estimateReconstructionParametersSPE</a></span><span class="op">(</span></span>
 <span>  <span class="va">spe</span>,</span>
 <span>  marks <span class="op">=</span> <span class="st">"cell_category"</span>,</span>
@@ -207,40 +191,12 @@ set the necessary parameters.</p>
 <span>  plot_hist <span class="op">=</span> <span class="cn">TRUE</span></span>
 <span><span class="op">)</span></span>
 <span></span>
-<span><span class="va">thres</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/mean.html" class="external-link">mean</a></span><span class="op">(</span><span class="va">n</span><span class="op">$</span><span class="va">thres</span><span class="op">)</span></span>
-<span><span class="va">bndw</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/mean.html" class="external-link">mean</a></span><span class="op">(</span><span class="va">n</span><span class="op">$</span><span class="va">bndw</span><span class="op">)</span></span></code></pre></div>
-<div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu">colData</span><span class="op">(</span><span class="va">spe</span><span class="op">)</span><span class="op">$</span><span class="va">image_name</span> <span class="op">|&gt;</span> <span class="fu"><a href="https://rdrr.io/r/base/unique.html" class="external-link">unique</a></span><span class="op">(</span><span class="op">)</span></span>
-<span></span>
-<span></span>
-<span><span class="fu"><a href="../reference/shapeIntensityImage.html">shapeIntensityImage</a></span><span class="op">(</span></span>
-<span>  <span class="va">spe</span>,</span>
-<span>  marks <span class="op">=</span> <span class="st">"cell_category"</span>,</span>
-<span>  image_col <span class="op">=</span> <span class="st">"image_name"</span>,</span>
-<span>  image_id <span class="op">=</span> <span class="st">"J13"</span>,</span>
-<span>  bndw <span class="op">=</span> <span class="va">bndw</span>,</span>
-<span>  mark_select <span class="op">=</span> <span class="st">"islet"</span></span>
-<span><span class="op">)</span></span>
-<span></span>
-<span></span>
-<span><span class="va">p2</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/reconstructShapeDensityImage.html">reconstructShapeDensityImage</a></span><span class="op">(</span></span>
-<span>  <span class="va">spe</span>,</span>
-<span>  marks <span class="op">=</span> <span class="st">"cell_category"</span>,</span>
-<span>  image_col <span class="op">=</span> <span class="st">"image_name"</span>,</span>
-<span>  image_id <span class="op">=</span> <span class="st">"J13"</span>,</span>
-<span>  mark_select <span class="op">=</span> <span class="st">"islet"</span></span>
-<span><span class="op">)</span></span>
-<span></span>
-<span><span class="va">spe_sel</span> <span class="op">&lt;-</span> <span class="va">spe</span><span class="op">[</span>, <span class="va">spe</span><span class="op">[[</span><span class="st">"image_name"</span><span class="op">]</span><span class="op">]</span> <span class="op"><a href="https://rdrr.io/r/base/match.html" class="external-link">%in%</a></span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"J13"</span><span class="op">)</span><span class="op">]</span></span>
-<span><span class="va">spe_sel_df</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/cbind.html" class="external-link">cbind</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/pkg/SpatialExperiment/man/SpatialExperiment-methods.html" class="external-link">spatialCoords</a></span><span class="op">(</span><span class="va">spe_sel</span><span class="op">)</span>, <span class="fu">colData</span><span class="op">(</span><span class="va">spe_sel</span><span class="op">)</span><span class="op">)</span></span>
-<span></span>
-<span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html" class="external-link">ggplot</a></span><span class="op">(</span><span class="op">)</span> <span class="op">+</span></span>
-<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_point.html" class="external-link">geom_point</a></span><span class="op">(</span>data <span class="op">=</span> <span class="va">spe_sel_df</span>,</span>
-<span>             <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html" class="external-link">aes</a></span><span class="op">(</span>x <span class="op">=</span> <span class="va">cell_x</span>, y <span class="op">=</span> <span class="va">cell_y</span>, color <span class="op">=</span> <span class="va">cell_category</span><span class="op">)</span>, size <span class="op">=</span> <span class="fl">0.75</span><span class="op">)</span> <span class="op">+</span></span>
-<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggtheme.html" class="external-link">theme_light</a></span><span class="op">(</span><span class="op">)</span> <span class="op">+</span></span>
-<span>  <span class="co">#scale_color_brewer(palette = "Set1") +</span></span>
-<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggsf.html" class="external-link">geom_sf</a></span><span class="op">(</span>data <span class="op">=</span> <span class="va">p2</span>, fill <span class="op">=</span> <span class="cn">NA</span>, color <span class="op">=</span> <span class="st">"black"</span><span class="op">)</span></span></code></pre></div>
-<div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
+<span><span class="op">(</span><span class="va">thres</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/mean.html" class="external-link">mean</a></span><span class="op">(</span><span class="va">n</span><span class="op">$</span><span class="va">thres</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="op">(</span><span class="va">bndw</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/mean.html" class="external-link">mean</a></span><span class="op">(</span><span class="va">n</span><span class="op">$</span><span class="va">bndw</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
+<p>Using the <code>bdnw</code> parameter we can plot the density image
+and a distribution of the density values using the function
+<code>shapeIntensityImage</code>.</p>
+<div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="../reference/shapeIntensityImage.html">shapeIntensityImage</a></span><span class="op">(</span></span>
 <span>  <span class="va">spe</span>,</span>
 <span>  marks <span class="op">=</span> <span class="st">"cell_category"</span>,</span>
@@ -249,11 +205,9 @@ set the necessary parameters.</p>
 <span>  bndw <span class="op">=</span> <span class="va">bndw</span>,</span>
 <span>  mark_select <span class="op">=</span> <span class="st">"islet"</span></span>
 <span><span class="op">)</span></span></code></pre></div>
-<p>From the histogram and the density image we can see that there are a
-lot of pixels with 0 density. To set the threshold at 0.004. We then use
-the function <code>reconstructShapeDensity</code> to reconstruct the
-image. The result is a <em><a href="https://CRAN.R-project.org/package=sf" class="external-link">sf</a></em> polygon.</p>
-<div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
+<p>We then use the function <code>reconstructShapeDensity</code> to
+reconstruct the image. The result is a <em><a href="https://CRAN.R-project.org/package=sf" class="external-link">sf</a></em> polygon.</p>
+<div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">islet</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/reconstructShapeDensityImage.html">reconstructShapeDensityImage</a></span><span class="op">(</span></span>
 <span>  <span class="va">spe</span>,</span>
 <span>  marks <span class="op">=</span> <span class="st">"cell_category"</span>,</span>
@@ -264,15 +218,16 @@ image. The result is a <em><a href="https://CRAN.R-project.org/package=sf" class
 <span>  dim <span class="op">=</span> <span class="fl">500</span>,</span>
 <span>  thres <span class="op">=</span>  <span class="va">thres</span></span>
 <span><span class="op">)</span></span></code></pre></div>
-<p>We can plot both the points and the estimated islets.</p>
-<div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">islet</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/reconstructShapeDensityImage.html">reconstructShapeDensityImage</a></span><span class="op">(</span></span>
-<span>  <span class="va">spe</span>,</span>
-<span>  marks <span class="op">=</span> <span class="st">"cell_category"</span>,</span>
-<span>  image_col <span class="op">=</span> <span class="st">"image_name"</span>,</span>
-<span>  image_id <span class="op">=</span> <span class="st">"E04"</span>,</span>
-<span>  mark_select <span class="op">=</span> <span class="st">"islet"</span></span>
-<span><span class="op">)</span> </span></code></pre></div>
+<p>We can plot both the points and the estimated islets polygon.</p>
+<!-- ```{r, include=FALSE, eval=FALSE} -->
+<!-- islet2 <- reconstructShapeDensityImage( -->
+<!--   spe, -->
+<!--   marks = "cell_category", -->
+<!--   image_col = "image_name", -->
+<!--   image_id = "E04", -->
+<!--   mark_select = "islet" -->
+<!-- )  -->
+<!-- ``` -->
 <!-- ```{r, eval=FALSE, include=FALSE} -->
 <!-- p <- plotSpots(spe[,spe[["patient_id"]] == 6126 & -->
 <!--                 spe[["image_name"]] %in% c("E04")], -->
@@ -282,7 +237,7 @@ image. The result is a <em><a href="https://CRAN.R-project.org/package=sf" class
 <!--           y_reverse = FALSE) + -->
 <!--     geom_sf(data = islet, aes(), fill = NA) -->
 <!-- ``` -->
-<div class="sourceCode" id="cb12"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Cannot easily add geom_df to plotSpots, therefore custom function here...</span></span>
 <span><span class="va">spe_sel</span> <span class="op">&lt;-</span> <span class="va">spe</span><span class="op">[</span>, <span class="va">spe</span><span class="op">[[</span><span class="st">"image_name"</span><span class="op">]</span><span class="op">]</span> <span class="op"><a href="https://rdrr.io/r/base/match.html" class="external-link">%in%</a></span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"E04"</span><span class="op">)</span><span class="op">]</span></span>
 <span><span class="va">spe_sel_df</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/cbind.html" class="external-link">cbind</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/pkg/SpatialExperiment/man/SpatialExperiment-methods.html" class="external-link">spatialCoords</a></span><span class="op">(</span><span class="va">spe_sel</span><span class="op">)</span>, <span class="fu">colData</span><span class="op">(</span><span class="va">spe_sel</span><span class="op">)</span><span class="op">)</span></span>
@@ -295,16 +250,92 @@ image. The result is a <em><a href="https://CRAN.R-project.org/package=sf" class
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggsf.html" class="external-link">geom_sf</a></span><span class="op">(</span>data <span class="op">=</span> <span class="va">islet</span>, fill <span class="op">=</span> <span class="cn">NA</span>, color <span class="op">=</span> <span class="st">"black"</span><span class="op">)</span></span></code></pre></div>
 </div>
 <div class="section level3">
-<h3 id="reconstruction-of-diabetes-islets-for-all-images">Reconstruction of diabetes islets for all images<a class="anchor" aria-label="anchor" href="#reconstruction-of-diabetes-islets-for-all-images"></a>
+<h3 id="reconstruction-of-pancreatic-islets-for-all-images">Reconstruction of pancreatic islets for all images<a class="anchor" aria-label="anchor" href="#reconstruction-of-pancreatic-islets-for-all-images"></a>
 </h3>
-<div class="sourceCode" id="cb13"><pre class="downlit sourceCode r">
+<p>The function <code>reconstructShapeDensitySPE</code> reconstructs the
+islets for all images in the <code>spe</code> object.</p>
+<div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">all_islets</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/reconstructShapeDensitySPE.html">reconstructShapeDensitySPE</a></span><span class="op">(</span><span class="va">spe</span>, marks <span class="op">=</span> <span class="st">"cell_category"</span>,</span>
 <span>                             image_col <span class="op">=</span> <span class="st">"image_name"</span>,</span>
 <span>                             mark_select <span class="op">=</span> <span class="st">"islet"</span>, </span>
 <span>                             bndw <span class="op">=</span> <span class="va">sigma</span>,</span>
 <span>                             thres <span class="op">=</span> <span class="fl">0.0025</span>,</span>
-<span>                             ncores <span class="op">=</span> <span class="fl">4</span><span class="op">)</span></span></code></pre></div>
+<span>                             ncores <span class="op">=</span> <span class="fl">2</span><span class="op">)</span></span></code></pre></div>
+</div>
+</div>
+<div class="section level2">
+<h2 id="calculation-of-structure-metrics">Calculation of structure metrics<a class="anchor" aria-label="anchor" href="#calculation-of-structure-metrics"></a>
+</h2>
+<p>We use the function <code>totalShapeMetrics</code> to calculate a set
+of metrics related to the shape of the islets.</p>
+<div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">islet_shape_metrics</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/totalShapeMetrics.html">totalShapeMetrics</a></span><span class="op">(</span><span class="va">all_islets</span><span class="op">)</span></span></code></pre></div>
+<!-- ```{r} -->
+<!-- # This snippet selects all patient information that is not specific to the individual cell -->
+<!-- unique_columns <- colData(spe) |> -->
+<!--   as_tibble() |> -->
+<!--   group_by(image_name) |> -->
+<!--   summarize(across(everything(), ~n_distinct(.x) == 1)) %>%  # Check uniqueness for each column per patient_id -->
+<!--   summarise(across(everything(), all)) %>%                   # Identify columns that are unique across all patients -->
+<!--   select(-image_name) |> -->
+<!--   tidyr::pivot_longer(everything(), names_to = "column", values_to = "is_unique") %>% -->
+<!--   dplyr::filter(is_unique == TRUE) %>% -->
+<!--   pull(column) -->
+<!-- ``` -->
+<p>The result is a simple feature collection with polygons. We will add
+some patient level information to the simple feature collection for
+plotting afterwards.</p>
+<div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">patient_data</span> <span class="op">&lt;-</span> <span class="fu">colData</span><span class="op">(</span><span class="va">spe</span><span class="op">)</span> <span class="op">|&gt;</span></span>
+<span>  <span class="fu"><a href="https://tibble.tidyverse.org/reference/as_tibble.html" class="external-link">as_tibble</a></span><span class="op">(</span><span class="op">)</span> <span class="op">|&gt;</span></span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/group_by.html" class="external-link">group_by</a></span><span class="op">(</span><span class="va">image_name</span><span class="op">)</span> <span class="op">|&gt;</span></span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/select.html" class="external-link">select</a></span><span class="op">(</span><span class="fu"><a href="https://tidyselect.r-lib.org/reference/all_of.html" class="external-link">all_of</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"patient_stage"</span>,  <span class="st">"tissue_slide"</span>, <span class="st">"tissue_region"</span>,</span>
+<span>                  <span class="st">"patient_id"</span>, <span class="st">"patient_disease_duration"</span>, <span class="st">"patient_age"</span>,</span>
+<span>                  <span class="st">"patient_gender"</span>, <span class="st">"patient_ethnicity"</span>, <span class="st">"patient_BMI"</span>, <span class="st">"sample_id"</span><span class="op">)</span><span class="op">)</span><span class="op">)</span> <span class="op">|&gt;</span></span>
+<span>  <span class="fu"><a href="https://rdrr.io/r/base/unique.html" class="external-link">unique</a></span><span class="op">(</span><span class="op">)</span></span>
+<span><span class="co">#&gt; Adding missing grouping variables: `image_name`</span></span></code></pre></div>
+<div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">all_islets</span> <span class="op">&lt;-</span> <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate-joins.html" class="external-link">left_join</a></span><span class="op">(</span><span class="va">all_islets</span>, <span class="va">patient_data</span>, by <span class="op">=</span> <span class="st">"image_name"</span><span class="op">)</span></span></code></pre></div>
+<div class="sourceCode" id="cb12"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">all_islets</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/cbind.html" class="external-link">cbind</a></span><span class="op">(</span><span class="va">all_islets</span>, <span class="fu"><a href="https://rdrr.io/r/base/t.html" class="external-link">t</a></span><span class="op">(</span><span class="va">islet_shape_metrics</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
+<div class="section level3">
+<h3 id="plot-structure-metrics">Plot structure metrics<a class="anchor" aria-label="anchor" href="#plot-structure-metrics"></a>
+</h3>
+<p>We use PCA to get an overview of the different features. Each dot
+represent one structure.</p>
+<div class="sourceCode" id="cb13"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/sinhrks/ggfortify" class="external-link">ggfortify</a></span><span class="op">)</span></span>
+<span></span>
+<span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/autoplot.html" class="external-link">autoplot</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/stats/prcomp.html" class="external-link">prcomp</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/t.html" class="external-link">t</a></span><span class="op">(</span><span class="va">islet_shape_metrics</span><span class="op">)</span>, scale. <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span>,</span>
+<span>          x <span class="op">=</span> <span class="fl">1</span>, y <span class="op">=</span> <span class="fl">2</span>,</span>
+<span>         data <span class="op">=</span> <span class="va">all_islets</span>,</span>
+<span>         color <span class="op">=</span> <span class="st">"patient_stage"</span>,</span>
+<span>         size <span class="op">=</span> <span class="fl">2</span>,</span>
+<span>         <span class="co"># shape = 'type',</span></span>
+<span>         loadings <span class="op">=</span> <span class="cn">TRUE</span>, loadings.colour <span class="op">=</span> <span class="st">'steelblue3'</span>,</span>
+<span>         loadings.label <span class="op">=</span> <span class="cn">TRUE</span>, loadings.label.size <span class="op">=</span> <span class="fl">3</span>,</span>
+<span>         loadings.label.repel <span class="op">=</span> <span class="cn">TRUE</span>,</span>
+<span>         loadings.label.colour <span class="op">=</span> <span class="st">'black'</span><span class="op">)</span> <span class="op">+</span></span>
+<span>    <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/scale_brewer.html" class="external-link">scale_color_brewer</a></span><span class="op">(</span>palette <span class="op">=</span> <span class="st">"Dark2"</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggtheme.html" class="external-link">theme_bw</a></span><span class="op">(</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/coord_fixed.html" class="external-link">coord_fixed</a></span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
+<p><img src="IMC_DiabetesIslands_Vignette_files/figure-html/unnamed-chunk-13-1.png" width="700">
+A boxplot reveals differences of the shape metrics between patient
+stages.</p>
 <div class="sourceCode" id="cb14"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">all_islets</span> <span class="op">|&gt;</span> </span>
+<span>  <span class="fu">sf</span><span class="fu">::</span><span class="fu"><a href="https://r-spatial.github.io/sf/reference/st_geometry.html" class="external-link">st_drop_geometry</a></span><span class="op">(</span><span class="op">)</span> <span class="op">|&gt;</span> </span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/select.html" class="external-link">select</a></span><span class="op">(</span><span class="va">patient_stage</span>, <span class="fu"><a href="https://rdrr.io/r/base/colnames.html" class="external-link">rownames</a></span><span class="op">(</span><span class="va">islet_shape_metrics</span><span class="op">)</span><span class="op">)</span> <span class="op">|&gt;</span> </span>
+<span>  <span class="fu"><a href="https://tidyr.tidyverse.org/reference/pivot_longer.html" class="external-link">pivot_longer</a></span><span class="op">(</span><span class="op">-</span><span class="va">patient_stage</span><span class="op">)</span> <span class="op">|&gt;</span> </span>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html" class="external-link">ggplot</a></span><span class="op">(</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html" class="external-link">aes</a></span><span class="op">(</span>x <span class="op">=</span> <span class="va">patient_stage</span>, y <span class="op">=</span> <span class="va">value</span>, fill <span class="op">=</span> <span class="va">patient_stage</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_boxplot.html" class="external-link">geom_boxplot</a></span><span class="op">(</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/facet_wrap.html" class="external-link">facet_wrap</a></span><span class="op">(</span><span class="op">~</span><span class="va">name</span>, scales <span class="op">=</span> <span class="st">"free"</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/scale_brewer.html" class="external-link">scale_fill_brewer</a></span><span class="op">(</span>palette <span class="op">=</span> <span class="st">"Dark2"</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/scale_discrete.html" class="external-link">scale_x_discrete</a></span><span class="op">(</span>guide <span class="op">=</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/guide_axis.html" class="external-link">guide_axis</a></span><span class="op">(</span>n.dodge <span class="op">=</span> <span class="fl">2</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/guides.html" class="external-link">guides</a></span><span class="op">(</span>fill <span class="op">=</span> <span class="st">"none"</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggtheme.html" class="external-link">theme_bw</a></span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
+<p><img src="IMC_DiabetesIslands_Vignette_files/figure-html/unnamed-chunk-14-1.png" width="768"></p>
+<div class="sourceCode" id="cb15"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/utils/sessionInfo.html" class="external-link">sessionInfo</a></span><span class="op">(</span><span class="op">)</span></span>
 <span><span class="co">#&gt; R version 4.4.1 (2024-06-14)</span></span>
 <span><span class="co">#&gt; Platform: x86_64-pc-linux-gnu</span></span>
@@ -328,19 +359,20 @@ image. The result is a <em><a href="https://CRAN.R-project.org/package=sf" class
 <span><span class="co">#&gt; [8] base     </span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; other attached packages:</span></span>
-<span><span class="co">#&gt;  [1] imcdatasets_1.12.0          cytomapper_1.16.0          </span></span>
-<span><span class="co">#&gt;  [3] EBImage_4.46.0              SpatialExperiment_1.14.0   </span></span>
-<span><span class="co">#&gt;  [5] SingleCellExperiment_1.26.0 SummarizedExperiment_1.34.0</span></span>
-<span><span class="co">#&gt;  [7] Biobase_2.64.0              GenomicRanges_1.56.1       </span></span>
-<span><span class="co">#&gt;  [9] GenomeInfoDb_1.40.1         IRanges_2.38.1             </span></span>
-<span><span class="co">#&gt; [11] S4Vectors_0.42.1            BiocGenerics_0.50.0        </span></span>
-<span><span class="co">#&gt; [13] MatrixGenerics_1.16.0       matrixStats_1.3.0          </span></span>
-<span><span class="co">#&gt; [15] spatstat.explore_3.3-1      nlme_3.1-164               </span></span>
-<span><span class="co">#&gt; [17] spatstat.random_3.3-1       spatstat.geom_3.3-2        </span></span>
-<span><span class="co">#&gt; [19] spatstat.univar_3.0-0       spatstat.data_3.1-2        </span></span>
-<span><span class="co">#&gt; [21] ggspavis_1.10.0             patchwork_1.2.0            </span></span>
-<span><span class="co">#&gt; [23] ggplot2_3.5.1               dplyr_1.1.4                </span></span>
-<span><span class="co">#&gt; [25] sosta_0.0.0.9000            BiocStyle_2.32.1           </span></span>
+<span><span class="co">#&gt;  [1] ggfortify_0.4.17            imcdatasets_1.12.0         </span></span>
+<span><span class="co">#&gt;  [3] cytomapper_1.16.0           EBImage_4.46.0             </span></span>
+<span><span class="co">#&gt;  [5] SpatialExperiment_1.14.0    SingleCellExperiment_1.26.0</span></span>
+<span><span class="co">#&gt;  [7] SummarizedExperiment_1.34.0 Biobase_2.64.0             </span></span>
+<span><span class="co">#&gt;  [9] GenomicRanges_1.56.1        GenomeInfoDb_1.40.1        </span></span>
+<span><span class="co">#&gt; [11] IRanges_2.38.1              S4Vectors_0.42.1           </span></span>
+<span><span class="co">#&gt; [13] BiocGenerics_0.50.0         MatrixGenerics_1.16.0      </span></span>
+<span><span class="co">#&gt; [15] matrixStats_1.3.0           spatstat.explore_3.3-1     </span></span>
+<span><span class="co">#&gt; [17] nlme_3.1-164                spatstat.random_3.3-1      </span></span>
+<span><span class="co">#&gt; [19] spatstat.geom_3.3-2         spatstat.univar_3.0-0      </span></span>
+<span><span class="co">#&gt; [21] spatstat.data_3.1-2         ggspavis_1.10.0            </span></span>
+<span><span class="co">#&gt; [23] patchwork_1.2.0             ggplot2_3.5.1              </span></span>
+<span><span class="co">#&gt; [25] tidyr_1.3.1                 dplyr_1.1.4                </span></span>
+<span><span class="co">#&gt; [27] sosta_0.0.0.9000            BiocStyle_2.32.1           </span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; loaded via a namespace (and not attached):</span></span>
 <span><span class="co">#&gt;   [1] later_1.3.2                    filelock_1.0.3                </span></span>
@@ -350,7 +382,7 @@ image. The result is a <em><a href="https://CRAN.R-project.org/package=sf" class
 <span><span class="co">#&gt;   [9] sf_1.0-16                      edgeR_4.2.1                   </span></span>
 <span><span class="co">#&gt;  [11] lattice_0.22-6                 magrittr_2.0.3                </span></span>
 <span><span class="co">#&gt;  [13] limma_3.60.4                   sass_0.4.9                    </span></span>
-<span><span class="co">#&gt;  [15] rmarkdown_2.27                 jquerylib_0.1.4               </span></span>
+<span><span class="co">#&gt;  [15] rmarkdown_2.28                 jquerylib_0.1.4               </span></span>
 <span><span class="co">#&gt;  [17] yaml_2.3.10                    httpuv_1.6.15                 </span></span>
 <span><span class="co">#&gt;  [19] ggside_0.3.1                   sp_2.1-4                      </span></span>
 <span><span class="co">#&gt;  [21] spatstat.sparse_3.1-0          DBI_1.2.3                     </span></span>
@@ -358,7 +390,7 @@ image. The result is a <em><a href="https://CRAN.R-project.org/package=sf" class
 <span><span class="co">#&gt;  [25] zlibbioc_1.50.0                purrr_1.0.2                   </span></span>
 <span><span class="co">#&gt;  [27] R.utils_2.12.3                 RCurl_1.98-1.16               </span></span>
 <span><span class="co">#&gt;  [29] rappdirs_0.3.3                 GenomeInfoDbData_1.2.12       </span></span>
-<span><span class="co">#&gt;  [31] ggrepel_0.9.5                  spatstat.utils_3.0-5          </span></span>
+<span><span class="co">#&gt;  [31] ggrepel_0.9.5                  spatstat.utils_3.1-0          </span></span>
 <span><span class="co">#&gt;  [33] terra_1.7-78                   units_0.8-5                   </span></span>
 <span><span class="co">#&gt;  [35] goftest_1.2-3                  dqrng_0.4.1                   </span></span>
 <span><span class="co">#&gt;  [37] pkgdown_2.1.0                  svglite_2.1.3                 </span></span>
@@ -372,7 +404,7 @@ image. The result is a <em><a href="https://CRAN.R-project.org/package=sf" class
 <span><span class="co">#&gt;  [53] systemfonts_1.1.0              tools_4.4.1                   </span></span>
 <span><span class="co">#&gt;  [55] ragg_1.3.2                     Rcpp_1.0.13                   </span></span>
 <span><span class="co">#&gt;  [57] glue_1.7.0                     gridExtra_2.3                 </span></span>
-<span><span class="co">#&gt;  [59] SparseArray_1.4.8              xfun_0.46                     </span></span>
+<span><span class="co">#&gt;  [59] SparseArray_1.4.8              xfun_0.47                     </span></span>
 <span><span class="co">#&gt;  [61] HDF5Array_1.32.1               shinydashboard_0.7.2          </span></span>
 <span><span class="co">#&gt;  [63] withr_3.0.1                    BiocManager_1.30.23           </span></span>
 <span><span class="co">#&gt;  [65] fastmap_1.2.0                  boot_1.3-30                   </span></span>
@@ -394,31 +426,32 @@ image. The result is a <em><a href="https://CRAN.R-project.org/package=sf" class
 <span><span class="co">#&gt;  [97] knitr_1.48                     rjson_0.2.21                  </span></span>
 <span><span class="co">#&gt;  [99] curl_5.2.1                     proxy_0.4-27                  </span></span>
 <span><span class="co">#&gt; [101] cachem_1.1.0                   rhdf5_2.48.0                  </span></span>
-<span><span class="co">#&gt; [103] BiocVersion_3.19.1             KernSmooth_2.23-24            </span></span>
-<span><span class="co">#&gt; [105] parallel_4.4.1                 vipor_0.4.7                   </span></span>
-<span><span class="co">#&gt; [107] AnnotationDbi_1.66.0           desc_1.4.3                    </span></span>
-<span><span class="co">#&gt; [109] s2_1.1.7                       pillar_1.9.0                  </span></span>
-<span><span class="co">#&gt; [111] grid_4.4.1                     SpatialFeatureExperiment_1.6.1</span></span>
-<span><span class="co">#&gt; [113] vctrs_0.6.5                    promises_1.3.0                </span></span>
-<span><span class="co">#&gt; [115] dbplyr_2.5.0                   beachmat_2.20.0               </span></span>
-<span><span class="co">#&gt; [117] xtable_1.8-4                   sfheaders_0.4.4               </span></span>
-<span><span class="co">#&gt; [119] beeswarm_0.4.0                 evaluate_0.24.0               </span></span>
-<span><span class="co">#&gt; [121] zeallot_0.1.0                  magick_2.8.4                  </span></span>
-<span><span class="co">#&gt; [123] cli_3.6.3                      locfit_1.5-9.10               </span></span>
-<span><span class="co">#&gt; [125] compiler_4.4.1                 rlang_1.1.4                   </span></span>
-<span><span class="co">#&gt; [127] crayon_1.5.3                   labeling_0.4.3                </span></span>
-<span><span class="co">#&gt; [129] classInt_0.4-10                fs_1.6.4                      </span></span>
-<span><span class="co">#&gt; [131] ggbeeswarm_0.7.2               viridisLite_0.4.2             </span></span>
-<span><span class="co">#&gt; [133] deldir_2.0-4                   BiocParallel_1.38.0           </span></span>
-<span><span class="co">#&gt; [135] nnls_1.5                       Biostrings_2.72.1             </span></span>
-<span><span class="co">#&gt; [137] munsell_0.5.1                  tiff_0.1-12                   </span></span>
-<span><span class="co">#&gt; [139] Matrix_1.7-0                   ExperimentHub_2.12.0          </span></span>
-<span><span class="co">#&gt; [141] sparseMatrixStats_1.16.0       bit64_4.0.5                   </span></span>
-<span><span class="co">#&gt; [143] Rhdf5lib_1.26.0                KEGGREST_1.44.1               </span></span>
-<span><span class="co">#&gt; [145] statmod_1.5.0                  shiny_1.9.1                   </span></span>
-<span><span class="co">#&gt; [147] highr_0.11                     AnnotationHub_3.12.0          </span></span>
-<span><span class="co">#&gt; [149] memoise_2.0.1                  bslib_0.8.0                   </span></span>
-<span><span class="co">#&gt; [151] bit_4.0.5</span></span></code></pre></div>
+<span><span class="co">#&gt; [103] stringr_1.5.1                  BiocVersion_3.19.1            </span></span>
+<span><span class="co">#&gt; [105] KernSmooth_2.23-24             parallel_4.4.1                </span></span>
+<span><span class="co">#&gt; [107] vipor_0.4.7                    AnnotationDbi_1.66.0          </span></span>
+<span><span class="co">#&gt; [109] desc_1.4.3                     s2_1.1.7                      </span></span>
+<span><span class="co">#&gt; [111] pillar_1.9.0                   grid_4.4.1                    </span></span>
+<span><span class="co">#&gt; [113] SpatialFeatureExperiment_1.6.1 vctrs_0.6.5                   </span></span>
+<span><span class="co">#&gt; [115] promises_1.3.0                 dbplyr_2.5.0                  </span></span>
+<span><span class="co">#&gt; [117] beachmat_2.20.0                xtable_1.8-4                  </span></span>
+<span><span class="co">#&gt; [119] sfheaders_0.4.4                beeswarm_0.4.0                </span></span>
+<span><span class="co">#&gt; [121] evaluate_0.24.0                zeallot_0.1.0                 </span></span>
+<span><span class="co">#&gt; [123] magick_2.8.4                   cli_3.6.3                     </span></span>
+<span><span class="co">#&gt; [125] locfit_1.5-9.10                compiler_4.4.1                </span></span>
+<span><span class="co">#&gt; [127] rlang_1.1.4                    crayon_1.5.3                  </span></span>
+<span><span class="co">#&gt; [129] labeling_0.4.3                 classInt_0.4-10               </span></span>
+<span><span class="co">#&gt; [131] fs_1.6.4                       ggbeeswarm_0.7.2              </span></span>
+<span><span class="co">#&gt; [133] stringi_1.8.4                  viridisLite_0.4.2             </span></span>
+<span><span class="co">#&gt; [135] deldir_2.0-4                   BiocParallel_1.38.0           </span></span>
+<span><span class="co">#&gt; [137] nnls_1.5                       Biostrings_2.72.1             </span></span>
+<span><span class="co">#&gt; [139] munsell_0.5.1                  tiff_0.1-12                   </span></span>
+<span><span class="co">#&gt; [141] Matrix_1.7-0                   ExperimentHub_2.12.0          </span></span>
+<span><span class="co">#&gt; [143] sparseMatrixStats_1.16.0       bit64_4.0.5                   </span></span>
+<span><span class="co">#&gt; [145] Rhdf5lib_1.26.0                KEGGREST_1.44.1               </span></span>
+<span><span class="co">#&gt; [147] statmod_1.5.0                  shiny_1.9.1                   </span></span>
+<span><span class="co">#&gt; [149] highr_0.11                     AnnotationHub_3.12.0          </span></span>
+<span><span class="co">#&gt; [151] memoise_2.0.1                  bslib_0.8.0                   </span></span>
+<span><span class="co">#&gt; [153] bit_4.0.5</span></span></code></pre></div>
 </div>
 </div>
   </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>
