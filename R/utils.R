@@ -104,7 +104,7 @@ SPE2ppp <- function(spe, marks,
     image_col = NULL,
     image_id = NULL) {
     if (!is.null(image_col) & !is.null(image_id)) {
-        spe <- spe[, colData(spe)[[image_col]] == image_id]
+        spe <- spe[, colData(spe)[[image_col]] %in% image_id]
     }
 
     ppp <- as.ppp(
