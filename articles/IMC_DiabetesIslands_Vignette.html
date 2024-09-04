@@ -103,7 +103,9 @@ Switzerland<br><small class="dont-index">Source: <a href="https://github.com/sgu
 </h2>
 <p>In this vignette we will use data from the package <em><a href="https://bioconductor.org/packages/3.19/imcdatasets" class="external-link">imcdatasets</a></em>.
 The dataset contains imaging mass cytometry (IMC) data of pancreatic
-islets human donors at different stages of type 1 diabetes (T1D) <span class="citation">[@damondMapHumanType2019]</span>.</p>
+islets human donors at different stages of type 1 diabetes (T1D) (Damond
+et al. (2019)).</p>
+<p>#<span class="citation">[@damondMapHumanType2019]</span>.</p>
 <!-- From the manual of *[imcdatasets](https://bioconductor.org/packages/3.19/imcdatasets)* and the original publication by @damondMapHumanType2019 we know that -->
 <!-- >The three donors in the subset present the following characteristics: -->
 <!-- > -->
@@ -111,30 +113,9 @@ islets human donors at different stages of type 1 diabetes (T1D) <span class="ci
 <!-- > -->
 <!-- > 6414 is a donor with recent T1D onset (shortly after diagnosis) showing partial beta cell destruction and mild infiltration of islets with T cells. -->
 <!-- > 6180 is a donor with long-duration T1D (11 years after diagnosis), showing near-total beta cell destruction and limited immune cell infiltration in both the islets and the pancreas. -->
-<div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="co"># load the data</span></span>
-<span><span class="va">spe</span> <span class="op">&lt;-</span> <span class="fu">imcdatasets</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/imcdatasets/man/Damond_2019_Pancreas.html" class="external-link">Damond_2019_Pancreas</a></span><span class="op">(</span><span class="st">"spe"</span>, full_dataset <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span>
-<span><span class="co">#&gt; see ?imcdatasets and browseVignettes('imcdatasets') for documentation</span></span>
-<span><span class="co">#&gt; downloading 1 resources</span></span>
-<span><span class="co">#&gt; retrieving 1 resource</span></span>
-<span><span class="co">#&gt; loading from cache</span></span>
-<span><span class="va">spe</span></span>
-<span><span class="co">#&gt; class: SpatialExperiment </span></span>
-<span><span class="co">#&gt; dim: 38 252059 </span></span>
-<span><span class="co">#&gt; metadata(0):</span></span>
-<span><span class="co">#&gt; assays(3): counts exprs quant_norm</span></span>
-<span><span class="co">#&gt; rownames(38): H3 SMA ... DNA1 DNA2</span></span>
-<span><span class="co">#&gt; rowData names(6): channel metal ... antibody_clone full_name</span></span>
-<span><span class="co">#&gt; colnames(252059): 138_1 138_2 ... 319_1149 319_1150</span></span>
-<span><span class="co">#&gt; colData names(27): cell_id image_name ... patient_BMI sample_id</span></span>
-<span><span class="co">#&gt; reducedDimNames(0):</span></span>
-<span><span class="co">#&gt; mainExpName: Damond_2019_Pancreas_v1</span></span>
-<span><span class="co">#&gt; altExpNames(0):</span></span>
-<span><span class="co">#&gt; spatialCoords names(2) : cell_x cell_y</span></span>
-<span><span class="co">#&gt; imgData names(0):</span></span></code></pre></div>
 <p>First we plot the data for illustration. As we have multiple images
 per patient we will subset one patient and a few slides.</p>
-<div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/pkg/ggspavis/man/plotSpots.html" class="external-link">plotSpots</a></span><span class="op">(</span><span class="va">spe</span><span class="op">[</span>,<span class="va">spe</span><span class="op">[[</span><span class="st">"patient_id"</span><span class="op">]</span><span class="op">]</span> <span class="op">==</span> <span class="fl">6126</span> <span class="op">&amp;</span></span>
 <span>                <span class="va">spe</span><span class="op">[[</span><span class="st">"image_name"</span><span class="op">]</span><span class="op">]</span> <span class="op"><a href="https://rdrr.io/r/base/match.html" class="external-link">%in%</a></span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"E02"</span>, <span class="st">"E03"</span>, <span class="st">"E04"</span><span class="op">)</span><span class="op">]</span>,</span>
 <span>          annotate <span class="op">=</span> <span class="st">"cell_category"</span>,</span>
@@ -181,7 +162,7 @@ two plots with the estimated parameters for each image. The parameter
 the intensity profile of the point pattern. The parameter
 <code>thres</code> is the estimated parameter for the denisty threshold
 for reconstruction.</p>
-<div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">n</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/estimateReconstructionParametersSPE.html">estimateReconstructionParametersSPE</a></span><span class="op">(</span></span>
 <span>  <span class="va">spe</span>,</span>
 <span>  marks <span class="op">=</span> <span class="st">"cell_category"</span>,</span>
@@ -196,7 +177,7 @@ for reconstruction.</p>
 <p>Using the <code>bdnw</code> parameter we can plot the density image
 and a distribution of the density values using the function
 <code>shapeIntensityImage</code>.</p>
-<div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="../reference/shapeIntensityImage.html">shapeIntensityImage</a></span><span class="op">(</span></span>
 <span>  <span class="va">spe</span>,</span>
 <span>  marks <span class="op">=</span> <span class="st">"cell_category"</span>,</span>
@@ -207,7 +188,7 @@ and a distribution of the density values using the function
 <span><span class="op">)</span></span></code></pre></div>
 <p>We then use the function <code>reconstructShapeDensity</code> to
 reconstruct the image. The result is a <em><a href="https://CRAN.R-project.org/package=sf" class="external-link">sf</a></em> polygon.</p>
-<div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">islet</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/reconstructShapeDensityImage.html">reconstructShapeDensityImage</a></span><span class="op">(</span></span>
 <span>  <span class="va">spe</span>,</span>
 <span>  marks <span class="op">=</span> <span class="st">"cell_category"</span>,</span>
@@ -219,6 +200,15 @@ reconstruct the image. The result is a <em><a href="https://CRAN.R-project.org/p
 <span>  thres <span class="op">=</span>  <span class="va">thres</span></span>
 <span><span class="op">)</span></span></code></pre></div>
 <p>We can plot both the points and the estimated islets polygon.</p>
+<div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">islet</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/reconstructShapeDensityImage.html">reconstructShapeDensityImage</a></span><span class="op">(</span></span>
+<span>  <span class="va">spe</span>,</span>
+<span>  marks <span class="op">=</span> <span class="st">"cell_category"</span>,</span>
+<span>  image_col <span class="op">=</span> <span class="st">"image_name"</span>,</span>
+<span>  image_id <span class="op">=</span> <span class="st">"E04"</span>,</span>
+<span>  mark_select <span class="op">=</span> <span class="st">"islet"</span>,</span>
+<span>  dim <span class="op">=</span> <span class="fl">500</span></span>
+<span><span class="op">)</span></span></code></pre></div>
 <!-- ```{r, include=FALSE, eval=FALSE} -->
 <!-- islet2 <- reconstructShapeDensityImage( -->
 <!--   spe, -->
@@ -248,6 +238,7 @@ reconstruct the image. The result is a <em><a href="https://CRAN.R-project.org/p
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggtheme.html" class="external-link">theme_light</a></span><span class="op">(</span><span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="co">#scale_color_brewer(palette = "Set1") +</span></span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggsf.html" class="external-link">geom_sf</a></span><span class="op">(</span>data <span class="op">=</span> <span class="va">islet</span>, fill <span class="op">=</span> <span class="cn">NA</span>, color <span class="op">=</span> <span class="st">"black"</span><span class="op">)</span></span></code></pre></div>
+<p><img src="IMC_DiabetesIslands_Vignette_files/figure-html/unnamed-chunk-8-1.png" width="700"></p>
 </div>
 <div class="section level3">
 <h3 id="reconstruction-of-pancreatic-islets-for-all-images">Reconstruction of pancreatic islets for all images<a class="anchor" aria-label="anchor" href="#reconstruction-of-pancreatic-islets-for-all-images"></a>
@@ -319,7 +310,7 @@ represent one structure.</p>
 <span>    <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/scale_brewer.html" class="external-link">scale_color_brewer</a></span><span class="op">(</span>palette <span class="op">=</span> <span class="st">"Dark2"</span><span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggtheme.html" class="external-link">theme_bw</a></span><span class="op">(</span><span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/coord_fixed.html" class="external-link">coord_fixed</a></span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
-<p><img src="IMC_DiabetesIslands_Vignette_files/figure-html/unnamed-chunk-13-1.png" width="700">
+<p><img src="IMC_DiabetesIslands_Vignette_files/figure-html/unnamed-chunk-14-1.png" width="700">
 A boxplot reveals differences of the shape metrics between patient
 stages.</p>
 <div class="sourceCode" id="cb14"><pre class="downlit sourceCode r">
@@ -334,7 +325,16 @@ stages.</p>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/scale_discrete.html" class="external-link">scale_x_discrete</a></span><span class="op">(</span>guide <span class="op">=</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/guide_axis.html" class="external-link">guide_axis</a></span><span class="op">(</span>n.dodge <span class="op">=</span> <span class="fl">2</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/guides.html" class="external-link">guides</a></span><span class="op">(</span>fill <span class="op">=</span> <span class="st">"none"</span><span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggtheme.html" class="external-link">theme_bw</a></span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
-<p><img src="IMC_DiabetesIslands_Vignette_files/figure-html/unnamed-chunk-14-1.png" width="768"></p>
+<p><img src="IMC_DiabetesIslands_Vignette_files/figure-html/unnamed-chunk-15-1.png" width="768"></p>
+</div>
+</div>
+<div class="section level2">
+<h2 id="references">References<a class="anchor" aria-label="anchor" href="#references"></a>
+</h2>
+<ul>
+<li>Damond N et al. (2019). A Map of Human Type 1 Diabetes Progression
+by Imaging Mass Cytometry. Cell Metab 29(3), 755-768.</li>
+</ul>
 <div class="sourceCode" id="cb15"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/utils/sessionInfo.html" class="external-link">sessionInfo</a></span><span class="op">(</span><span class="op">)</span></span>
 <span><span class="co">#&gt; R version 4.4.1 (2024-06-14)</span></span>
@@ -366,7 +366,7 @@ stages.</p>
 <span><span class="co">#&gt;  [9] GenomicRanges_1.56.1        GenomeInfoDb_1.40.1        </span></span>
 <span><span class="co">#&gt; [11] IRanges_2.38.1              S4Vectors_0.42.1           </span></span>
 <span><span class="co">#&gt; [13] BiocGenerics_0.50.0         MatrixGenerics_1.16.0      </span></span>
-<span><span class="co">#&gt; [15] matrixStats_1.3.0           spatstat.explore_3.3-1     </span></span>
+<span><span class="co">#&gt; [15] matrixStats_1.3.0           spatstat.explore_3.3-2     </span></span>
 <span><span class="co">#&gt; [17] nlme_3.1-164                spatstat.random_3.3-1      </span></span>
 <span><span class="co">#&gt; [19] spatstat.geom_3.3-2         spatstat.univar_3.0-0      </span></span>
 <span><span class="co">#&gt; [21] spatstat.data_3.1-2         ggspavis_1.10.0            </span></span>
@@ -406,16 +406,16 @@ stages.</p>
 <span><span class="co">#&gt;  [57] glue_1.7.0                     gridExtra_2.3                 </span></span>
 <span><span class="co">#&gt;  [59] SparseArray_1.4.8              xfun_0.47                     </span></span>
 <span><span class="co">#&gt;  [61] HDF5Array_1.32.1               shinydashboard_0.7.2          </span></span>
-<span><span class="co">#&gt;  [63] withr_3.0.1                    BiocManager_1.30.23           </span></span>
+<span><span class="co">#&gt;  [63] withr_3.0.1                    BiocManager_1.30.25           </span></span>
 <span><span class="co">#&gt;  [65] fastmap_1.2.0                  boot_1.3-30                   </span></span>
 <span><span class="co">#&gt;  [67] rhdf5filters_1.16.0            fansi_1.0.6                   </span></span>
-<span><span class="co">#&gt;  [69] spData_2.3.1                   digest_0.6.36                 </span></span>
+<span><span class="co">#&gt;  [69] spData_2.3.3                   digest_0.6.37                 </span></span>
 <span><span class="co">#&gt;  [71] R6_2.5.1                       mime_0.12                     </span></span>
 <span><span class="co">#&gt;  [73] textshaping_0.4.0              colorspace_2.1-1              </span></span>
 <span><span class="co">#&gt;  [75] wk_0.9.2                       tensor_1.5                    </span></span>
 <span><span class="co">#&gt;  [77] jpeg_0.1-10                    RSQLite_2.3.7                 </span></span>
 <span><span class="co">#&gt;  [79] R.methodsS3_1.8.2              utf8_1.2.4                    </span></span>
-<span><span class="co">#&gt;  [81] generics_0.1.3                 data.table_1.15.4             </span></span>
+<span><span class="co">#&gt;  [81] generics_0.1.3                 data.table_1.16.0             </span></span>
 <span><span class="co">#&gt;  [83] class_7.3-22                   httr_1.4.7                    </span></span>
 <span><span class="co">#&gt;  [85] htmlwidgets_1.6.4              S4Arrays_1.4.1                </span></span>
 <span><span class="co">#&gt;  [87] spdep_1.3-5                    pkgconfig_2.0.3               </span></span>
@@ -423,8 +423,8 @@ stages.</p>
 <span><span class="co">#&gt;  [91] XVector_0.44.0                 htmltools_0.5.8.1             </span></span>
 <span><span class="co">#&gt;  [93] bookdown_0.40                  fftwtools_0.9-11              </span></span>
 <span><span class="co">#&gt;  [95] scales_1.3.0                   png_0.1-8                     </span></span>
-<span><span class="co">#&gt;  [97] knitr_1.48                     rjson_0.2.21                  </span></span>
-<span><span class="co">#&gt;  [99] curl_5.2.1                     proxy_0.4-27                  </span></span>
+<span><span class="co">#&gt;  [97] knitr_1.48                     rjson_0.2.22                  </span></span>
+<span><span class="co">#&gt;  [99] curl_5.2.2                     proxy_0.4-27                  </span></span>
 <span><span class="co">#&gt; [101] cachem_1.1.0                   rhdf5_2.48.0                  </span></span>
 <span><span class="co">#&gt; [103] stringr_1.5.1                  BiocVersion_3.19.1            </span></span>
 <span><span class="co">#&gt; [105] KernSmooth_2.23-24             parallel_4.4.1                </span></span>
@@ -452,7 +452,6 @@ stages.</p>
 <span><span class="co">#&gt; [149] highr_0.11                     AnnotationHub_3.12.0          </span></span>
 <span><span class="co">#&gt; [151] memoise_2.0.1                  bslib_0.8.0                   </span></span>
 <span><span class="co">#&gt; [153] bit_4.0.5</span></span></code></pre></div>
-</div>
 </div>
   </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>
     </nav></aside>
