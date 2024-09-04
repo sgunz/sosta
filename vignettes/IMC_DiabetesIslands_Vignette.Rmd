@@ -45,7 +45,9 @@ library("imcdatasets")
 
 # Introduction
 
-In this vignette we will use data from the package `r BiocStyle::Biocpkg('imcdatasets')`. The dataset contains imaging mass cytometry (IMC) data of pancreatic islets human donors at different stages of type 1 diabetes (T1D) [@damondMapHumanType2019]. 
+In this vignette we will use data from the package `r BiocStyle::Biocpkg('imcdatasets')`. The dataset contains imaging mass cytometry (IMC) data of pancreatic islets human donors at different stages of type 1 diabetes (T1D) (Damond et al. (2019)).
+
+#[@damondMapHumanType2019]. 
 
 <!-- From the manual of `r BiocStyle::Biocpkg('imcdatasets')` and the original publication by @damondMapHumanType2019 we know that -->
 
@@ -57,10 +59,9 @@ In this vignette we will use data from the package `r BiocStyle::Biocpkg('imcdat
 <!-- > 6180 is a donor with long-duration T1D (11 years after diagnosis), showing near-total beta cell destruction and limited immune cell infiltration in both the islets and the pancreas. -->
 
 
-```{r loading}
+```{r loading, echo=FALSE, message=FALSE}
 # load the data
 spe <- imcdatasets::Damond_2019_Pancreas("spe", full_dataset = FALSE)
-spe
 ``` 
 
 First we plot the data for illustration. As we have multiple images per patient we will subset one patient and a few slides.
@@ -196,6 +197,18 @@ islet <- reconstructShapeDensityImage(
 
 We can plot both the points and the estimated islets polygon.
 
+
+```{r}
+islet <- reconstructShapeDensityImage(
+  spe,
+  marks = "cell_category",
+  image_col = "image_name",
+  image_id = "E04",
+  mark_select = "islet",
+  dim = 500
+)
+```
+
 <!-- ```{r, include=FALSE, eval=FALSE} -->
 <!-- islet2 <- reconstructShapeDensityImage( -->
 <!--   spe, -->
@@ -218,7 +231,7 @@ We can plot both the points and the estimated islets polygon.
 <!-- ``` -->
 
 
-```{r, eval=FALSE}
+```{r}
 # Cannot easily add geom_df to plotSpots, therefore custom function here...
 spe_sel <- spe[, spe[["image_name"]] %in% c("E04")]
 spe_sel_df <- cbind(spatialCoords(spe_sel), colData(spe_sel))
@@ -326,6 +339,9 @@ all_islets |>
   theme_bw()
   
 ```
+
+# References
+- Damond N et al. (2019). A Map of Human Type 1 Diabetes Progression by Imaging Mass Cytometry. Cell Metab 29(3), 755-768.
 
 ```{r sessionInfo}
 sessionInfo()

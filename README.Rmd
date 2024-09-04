@@ -31,6 +31,10 @@ You can install the development version of `sosta` from [GitHub](https://github.
 devtools::install_github("sgunz/sosta")
 ```
 
+## Disclaimer
+
+This package is still under active development. This repository serves for preview purposes only.
+
 ## Feedback
 
 We are happy to get your feedback. Please send it via email to [Samuel Gunz](https://www.mls.uzh.ch/en/research/robinson/groupmembers/samuel-gunz.html) or open a issue on [GitHub](https://github.com/sgunz/sosta/issues).
