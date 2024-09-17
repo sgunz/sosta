@@ -7,7 +7,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">sosta</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.0.0.9000</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.0.1</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -58,6 +58,53 @@
     <p>matrix; matrix with x,y coordinates of the cell of the input matrix</p>
     </div>
 
+    <div class="section level2">
+    <h2 id="ref-examples">Examples<a class="anchor" aria-label="anchor" href="#ref-examples"></a></h2>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="va">matrix_R</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/matrix.html" class="external-link">matrix</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span></span></span>
+<span class="r-in"><span>    <span class="fl">0</span>, <span class="fl">0</span>, <span class="fl">0</span>, <span class="fl">0</span>, <span class="fl">0</span>, <span class="fl">0</span>, <span class="fl">0</span>, <span class="fl">0</span>, <span class="fl">0</span>,</span></span>
+<span class="r-in"><span>    <span class="fl">0</span>, <span class="fl">1</span>, <span class="fl">1</span>, <span class="fl">1</span>, <span class="fl">1</span>, <span class="fl">1</span>, <span class="fl">0</span>, <span class="fl">0</span>, <span class="fl">0</span>,</span></span>
+<span class="r-in"><span>    <span class="fl">0</span>, <span class="fl">1</span>, <span class="fl">1</span>, <span class="fl">0</span>, <span class="fl">0</span>, <span class="fl">1</span>, <span class="fl">1</span>, <span class="fl">0</span>, <span class="fl">0</span>,</span></span>
+<span class="r-in"><span>    <span class="fl">0</span>, <span class="fl">1</span>, <span class="fl">1</span>, <span class="fl">0</span>, <span class="fl">0</span>, <span class="fl">1</span>, <span class="fl">1</span>, <span class="fl">0</span>, <span class="fl">0</span>,</span></span>
+<span class="r-in"><span>    <span class="fl">0</span>, <span class="fl">1</span>, <span class="fl">1</span>, <span class="fl">1</span>, <span class="fl">1</span>, <span class="fl">1</span>, <span class="fl">0</span>, <span class="fl">0</span>, <span class="fl">0</span>,</span></span>
+<span class="r-in"><span>    <span class="fl">0</span>, <span class="fl">1</span>, <span class="fl">1</span>, <span class="fl">0</span>, <span class="fl">1</span>, <span class="fl">1</span>, <span class="fl">0</span>, <span class="fl">0</span>, <span class="fl">0</span>,</span></span>
+<span class="r-in"><span>    <span class="fl">0</span>, <span class="fl">1</span>, <span class="fl">1</span>, <span class="fl">0</span>, <span class="fl">0</span>, <span class="fl">1</span>, <span class="fl">1</span>, <span class="fl">0</span>, <span class="fl">0</span>,</span></span>
+<span class="r-in"><span>    <span class="fl">0</span>, <span class="fl">1</span>, <span class="fl">1</span>, <span class="fl">0</span>, <span class="fl">0</span>, <span class="fl">1</span>, <span class="fl">1</span>, <span class="fl">0</span>, <span class="fl">0</span>,</span></span>
+<span class="r-in"><span>    <span class="fl">0</span>, <span class="fl">0</span>, <span class="fl">0</span>, <span class="fl">0</span>, <span class="fl">0</span>, <span class="fl">0</span>, <span class="fl">0</span>, <span class="fl">0</span>, <span class="fl">0</span></span></span>
+<span class="r-in"><span><span class="op">)</span>, nrow <span class="op">=</span> <span class="fl">9</span>, byrow <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="fu">xyCoordinates</span><span class="op">(</span><span class="va">matrix_R</span><span class="op">)</span></span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>       x y</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  [1,] 2 2</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  [2,] 3 2</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  [3,] 4 2</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  [4,] 5 2</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  [5,] 6 2</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  [6,] 7 2</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  [7,] 8 2</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  [8,] 2 3</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  [9,] 3 3</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [10,] 4 3</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [11,] 5 3</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [12,] 6 3</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [13,] 7 3</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [14,] 8 3</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [15,] 2 4</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [16,] 5 4</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [17,] 2 5</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [18,] 5 5</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [19,] 6 5</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [20,] 2 6</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [21,] 3 6</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [22,] 4 6</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [23,] 5 6</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [24,] 6 6</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [25,] 7 6</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [26,] 8 6</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [27,] 3 7</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [28,] 4 7</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [29,] 7 7</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [30,] 8 7</span>
+</code></pre></div>
+    </div>
   </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>
     </nav></aside></div>
 
