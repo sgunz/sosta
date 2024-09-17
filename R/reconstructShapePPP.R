@@ -18,11 +18,10 @@
 #' thres <- findIntensityThreshold(pp_sel, bndw = bndw, dimyx = dimyx)
 #' islet_poly <- reconstructShapeDensity(pp_sel, bndw = bndw, thres = thres, dimyx = dimyx)
 #' plot(islet_poly)
-reconstructShapeDensity <- function(
-        ppp,
-        bndw,
-        thres,
-        dimyx) {
+reconstructShapeDensity <- function(ppp,
+    bndw,
+    thres,
+    dimyx) {
     # estimate density
     density_image <- density.ppp(ppp,
         bndw,
@@ -55,64 +54,6 @@ reconstructShapeDensity <- function(
     return(st_sf(st_cast(stCast, "POLYGON")))
 }
 
-#' Reconstruct structure from point pattern using likelihood ratio test
-#'
-#' @param ppp point pattern object of class `ppp`
-#' @param r radius of the circle to use in the function `scanLRTS`
-#' @param dimyx pixel dimension of the output image
-#'
-#' @return sf object of class `POLYGON`
-#' @import spatstat.explore spatstat.geom sf
-#' @importFrom EBImage resize
-#' @export
-reconstructShapeLRT <- function(
-        ppp,
-        r = bw.diggle(ppp),
-        dimyx) {
-    # likelihood ratio test
-    LR <- scanLRTS(ppp,
-        r,
-        dimyx = c(dimyx)
-    )
-
-    # construct spatstat window from matrix with true false entries
-    diff <- ceiling(c(dim(LR) - dimyx)[1] / 2)
-
-    LRsub <- LR[
-        diff:(dim(LR)[1] - diff),
-        diff:(dim(LR)[2] - diff)
-    ]
-
-    matResc <- resize(t(as.matrix(LRsub)),
-        w = diff(ppp$window$xrange),
-        h = diff(ppp$window$yrange)
-    )
-
-    # TODO: Problem if matrix is too big, add some scaling factor
-    # TODO: determine scaling factor
-    # matResc <- resize(t(as.matrix(LRsub)), w = diff(tonsilPPP$window$xrange)/100,
-    #                   h = diff(tonsilPPP$window$yrange)/100)
-    #
-    # shapeWinResc <- owin(mask = t(ifelse(matResc > 0, TRUE, FALSE)))
-    #
-    # rescaleShapeWin <- rescale.owin(shapeWinResc,
-    #                                 1/100)
-
-
-
-    shapeWinResc <- owin(mask = t(ifelse(matResc > 0, TRUE, FALSE)))
-    # cast to sf object
-    stWinResc <- st_cast(st_as_sf(shapeWinResc), "POLYGON")
-    # return remove 0.5 * r, to account for radius
-    stWinResc <- st_buffer(stWinResc, -0.5 * r)
-    # remove empty polygons
-    stWinResc <- stWinResc[!st_is_empty(stWinResc), drop = FALSE]
-    # this ensures that we have single polygons
-    return(st_cast(st_union(stWinResc), "POLYGON"))
-}
-
-
-
 
 #' Get intensity plot and intensity from spe object with given image id
 #'
@@ -138,15 +79,17 @@ reconstructShapeLRT <- function(
 #'
 #' @examples
 #' spe <- imcdatasets::Damond_2019_Pancreas("spe", full_dataset = FALSE)
-#' shapeIntensityImage(spe, marks = "cell_category", image_col = "image_name",
-#' image_id = "E04", mark_select = "islet")
-
-shapeIntensityImage <- function(spe, marks,
-    image_col,
-    image_id,
-    mark_select,
-    bndw = NULL,
-    dim = 500) {
+#' shapeIntensityImage(spe,
+#'     marks = "cell_category", image_col = "image_name",
+#'     image_id = "E04", mark_select = "islet"
+#' )
+shapeIntensityImage <- function(
+        spe, marks,
+        image_col,
+        image_id,
+        mark_select,
+        bndw = NULL,
+        dim = 500) {
     # Convert the spe object to a point pattern object
     pp <- SPE2ppp(spe, marks = marks, image_col = image_col, image_id = image_id)
 
@@ -161,9 +104,10 @@ shapeIntensityImage <- function(spe, marks,
 
     # plot the density of the image
     im_df <- density.ppp(pp.islet,
-                         sigma = bndw,
-                         dimyx = dimyx,
-                         positive = TRUE) |> as.data.frame()
+        sigma = bndw,
+        dimyx = dimyx,
+        positive = TRUE
+    ) |> as.data.frame()
 
     # plot density image
     den_im <- im_df |>
@@ -176,19 +120,19 @@ shapeIntensityImage <- function(spe, marks,
 
     # plot histogram
     den_hist <- im_df |>
-        dplyr::filter(.data$value > max(.data$value)/250) |>
-        ggplot(aes(x = abs(.data$value))) +   # Use .data pronoun
+        dplyr::filter(.data$value > max(.data$value) / 250) |>
+        ggplot(aes(x = abs(.data$value))) + # Use .data pronoun
         geom_histogram(bins = 50) +
         labs(x = "pixel intensity") +
         theme_light()
 
 
     p <- patchwork::wrap_plots(den_im, den_hist, ncol = 2) +
-      patchwork::plot_annotation(
-      title = paste0(image_col, ': ', image_id),
-      subtitle = paste0('bndw: ', round(bndw, 4)),
-      caption = paste0('Pixel image dimensions: ', dimyx[1], "x",dimyx[2])
-    )
+        patchwork::plot_annotation(
+            title = paste0(image_col, ": ", image_id),
+            subtitle = paste0("bndw: ", round(bndw, 4)),
+            caption = paste0("Pixel image dimensions: ", dimyx[1], "x", dimyx[2])
+        )
 
     return(p)
 }
@@ -217,8 +161,10 @@ shapeIntensityImage <- function(spe, marks,
 #'
 #' @examples
 #' spe <- imcdatasets::Damond_2019_Pancreas("spe", full_dataset = FALSE)
-#' islet_poly <- reconstructShapeDensityImage(spe, marks = "cell_category",
-#' image_col = "image_name", image_id = "E04", mark_select = "islet", dim = 500)
+#' islet_poly <- reconstructShapeDensityImage(spe,
+#'     marks = "cell_category",
+#'     image_col = "image_name", image_id = "E04", mark_select = "islet", dim = 500
+#' )
 #' plot(islet_poly)
 reconstructShapeDensityImage <- function(spe, marks,
     image_col, image_id, mark_select,
@@ -287,8 +233,10 @@ reconstructShapeDensityImage <- function(spe, marks,
 #' @examples
 #' spe <- imcdatasets::Damond_2019_Pancreas("spe", full_dataset = FALSE)
 #' spe <- spe[, spe[["image_name"]] %in% c("E02", "E03", "E04")]
-#' all_islets <- reconstructShapeDensitySPE(spe, marks = "cell_category",
-#' image_col = "image_name", mark_select = "islet", bndw = sigma, thres = 0.0025)
+#' all_islets <- reconstructShapeDensitySPE(spe,
+#'     marks = "cell_category",
+#'     image_col = "image_name", mark_select = "islet", bndw = sigma, thres = 0.0025
+#' )
 #' all_islets
 reconstructShapeDensitySPE <- function(spe, marks,
     image_col, mark_select,
@@ -344,17 +292,20 @@ reconstructShapeDensitySPE <- function(spe, marks,
 #' @examples
 #' spe <- imcdatasets::Damond_2019_Pancreas("spe", full_dataset = FALSE)
 #' spe <- spe[, spe[["image_name"]] %in% c("E02", "E03", "E04")]
-#' estimateReconstructionParametersSPE(spe, marks = "cell_category",
-#' image_col = "image_name", mark_select = "islet", plot_hist = TRUE)
-estimateReconstructionParametersSPE <- function(spe,
-    marks,
-    image_col,
-    mark_select = NULL,
-    nimages = NULL,
-    fun = "bw.diggle",
-    dim = 500,
-    ncores = 1,
-    plot_hist = TRUE) {
+#' estimateReconstructionParametersSPE(spe,
+#'     marks = "cell_category",
+#'     image_col = "image_name", mark_select = "islet", plot_hist = TRUE
+#' )
+estimateReconstructionParametersSPE <- function(
+        spe,
+        marks,
+        image_col,
+        mark_select = NULL,
+        nimages = NULL,
+        fun = "bw.diggle",
+        dim = 500,
+        ncores = 1,
+        plot_hist = TRUE) {
     # get the id's of all images
     all_images <- colData(spe)[[image_col]] |> unique()
     # default is to take all values
@@ -397,7 +348,7 @@ estimateReconstructionParametersSPE <- function(spe,
             geom_histogram(bins = round(nimages / 2)) +
             theme_light()
 
-        print(patchwork::wrap_plots(p1, p2, ncol = 2))
+        plot(patchwork::wrap_plots(p1, p2, ncol = 2))
     }
 
     return(res)

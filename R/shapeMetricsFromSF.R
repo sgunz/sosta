@@ -7,15 +7,16 @@
 #'
 #' @examples
 #' matrix_R <- matrix(c(
-#' 0, 0, 0, 0, 0, 0, 0, 0, 0,
-#' 0, 1, 1, 1, 1, 1, 0, 0, 0,
-#' 0, 1, 1, 0, 0, 1, 1, 0, 0,
-#' 0, 1, 1, 0, 0, 1, 1, 0, 0,
-#' 0, 1, 1, 1, 1, 1, 0, 0, 0,
-#' 0, 1, 1, 0, 1, 1, 0, 0, 0,
-#' 0, 1, 1, 0, 0, 1, 1, 0, 0,
-#' 0, 1, 1, 0, 0, 1, 1, 0, 0,
-#' 0, 0, 0, 0, 0, 0, 0, 0, 0), nrow = 9, byrow = TRUE)
+#'     0, 0, 0, 0, 0, 0, 0, 0, 0,
+#'     0, 1, 1, 1, 1, 1, 0, 0, 0,
+#'     0, 1, 1, 0, 0, 1, 1, 0, 0,
+#'     0, 1, 1, 0, 0, 1, 1, 0, 0,
+#'     0, 1, 1, 1, 1, 1, 0, 0, 0,
+#'     0, 1, 1, 0, 1, 1, 0, 0, 0,
+#'     0, 1, 1, 0, 0, 1, 1, 0, 0,
+#'     0, 1, 1, 0, 0, 1, 1, 0, 0,
+#'     0, 0, 0, 0, 0, 0, 0, 0, 0
+#' ), nrow = 9, byrow = TRUE)
 #' poly_R <- binaryImageToSF(matrix_R, xmin = 0, xmax = 1, ymin = 0, ymax = 1)
 #' st_feature_axes(poly_R)
 st_feature_axes <- function(sfPoly) {
@@ -47,6 +48,20 @@ st_feature_axes <- function(sfPoly) {
 #' @export
 #'
 #' @references https://stackoverflow.com/questions/62250151/calculate-curvature-of-a-closed-object-in-r
+#' @examples
+#' matrix_R <- matrix(c(
+#'     0, 0, 0, 0, 0, 0, 0, 0, 0,
+#'     0, 1, 1, 1, 1, 1, 0, 0, 0,
+#'     0, 1, 1, 0, 0, 1, 1, 0, 0,
+#'     0, 1, 1, 0, 0, 1, 1, 0, 0,
+#'     0, 1, 1, 1, 1, 1, 0, 0, 0,
+#'     0, 1, 1, 0, 1, 1, 0, 0, 0,
+#'     0, 1, 1, 0, 0, 1, 1, 0, 0,
+#'     0, 1, 1, 0, 0, 1, 1, 0, 0,
+#'     0, 0, 0, 0, 0, 0, 0, 0, 0
+#' ), nrow = 9, byrow = TRUE)
+#' poly_R <- binaryImageToSF(matrix_R, xmin = 0, xmax = 1, ymin = 0, ymax = 1)
+#' st_calculateCurvature(poly_R)
 st_calculateCurvature <- function(sfPoly, smoothness = 5) {
     # Smooth the data using concave hull and ksmooth method
     smooth_poly <- smoothr::smooth(sf::st_boundary(sfPoly),
@@ -98,13 +113,14 @@ st_calculateCurvature <- function(sfPoly, smoothness = 5) {
 #'
 #' @examples
 #' matrix_R <- matrix(c(
-#' 1, 1, 1, 1, 1, 0,
-#' 1, 1, 0, 0, 1, 1,
-#' 1, 1, 0, 0, 1, 1,
-#' 1, 1, 1, 1, 1, 0,
-#' 1, 1, 0, 1, 1, 0,
-#' 1, 1, 0, 0, 1, 1,
-#' 1, 1, 0, 0, 1, 1), nrow = 7, byrow = TRUE)
+#'     1, 1, 1, 1, 1, 0,
+#'     1, 1, 0, 0, 1, 1,
+#'     1, 1, 0, 0, 1, 1,
+#'     1, 1, 1, 1, 1, 0,
+#'     1, 1, 0, 1, 1, 0,
+#'     1, 1, 0, 0, 1, 1,
+#'     1, 1, 0, 0, 1, 1
+#' ), nrow = 7, byrow = TRUE)
 #' poly_R <- binaryImageToSF(matrix_R, xmin = 0, xmax = 1, ymin = 0, ymax = 1)
 #' st_calculateShapeCurl(poly_R)
 st_calculateShapeCurl <- function(sfPoly) {

@@ -185,7 +185,8 @@ pp <- SPE2ppp(
     spe,
     marks = "cell_category",
     image_col = "image_name",
-    image_id = "E04")
+    image_id = "E04"
+)
 
 pp_sel <- subset(pp, marks == "islet")
 plot(pp_sel)
@@ -196,12 +197,13 @@ findIntensityThreshold(pp_sel, dimyx = dimyx)
 
 
 den_df <- as.data.frame(density(pp_sel,
-                                    sigma = bw.diggle(pp_sel),
-                                    dimyx = dimyx,
-                                    positive = TRUE))
+    sigma = bw.diggle(pp_sel),
+    dimyx = dimyx,
+    positive = TRUE
+))
 # take all densities greater than certain threshold due to numerical properties
 # of the density estimation
-new_den <- density(den_df$value[den_df$value > max(den_df$value)/250])
+new_den <- density(den_df$value[den_df$value > max(den_df$value) / 250])
 # define the peaks x values
 peaks <- new_den$x[which(diff(sign(diff(new_den$y))) == -2)]
 # define peak values

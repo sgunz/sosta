@@ -49,7 +49,9 @@ Reconstruct structure from spatial experiment object per image id
 \examples{
 spe <- imcdatasets::Damond_2019_Pancreas("spe", full_dataset = FALSE)
 spe <- spe[, spe[["image_name"]] \%in\% c("E02", "E03", "E04")]
-all_islets <- reconstructShapeDensitySPE(spe, marks = "cell_category",
-image_col = "image_name", mark_select = "islet", bndw = sigma, thres = 0.0025)
+all_islets <- reconstructShapeDensitySPE(spe,
+    marks = "cell_category",
+    image_col = "image_name", mark_select = "islet", bndw = sigma, thres = 0.0025
+)
 all_islets
 }

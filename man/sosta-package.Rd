@@ -4,9 +4,9 @@
 \name{sosta-package}
 \alias{sosta}
 \alias{sosta-package}
-\title{sosta: Spatial Omics Structure Analysis}
+\title{sosta: A package for the analysis of morphologically-relevant structures in spatial omics data}
 \description{
-A framework to reconstruct, characterise and compare spatial structures from spatial omics data.
+The `sosta` (Spatial Omics Structure Analysis) package is designed for analyzing spatial omics data to study tissue organization at a anatomical structure level. It reconstructs morphologically-relevant structures based on molecular features or cell types and calculates various metrics such as shape characteristics. The package is designed to integrate with other packages for the analysis of spatial omics data.
 }
 \seealso{
 Useful links:

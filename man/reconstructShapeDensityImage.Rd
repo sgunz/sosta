@@ -47,7 +47,9 @@ Reconstruct structure from spe object with given image id
 }
 \examples{
 spe <- imcdatasets::Damond_2019_Pancreas("spe", full_dataset = FALSE)
-islet_poly <- reconstructShapeDensityImage(spe, marks = "cell_category",
-image_col = "image_name", image_id = "E04", mark_select = "islet", dim = 500)
+islet_poly <- reconstructShapeDensityImage(spe,
+    marks = "cell_category",
+    image_col = "image_name", image_id = "E04", mark_select = "islet", dim = 500
+)
 plot(islet_poly)
 }

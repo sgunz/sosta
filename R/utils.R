@@ -13,20 +13,21 @@
 #'
 #' @examples
 #' matrix_R <- matrix(c(
-#' 0, 0, 0, 0, 0, 0, 0, 0, 0,
-#' 0, 1, 1, 1, 1, 1, 0, 0, 0,
-#' 0, 1, 1, 0, 0, 1, 1, 0, 0,
-#' 0, 1, 1, 0, 0, 1, 1, 0, 0,
-#' 0, 1, 1, 1, 1, 1, 0, 0, 0,
-#' 0, 1, 1, 0, 1, 1, 0, 0, 0,
-#' 0, 1, 1, 0, 0, 1, 1, 0, 0,
-#' 0, 1, 1, 0, 0, 1, 1, 0, 0,
-#' 0, 0, 0, 0, 0, 0, 0, 0, 0), nrow = 9, byrow = TRUE)
+#'     0, 0, 0, 0, 0, 0, 0, 0, 0,
+#'     0, 1, 1, 1, 1, 1, 0, 0, 0,
+#'     0, 1, 1, 0, 0, 1, 1, 0, 0,
+#'     0, 1, 1, 0, 0, 1, 1, 0, 0,
+#'     0, 1, 1, 1, 1, 1, 0, 0, 0,
+#'     0, 1, 1, 0, 1, 1, 0, 0, 0,
+#'     0, 1, 1, 0, 0, 1, 1, 0, 0,
+#'     0, 1, 1, 0, 0, 1, 1, 0, 0,
+#'     0, 0, 0, 0, 0, 0, 0, 0, 0
+#' ), nrow = 9, byrow = TRUE)
 #' poly_R <- binaryImageToSF(matrix_R, xmin = 0, xmax = 1, ymin = 0, ymax = 1)
 #' plot(poly_R)
 binaryImageToSF <- function(binaryMatrix,
-                            xmin, xmax,
-                            ymin, ymax) {
+    xmin, xmax,
+    ymin, ymax) {
     # turn 90 degrees anti clockwise for correspondance with spatstat
     binaryMatrix <- apply(t(binaryMatrix), 2, rev)
     # get raster
@@ -54,15 +55,16 @@ binaryImageToSF <- function(binaryMatrix,
 #'
 #' @examples
 #' matrix_R <- matrix(c(
-#' 0, 0, 0, 0, 0, 0, 0, 0, 0,
-#' 0, 1, 1, 1, 1, 1, 0, 0, 0,
-#' 0, 1, 1, 0, 0, 1, 1, 0, 0,
-#' 0, 1, 1, 0, 0, 1, 1, 0, 0,
-#' 0, 1, 1, 1, 1, 1, 0, 0, 0,
-#' 0, 1, 1, 0, 1, 1, 0, 0, 0,
-#' 0, 1, 1, 0, 0, 1, 1, 0, 0,
-#' 0, 1, 1, 0, 0, 1, 1, 0, 0,
-#' 0, 0, 0, 0, 0, 0, 0, 0, 0), nrow = 9, byrow = TRUE)
+#'     0, 0, 0, 0, 0, 0, 0, 0, 0,
+#'     0, 1, 1, 1, 1, 1, 0, 0, 0,
+#'     0, 1, 1, 0, 0, 1, 1, 0, 0,
+#'     0, 1, 1, 0, 0, 1, 1, 0, 0,
+#'     0, 1, 1, 1, 1, 1, 0, 0, 0,
+#'     0, 1, 1, 0, 1, 1, 0, 0, 0,
+#'     0, 1, 1, 0, 0, 1, 1, 0, 0,
+#'     0, 1, 1, 0, 0, 1, 1, 0, 0,
+#'     0, 0, 0, 0, 0, 0, 0, 0, 0
+#' ), nrow = 9, byrow = TRUE)
 #' xyCoordinates(matrix_R)
 xyCoordinates <- function(inputMatrix) {
     indices <- which(inputMatrix == 1, arr.ind = TRUE)
@@ -78,15 +80,16 @@ xyCoordinates <- function(inputMatrix) {
 #' @export
 #' @examples
 #' matrix_R <- matrix(c(
-#' 0, 0, 0, 0, 0, 0, 0, 0, 0,
-#' 0, 1, 1, 1, 1, 1, 0, 0, 0,
-#' 0, 1, 1, 0, 0, 1, 1, 0, 0,
-#' 0, 1, 1, 0, 0, 1, 1, 0, 0,
-#' 0, 1, 1, 1, 1, 1, 0, 0, 0,
-#' 0, 1, 1, 0, 1, 1, 0, 0, 0,
-#' 0, 1, 1, 0, 0, 1, 1, 0, 0,
-#' 0, 1, 1, 0, 0, 1, 1, 0, 0,
-#' 0, 0, 0, 0, 0, 0, 0, 0, 0), nrow = 9, byrow = TRUE)
+#'     0, 0, 0, 0, 0, 0, 0, 0, 0,
+#'     0, 1, 1, 1, 1, 1, 0, 0, 0,
+#'     0, 1, 1, 0, 0, 1, 1, 0, 0,
+#'     0, 1, 1, 0, 0, 1, 1, 0, 0,
+#'     0, 1, 1, 1, 1, 1, 0, 0, 0,
+#'     0, 1, 1, 0, 1, 1, 0, 0, 0,
+#'     0, 1, 1, 0, 0, 1, 1, 0, 0,
+#'     0, 1, 1, 0, 0, 1, 1, 0, 0,
+#'     0, 0, 0, 0, 0, 0, 0, 0, 0
+#' ), nrow = 9, byrow = TRUE)
 #' coords <- xyCoordinates(matrix_R)
 #' normalizeCoordinates(coords)
 normalizeCoordinates <- function(coords) {
@@ -118,8 +121,10 @@ normalizeCoordinates <- function(coords) {
 #'
 #' @examples
 #' spe <- imcdatasets::Damond_2019_Pancreas("spe", full_dataset = FALSE)
-#' pp <- SPE2ppp(spe, marks = "cell_category", image_col = "image_name",
-#' image_id = "E04")
+#' pp <- SPE2ppp(spe,
+#'     marks = "cell_category", image_col = "image_name",
+#'     image_id = "E04"
+#' )
 #' getDimXY(pp, 500)
 getDimXY <- function(ppp, ydim) {
     xratio <- abs(diff(ppp$window$xrange)) / abs(diff(ppp$window$yrange))
@@ -186,18 +191,20 @@ SPE2ppp <- function(
 #' pp_sel <- subset(pp, marks == "islet")
 #' dimyx <- getDimXY(pp_sel, 500)
 #' findIntensityThreshold(pp_sel, dimyx = dimyx)
-findIntensityThreshold <- function(ppp, bndw = NULL, dimyx,
-    threshold = 250) {
+findIntensityThreshold <- function(
+        ppp, bndw = NULL, dimyx,
+        threshold = 250) {
     # define default of the sigma threshold
     if (is.null(bndw)) bndw <- bw.diggle(ppp)
     # create data frame
     den_df <- as.data.frame(density(ppp,
-                                    sigma = bndw,
-                                    dimyx = dimyx,
-                                    positive = TRUE))
+        sigma = bndw,
+        dimyx = dimyx,
+        positive = TRUE
+    ))
     # take all densities greater than certain threshold due to numerical properties
     # of the density estimation
-    new_den <- density(den_df$value[den_df$value > max(den_df$value)/threshold])
+    new_den <- density(den_df$value[den_df$value > max(den_df$value) / threshold])
     # define the peaks x values
     peaks <- new_den$x[which(diff(sign(diff(new_den$y))) == -2)]
     # define peak values
@@ -208,8 +215,8 @@ findIntensityThreshold <- function(ppp, bndw = NULL, dimyx,
     if (length(peaks) == 1) {
         thres <- peaks
     } else {
-      thres <- (peaks[order(peak_vals, decreasing = TRUE)[2]] -
-                  peaks[order(peak_vals, decreasing = TRUE)[1]]) / 2
+        thres <- (peaks[order(peak_vals, decreasing = TRUE)[2]] -
+            peaks[order(peak_vals, decreasing = TRUE)[1]]) / 2
     }
     return(thres)
 }
