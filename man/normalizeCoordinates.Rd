@@ -15,3 +15,17 @@ matrix; coordinates scaled between 0 and 1
 \description{
 Function to normalize coodinates between zero and one while keep scaling
 }
+\examples{
+matrix_R <- matrix(c(
+0, 0, 0, 0, 0, 0, 0, 0, 0,
+0, 1, 1, 1, 1, 1, 0, 0, 0,
+0, 1, 1, 0, 0, 1, 1, 0, 0,
+0, 1, 1, 0, 0, 1, 1, 0, 0,
+0, 1, 1, 1, 1, 1, 0, 0, 0,
+0, 1, 1, 0, 1, 1, 0, 0, 0,
+0, 1, 1, 0, 0, 1, 1, 0, 0,
+0, 1, 1, 0, 0, 1, 1, 0, 0,
+0, 0, 0, 0, 0, 0, 0, 0, 0), nrow = 9, byrow = TRUE)
+coords <- xyCoordinates(matrix_R)
+normalizeCoordinates(coords)
+}

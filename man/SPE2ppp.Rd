@@ -9,9 +9,11 @@ SPE2ppp(spe, marks, image_col = NULL, image_id = NULL)
 \arguments{
 \item{spe}{SpatialExperiment; a object of class \code{SpatialExperiment}}
 
-\item{marks}{character; name of column in \code{colData} that will correspond to the \code{ppp} marks}
+\item{marks}{character; name of column in \code{colData} that will correspond to
+the \code{ppp} marks}
 
-\item{image_col}{character; name of a column in \code{colData} that corresponds to the image}
+\item{image_col}{character; name of a column in \code{colData} that corresponds to
+the image}
 
 \item{image_id}{character; image id, must be present in image_col}
 }
@@ -20,4 +22,8 @@ ppp; object of type \code{ppp}
 }
 \description{
 Function to convert spatial coordinates of a \code{SpatialExperiment} object to a \code{ppp} object
+}
+\examples{
+spe <- imcdatasets::Damond_2019_Pancreas("spe", full_dataset = FALSE)
+SPE2ppp(spe, marks = "cell_category", image_col = "image_name", image_id = "E04")
 }

@@ -18,25 +18,38 @@ reconstructShapeDensitySPE(
 \arguments{
 \item{spe}{SpatialExperiment; a object of class \code{SpatialExperiment}}
 
-\item{marks}{character; name of column in \code{colData} that will correspond to the \code{ppp} marks}
+\item{marks}{character; name of column in \code{colData} that will correspond
+to the \code{ppp} marks}
 
-\item{image_col}{character; name of a column in \code{colData} that corresponds to the image}
+\item{image_col}{character; name of a column in \code{colData} that corresponds
+to the image}
 
-\item{mark_select}{character; name of mark that is to be selected for the reconstruction}
+\item{mark_select}{character; name of mark that is to be selected for the
+reconstruction}
 
 \item{dim}{numeric; x dimension of the final reconstruction.
-A lower resolution speed up computation but lead to less exact reconstruction. Default = 500}
+A lower resolution speed up computation but lead to less exact reconstruction.
+Default = 500}
 
 \item{bndw}{numeric; bandwith of the sigma parameter in the density estimation,
-if no value is given the bandwith is estimated using cross validation with the \code{bw.diggle} function.}
+if no value is given the bandwith is estimated using cross validation with
+the \code{bw.diggle} function.}
 
 \item{thres}{numeric; intensity threshold for the reconstruction}
 
-\item{ncores}{numeric; number of cores for parallel processing using \code{mclapply}. Default = 1}
+\item{ncores}{numeric; number of cores for parallel processing using
+\code{mclapply}. Default = 1}
 }
 \value{
 simple feature collection
 }
 \description{
 Reconstruct structure from spatial experiment object per image id
+}
+\examples{
+spe <- imcdatasets::Damond_2019_Pancreas("spe", full_dataset = FALSE)
+spe <- spe[, spe[["image_name"]] \%in\% c("E02", "E03", "E04")]
+all_islets <- reconstructShapeDensitySPE(spe, marks = "cell_category",
+image_col = "image_name", mark_select = "islet", bndw = sigma, thres = 0.0025)
+all_islets
 }

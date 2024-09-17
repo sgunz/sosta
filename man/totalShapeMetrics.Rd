@@ -20,3 +20,9 @@ Calculate a set of shape metrics of a set of polygons.
 The function calculates all metrics that are implemented in the function
 \code{shapeMetrics()}
 }
+\examples{
+spe <- imcdatasets::Damond_2019_Pancreas("spe", full_dataset = FALSE)
+islet_poly <- reconstructShapeDensityImage(spe, marks = "cell_category",
+image_col = "image_name", image_id = "E04", mark_select = "islet", dim = 500)
+totalShapeMetrics(islet_poly)
+}

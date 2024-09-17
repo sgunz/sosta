@@ -2,7 +2,7 @@
 % Please edit documentation in R/shapeMetricsFromSF.R
 \name{st_calculateShapeCurl}
 \alias{st_calculateShapeCurl}
-\title{Calculate curls of a polygon}
+\title{Calculate curl of a polygon}
 \usage{
 st_calculateShapeCurl(sfPoly)
 }
@@ -13,5 +13,17 @@ st_calculateShapeCurl(sfPoly)
 numeric; the curl of the polygon
 }
 \description{
-Calculate curls of a polygon
+Calculate curl of a polygon
+}
+\examples{
+matrix_R <- matrix(c(
+1, 1, 1, 1, 1, 0,
+1, 1, 0, 0, 1, 1,
+1, 1, 0, 0, 1, 1,
+1, 1, 1, 1, 1, 0,
+1, 1, 0, 1, 1, 0,
+1, 1, 0, 0, 1, 1,
+1, 1, 0, 0, 1, 1), nrow = 7, byrow = TRUE)
+poly_R <- binaryImageToSF(matrix_R, xmin = 0, xmax = 1, ymin = 0, ymax = 1)
+st_calculateShapeCurl(poly_R)
 }

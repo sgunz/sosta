@@ -6,6 +6,18 @@
 #' @export
 #'
 #' @examples
+#' matrix_R <- matrix(c(
+#' 0, 0, 0, 0, 0, 0, 0, 0, 0,
+#' 0, 1, 1, 1, 1, 1, 0, 0, 0,
+#' 0, 1, 1, 0, 0, 1, 1, 0, 0,
+#' 0, 1, 1, 0, 0, 1, 1, 0, 0,
+#' 0, 1, 1, 1, 1, 1, 0, 0, 0,
+#' 0, 1, 1, 0, 1, 1, 0, 0, 0,
+#' 0, 1, 1, 0, 0, 1, 1, 0, 0,
+#' 0, 1, 1, 0, 0, 1, 1, 0, 0,
+#' 0, 0, 0, 0, 0, 0, 0, 0, 0), nrow = 9, byrow = TRUE)
+#' poly_R <- binaryImageToSF(matrix_R, xmin = 0, xmax = 1, ymin = 0, ymax = 1)
+#' st_feature_axes(poly_R)
 st_feature_axes <- function(sfPoly) {
     minRect <- sf::st_minimum_rotated_rectangle(sfPoly)
 
@@ -35,8 +47,6 @@ st_feature_axes <- function(sfPoly) {
 #' @export
 #'
 #' @references https://stackoverflow.com/questions/62250151/calculate-curvature-of-a-closed-object-in-r
-#'
-#' @examples
 st_calculateCurvature <- function(sfPoly, smoothness = 5) {
     # Smooth the data using concave hull and ksmooth method
     smooth_poly <- smoothr::smooth(sf::st_boundary(sfPoly),
@@ -79,7 +89,7 @@ st_calculateCurvature <- function(sfPoly, smoothness = 5) {
 }
 
 
-#' Calculate curls of a polygon
+#' Calculate curl of a polygon
 #'
 #' @param sfPoly `POLYGON ` of class `sf`
 #'
@@ -87,6 +97,16 @@ st_calculateCurvature <- function(sfPoly, smoothness = 5) {
 #' @export
 #'
 #' @examples
+#' matrix_R <- matrix(c(
+#' 1, 1, 1, 1, 1, 0,
+#' 1, 1, 0, 0, 1, 1,
+#' 1, 1, 0, 0, 1, 1,
+#' 1, 1, 1, 1, 1, 0,
+#' 1, 1, 0, 1, 1, 0,
+#' 1, 1, 0, 0, 1, 1,
+#' 1, 1, 0, 0, 1, 1), nrow = 7, byrow = TRUE)
+#' poly_R <- binaryImageToSF(matrix_R, xmin = 0, xmax = 1, ymin = 0, ymax = 1)
+#' st_calculateShapeCurl(poly_R)
 st_calculateShapeCurl <- function(sfPoly) {
     # Major axis length
     length <- st_feature_axes(sfPoly)$majorAxisLength
@@ -97,12 +117,11 @@ st_calculateShapeCurl <- function(sfPoly) {
     # Check if sqrt of radicand is real
     radicand <- ifelse(radicand > 0, radicand, 0)
     # Calculate fibre length
-    fibreLength <-  4 * st_area(sfPoly) / (perimeter - sqrt(radicand))
+    fibreLength <- 4 * st_area(sfPoly) / (perimeter - sqrt(radicand))
     # Return metrics
     return(list(
         Curl = (1 - (length / fibreLength)),
         fibreLength = fibreLength,
-        fibreWidth = st_area(sfPoly) / fibreLength)
-    )
+        fibreWidth = st_area(sfPoly) / fibreLength
+    ))
 }
-

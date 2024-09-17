@@ -17,23 +17,32 @@ shapeIntensityImage(
 \arguments{
 \item{spe}{SpatialExperiment; a object of class \code{SpatialExperiment}}
 
-\item{marks}{character; name of column in \code{colData} that will correspond to the \code{ppp} marks}
+\item{marks}{character; name of column in \code{colData} that will correspond to
+the \code{ppp} marks}
 
-\item{image_col}{character; name of a column in \code{colData} that corresponds to the image}
+\item{image_col}{character; name of a column in \code{colData} that corresponds to
+the image}
 
 \item{image_id}{character; image id, must be present in image_col}
 
-\item{mark_select}{character; name of mark that is to be selected for the reconstruction}
+\item{mark_select}{character; name of mark that is to be selected for the
+reconstruction}
 
 \item{bndw}{numeric; bandwith of the sigma parameter in the density estimation,
-if no value is given the bandwith is estimated using cross validation with the \code{bw.diggle} function.}
+if no value is given the bandwith is estimated using cross validation with
+the \code{bw.diggle} function.}
 
-\item{dim}{numeric; x dimension of the final reconstruction.
-A lower resolution speed up computation but lead to less exact reconstruction. Default = 500}
+\item{dim}{numeric; x dimension of the final reconstruction. A lower resolution
+speeds up computation but lead to less exact reconstruction. Default = 500}
 }
 \value{
 ggplot object with intensity image and histogram
 }
 \description{
 Get intensity plot and intensity from spe object with given image id
+}
+\examples{
+spe <- imcdatasets::Damond_2019_Pancreas("spe", full_dataset = FALSE)
+shapeIntensityImage(spe, marks = "cell_category", image_col = "image_name",
+image_id = "E04", mark_select = "islet")
 }

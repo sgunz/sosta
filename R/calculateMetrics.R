@@ -8,6 +8,18 @@
 #' @export
 #'
 #' @examples
+#' matrix_R <- matrix(c(
+#' 0, 0, 0, 0, 0, 0, 0, 0, 0,
+#' 0, 1, 1, 1, 1, 1, 0, 0, 0,
+#' 0, 1, 1, 0, 0, 1, 1, 0, 0,
+#' 0, 1, 1, 0, 0, 1, 1, 0, 0,
+#' 0, 1, 1, 1, 1, 1, 0, 0, 0,
+#' 0, 1, 1, 0, 1, 1, 0, 0, 0,
+#' 0, 1, 1, 0, 0, 1, 1, 0, 0,
+#' 0, 1, 1, 0, 0, 1, 1, 0, 0,
+#' 0, 0, 0, 0, 0, 0, 0, 0, 0), nrow = 9, byrow = TRUE)
+#' poly_R <- binaryImageToSF(matrix_R, xmin = 0, xmax = 1, ymin = 0, ymax = 1)
+#' shapeMetrics(poly_R)
 shapeMetrics <- function(sfPoly) {
     # Area
     shapeArea <- st_area(sfPoly)
@@ -45,7 +57,6 @@ shapeMetrics <- function(sfPoly) {
 }
 
 
-
 #' Calculate a set of shape metrics of a set of polygons
 #'
 #' @details
@@ -60,12 +71,16 @@ shapeMetrics <- function(sfPoly) {
 #' @export
 #'
 #' @examples
+#' spe <- imcdatasets::Damond_2019_Pancreas("spe", full_dataset = FALSE)
+#' islet_poly <- reconstructShapeDensityImage(spe, marks = "cell_category",
+#' image_col = "image_name", image_id = "E04", mark_select = "islet", dim = 500)
+#' totalShapeMetrics(islet_poly)
 totalShapeMetrics <- function(sfInput) {
     # cast into different objects, i.e the substructures
     cast_sf <- suppressWarnings(st_cast(sfInput, "POLYGON"))
     # calculate tissue metrics on all substructures
     if (length(cast_sf) > 1) {
-        shapeStruct <- sapply(
+        shapeStruct <- vapply(
             st_geometry(cast_sf),
             function(x) shapeMetrics(st_sfc(x))
         )
@@ -90,8 +105,6 @@ totalShapeMetrics <- function(sfInput) {
 #' @return matrix; matrix of mean shape metrics
 #' @import stats
 #' @export
-#'
-#' @examples
 meanShapeMetrics <- function(totalShapeMetricMatrix) {
     meanShapeMat <- rowMeans(totalShapeMetricMatrix)
     meanShapeMat["numberStructures"] <- dim(totalShapeMetricMatrix)[2]

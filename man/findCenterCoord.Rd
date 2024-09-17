@@ -15,6 +15,9 @@ findCenterCoord(sfe, m, mark, targetMark)
 
 \item{targetMark}{character; mark of interest, must be present in mark}
 }
+\value{
+vector; vector with center coordinates
+}
 \description{
 Find the center of a set of coordinates
 }

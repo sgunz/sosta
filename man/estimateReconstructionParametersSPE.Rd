@@ -2,7 +2,7 @@
 % Please edit documentation in R/reconstructShapePPP.R
 \name{estimateReconstructionParametersSPE}
 \alias{estimateReconstructionParametersSPE}
-\title{Title}
+\title{Estimate reconstruction parameters from a set of images}
 \usage{
 estimateReconstructionParametersSPE(
   spe,
@@ -19,26 +19,40 @@ estimateReconstructionParametersSPE(
 \arguments{
 \item{spe}{SpatialExperiment; a object of class \code{SpatialExperiment}}
 
-\item{marks}{character; name of column in \code{colData} that will correspond to the \code{ppp} marks}
+\item{marks}{character; name of column in \code{colData} that will correspond to
+the \code{ppp} marks}
 
-\item{image_col}{character; name of a column in \code{colData} that corresponds to the image}
+\item{image_col}{character; name of a column in \code{colData} that corresponds
+to the image}
 
-\item{mark_select}{character; name of mark that is to be selected for the reconstruction}
+\item{mark_select}{character; name of mark that is to be selected for the
+reconstruction}
 
-\item{nimages}{integer; number of images for the estimation. Will be randomly sampled}
+\item{nimages}{integer; number of images for the estimation. Will be randomly
+sampled}
 
-\item{fun}{character; function to estimate the kernel density. Default bw.diggle.}
+\item{fun}{character; function to estimate the kernel density. Default
+bw.diggle.}
 
 \item{dim}{numeric; x dimension of the final reconstruction.
-A lower resolution speed up computation but lead to less exact reconstruction. Default = 500}
+A lower resolution speed up computation but lead to less exact reconstruction.
+Default = 500}
 
-\item{ncores}{numeric; number of cores for parallel processing using \code{mclapply}. Default = 1}
+\item{ncores}{numeric; number of cores for parallel processing using \code{mclapply}.
+Default = 1}
 
-\item{plot_hist}{logical; if histogram of estimated densities and thresholds should be plotted. Default = TRUE}
+\item{plot_hist}{logical; if histogram of estimated densities and thresholds
+should be plotted. Default = TRUE}
 }
 \value{
-list; list of estimated intensities
+tibble; tibble with estimated intensities and thresholds
 }
 \description{
-Title
+Estimate reconstruction parameters from a set of images
+}
+\examples{
+spe <- imcdatasets::Damond_2019_Pancreas("spe", full_dataset = FALSE)
+spe <- spe[, spe[["image_name"]] \%in\% c("E02", "E03", "E04")]
+estimateReconstructionParametersSPE(spe, marks = "cell_category",
+image_col = "image_name", mark_select = "islet", plot_hist = TRUE)
 }

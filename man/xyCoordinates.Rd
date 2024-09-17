@@ -15,3 +15,16 @@ matrix; matrix with x,y coordinates of the cell of the input matrix
 \description{
 Function to extract x y coordinates from binary image
 }
+\examples{
+matrix_R <- matrix(c(
+0, 0, 0, 0, 0, 0, 0, 0, 0,
+0, 1, 1, 1, 1, 1, 0, 0, 0,
+0, 1, 1, 0, 0, 1, 1, 0, 0,
+0, 1, 1, 0, 0, 1, 1, 0, 0,
+0, 1, 1, 1, 1, 1, 0, 0, 0,
+0, 1, 1, 0, 1, 1, 0, 0, 0,
+0, 1, 1, 0, 0, 1, 1, 0, 0,
+0, 1, 1, 0, 0, 1, 1, 0, 0,
+0, 0, 0, 0, 0, 0, 0, 0, 0), nrow = 9, byrow = TRUE)
+xyCoordinates(matrix_R)
+}

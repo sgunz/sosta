@@ -15,3 +15,17 @@ list; list containing the major and minor axis lengths
 \description{
 Calculate the length of feature axes of an sf polygon
 }
+\examples{
+matrix_R <- matrix(c(
+0, 0, 0, 0, 0, 0, 0, 0, 0,
+0, 1, 1, 1, 1, 1, 0, 0, 0,
+0, 1, 1, 0, 0, 1, 1, 0, 0,
+0, 1, 1, 0, 0, 1, 1, 0, 0,
+0, 1, 1, 1, 1, 1, 0, 0, 0,
+0, 1, 1, 0, 1, 1, 0, 0, 0,
+0, 1, 1, 0, 0, 1, 1, 0, 0,
+0, 1, 1, 0, 0, 1, 1, 0, 0,
+0, 0, 0, 0, 0, 0, 0, 0, 0), nrow = 9, byrow = TRUE)
+poly_R <- binaryImageToSF(matrix_R, xmin = 0, xmax = 1, ymin = 0, ymax = 1)
+st_feature_axes(poly_R)
+}

@@ -11,6 +11,9 @@ calculateLine(coords, geom)
 
 \item{geom}{object of class sf, sfc or sfg}
 }
+\value{
+linestring; linestring based on the initial points
+}
 \description{
 Function to generate gradient / line based on a set of points
 }

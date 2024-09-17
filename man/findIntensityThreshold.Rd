@@ -4,21 +4,31 @@
 \alias{findIntensityThreshold}
 \title{Estimate the intensity threshold for the reconstruction of spatial strucutres}
 \usage{
-findIntensityThreshold(ppp, bndw = NULL, dimyx, breaks = 50)
+findIntensityThreshold(ppp, bndw = NULL, dimyx, threshold = 250)
 }
 \arguments{
 \item{ppp}{point pattern object of class \code{ppp}}
 
 \item{bndw}{numeric; bandwith of the sigma parameter in the density estimation,
-if no value is given the bandwith is estimated using cross validation with the \code{bw.diggle} function.}
+if no value is given the bandwith is estimated using cross validation with
+the \code{bw.diggle} function.}
 
 \item{dimyx}{vector; pixel dimensions of the kernel density image}
 
-\item{breaks}{numeric; number of bins of the intensity estimates}
+\item{threshold}{numeric; value used to filter the density estimates, where only
+densities greater than the maximum value divided by \code{threshold} are considered.
+Default is 250.}
 }
 \value{
 numeric; estimated intensity threshold
 }
 \description{
 Estimate the intensity threshold for the reconstruction of spatial strucutres
+}
+\examples{
+spe <- imcdatasets::Damond_2019_Pancreas("spe", full_dataset = FALSE)
+pp <- SPE2ppp(spe, marks = "cell_category", image_col = "image_name", image_id = "E04")
+pp_sel <- subset(pp, marks == "islet")
+dimyx <- getDimXY(pp_sel, 500)
+findIntensityThreshold(pp_sel, dimyx = dimyx)
 }

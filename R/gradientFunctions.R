@@ -5,11 +5,10 @@
 #' @param mark character; name of a column in `colData` that corresponds to the marks of interest
 #' @param targetMark character; mark of interest, must be present in mark
 #'
-#' @return
+#' @return vector; vector with center coordinates
 #' @export
 #' @import SpatialFeatureExperiment
 #'
-#' @examples
 findCenterCoord <- function(sfe, m, mark, targetMark) {
     # select centroids that fit the target mark
     sel <- centroids(sfe[, m])[colData(sfe[, m])[[mark]] == targetMark, ]
@@ -25,10 +24,8 @@ findCenterCoord <- function(sfe, m, mark, targetMark) {
 #' @param coords matrix; matrix of coordinates
 #' @param geom 	object of class sf, sfc or sfg
 #'
-#' @return
+#' @return linestring; linestring based on the initial points
 #' @export
-#'
-#' @examples
 calculateLine <- function(coords, geom) {
     # fit a linear model
     mod <- lm(y ~ x, coords)

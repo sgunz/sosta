@@ -24,8 +24,8 @@ vignette: >
 
 ```{r, include = FALSE}
 knitr::opts_chunk$set(
-  collapse = TRUE,
-  comment = "#>"
+    collapse = TRUE,
+    comment = "#>"
 )
 ```
 
@@ -68,12 +68,14 @@ First we plot the data for illustration. As we have multiple images per patient 
 
 
 ```{r}
-plotSpots(spe[,spe[["patient_id"]] == 6126 &
-                spe[["image_name"]] %in% c("E02", "E03", "E04")],
-          annotate = "cell_category",
-          sample_id = "image_name",
-          in_tissue = NULL) +
-  facet_wrap(~ image_name)
+plotSpots(
+    spe[, spe[["patient_id"]] == 6126 &
+        spe[["image_name"]] %in% c("E02", "E03", "E04")],
+    annotate = "cell_category",
+    sample_id = "image_name",
+    in_tissue = NULL
+) +
+    facet_wrap(~image_name)
 ```
 
 # Reconstruction of pancreatic islets
@@ -116,82 +118,119 @@ plotSpots(spe[,spe[["patient_id"]] == 6126 &
 
 In this example we will reconstruct the density based on the point pattern density of the islet cells. We will start with estimating the parameters that we use for reconstruction afterwards.
 
-The function `estimateReconstructionParametersSPE` returns two plots with the estimated parameters for each image. The parameter `bndw` is the bandwidth parameter that is used for estimating the intensity profile of the point pattern. The parameter `thres` is the estimated parameter for the denisty threshold for reconstruction.
+The function `estimateReconstructionParametersSPE` returns two plots with the estimated parameters for each image. The parameter `bndw` is the bandwidth parameter that is used for estimating the intensity profile of the point pattern. The parameter `thres` is the estimated parameter for the density threshold for reconstruction.
 
 ```{r, eval=FALSE}
 n <- estimateReconstructionParametersSPE(
-  spe,
-  marks = "cell_category",
-  image_col = "image_name",
-  mark_select = "islet",
-  ncores = 5,
-  plot_hist = TRUE
+    spe,
+    marks = "cell_category",
+    image_col = "image_name",
+    mark_select = "islet",
+    ncores = 5,
+    plot_hist = TRUE
 )
 
 (thres <- mean(n$thres))
 (bndw <- mean(n$bndw))
-
 ```
 
 ```{r, include=FALSE, eval=FALSE}
 colData(spe)$image_name |> unique()
 
 shapeIntensityImage(
-  spe,
-  marks = "cell_category",
-  image_col = "image_name",
-  image_id = "J13",
-  bndw = bndw,
-  mark_select = "islet"
+    spe,
+    marks = "cell_category",
+    image_col = "image_name",
+    image_id = "J13",
+    bndw = bndw,
+    mark_select = "islet"
 )
 
 
 p2 <- reconstructShapeDensityImage(
-  spe,
-  marks = "cell_category",
-  image_col = "image_name",
-  image_id = "J13",
-  mark_select = "islet"
+    spe,
+    marks = "cell_category",
+    image_col = "image_name",
+    image_id = "J13",
+    mark_select = "islet"
 )
 
 spe_sel <- spe[, spe[["image_name"]] %in% c("J13")]
 spe_sel_df <- cbind(spatialCoords(spe_sel), colData(spe_sel))
 
 ggplot() +
-  geom_point(data = spe_sel_df,
-             aes(x = cell_x, y = cell_y, color = cell_category), size = 0.75) +
-  theme_light() +
-  #scale_color_brewer(palette = "Set1") +
-  geom_sf(data = p2, fill = NA, color = "black")
+    geom_point(
+        data = spe_sel_df,
+        aes(x = cell_x, y = cell_y, color = cell_category), size = 0.75
+    ) +
+    theme_light() +
+    # scale_color_brewer(palette = "Set1") +
+    geom_sf(data = p2, fill = NA, color = "black")
 ```
 
 Using the `bdnw` parameter we can plot the density image and a distribution of the density values using the function `shapeIntensityImage`.
 
 ```{r, eval=FALSE}
 shapeIntensityImage(
-  spe,
-  marks = "cell_category",
-  image_col = "image_name",
-  image_id = "E04",
-  bndw = bndw,
-  mark_select = "islet"
+    spe,
+    marks = "cell_category",
+    image_col = "image_name",
+    image_id = "E04",
+    bndw = bndw,
+    mark_select = "islet"
 )
-
 ```
+```{r, eval=FALSE}
+pp <- SPE2ppp(
+    spe,
+    marks = "cell_category",
+    image_col = "image_name",
+    image_id = "E04")
+
+pp_sel <- subset(pp, marks == "islet")
+plot(pp_sel)
+dimyx <- getDimXY(pp_sel, 500)
+
+
+findIntensityThreshold(pp_sel, dimyx = dimyx)
+
+
+den_df <- as.data.frame(density(pp_sel,
+                                    sigma = bw.diggle(pp_sel),
+                                    dimyx = dimyx,
+                                    positive = TRUE))
+# take all densities greater than certain threshold due to numerical properties
+# of the density estimation
+new_den <- density(den_df$value[den_df$value > max(den_df$value)/250])
+# define the peaks x values
+peaks <- new_den$x[which(diff(sign(diff(new_den$y))) == -2)]
+# define peak values
+peak_vals <- new_den$y[which(diff(sign(diff(new_den$y))) == -2)]
+
+order(peak_vals)[1]
+order(peak_vals)[2]
+
+thres <- (peaks[order(peak_vals)[1]] - peaks[order(peak_vals)[2]]) / 2
+
+thres
+```
+
+
+
 
 We then use the function `reconstructShapeDensity` to reconstruct the image. The result is a `r BiocStyle::CRANpkg('sf')` polygon. 
 
 
 ```{r, eval=FALSE}
 islet <- reconstructShapeDensityImage(
-  spe,
-  marks = "cell_category",
-  image_col = "image_name",
-  image_id = "E04",
-  mark_select = "islet",
-  bndw = bndw,
-  dim = 500,
-  thres =  thres
+    spe,
+    marks = "cell_category",
+    image_col = "image_name",
+    image_id = "E04",
+    mark_select = "islet",
+    bndw = bndw,
+    dim = 500,
+    thres = thres
 )
 ```
 
@@ -200,35 +239,14 @@ We can plot both the points and the estimated islets polygon.
 
 ```{r}
 islet <- reconstructShapeDensityImage(
-  spe,
-  marks = "cell_category",
-  image_col = "image_name",
-  image_id = "E04",
-  mark_select = "islet",
-  dim = 500
+    spe,
+    marks = "cell_category",
+    image_col = "image_name",
+    image_id = "E04",
+    mark_select = "islet",
+    dim = 500
 )
 ```
-
-<!-- ```{r, include=FALSE, eval=FALSE} -->
-<!-- islet2 <- reconstructShapeDensityImage( -->
-<!--   spe, -->
-<!--   marks = "cell_category", -->
-<!--   image_col = "image_name", -->
-<!--   image_id = "E04", -->
-<!--   mark_select = "islet" -->
-<!-- )  -->
-<!-- ``` -->
-
-
-<!-- ```{r, eval=FALSE, include=FALSE} -->
-<!-- p <- plotSpots(spe[,spe[["patient_id"]] == 6126 & -->
-<!--                 spe[["image_name"]] %in% c("E04")], -->
-<!--           annotate = "cell_type", -->
-<!--           sample_id = "image_name", -->
-<!--           in_tissue = NULL, -->
-<!--           y_reverse = FALSE) + -->
-<!--     geom_sf(data = islet, aes(), fill = NA) -->
-<!-- ``` -->
 
 
 ```{r}
@@ -237,11 +255,13 @@ spe_sel <- spe[, spe[["image_name"]] %in% c("E04")]
 spe_sel_df <- cbind(spatialCoords(spe_sel), colData(spe_sel))
 
 ggplot() +
-  geom_point(data = spe_sel_df,
-             aes(x = cell_x, y = cell_y, color = cell_category), size = 0.75) +
-  theme_light() +
-  #scale_color_brewer(palette = "Set1") +
-  geom_sf(data = islet, fill = NA, color = "black")
+    geom_point(
+        data = spe_sel_df,
+        aes(x = cell_x, y = cell_y, color = cell_category), size = 0.75
+    ) +
+    theme_light() +
+    # scale_color_brewer(palette = "Set1") +
+    geom_sf(data = islet, fill = NA, color = "black")
 ```
 
 ## Reconstruction of pancreatic islets for all images
@@ -249,12 +269,14 @@ ggplot() +
 The function `reconstructShapeDensitySPE` reconstructs the islets for all images in the `spe` object.
 
 ```{r, eval=TRUE}
-all_islets <- reconstructShapeDensitySPE(spe, marks = "cell_category",
-                             image_col = "image_name",
-                             mark_select = "islet", 
-                             bndw = sigma,
-                             thres = 0.0025,
-                             ncores = 2)
+all_islets <- reconstructShapeDensitySPE(spe,
+    marks = "cell_category",
+    image_col = "image_name",
+    mark_select = "islet",
+    bndw = sigma,
+    thres = 0.0025,
+    ncores = 2
+)
 ```
 
 # Calculation of structure metrics
@@ -282,12 +304,14 @@ The result is a simple feature collection with polygons. We will add some patien
 
 ```{r}
 patient_data <- colData(spe) |>
-  as_tibble() |>
-  group_by(image_name) |>
-  select(all_of(c("patient_stage",  "tissue_slide", "tissue_region",
-                  "patient_id", "patient_disease_duration", "patient_age",
-                  "patient_gender", "patient_ethnicity", "patient_BMI", "sample_id"))) |>
-  unique()
+    as_tibble() |>
+    group_by(image_name) |>
+    select(all_of(c(
+        "patient_stage", "tissue_slide", "tissue_region",
+        "patient_id", "patient_disease_duration", "patient_age",
+        "patient_gender", "patient_ethnicity", "patient_BMI", "sample_id"
+    ))) |>
+    unique()
 ```
 
 
@@ -310,34 +334,34 @@ We use PCA to get an overview of the different features. Each dot represent one 
 library(ggfortify)
 
 autoplot(prcomp(t(islet_shape_metrics), scale. = TRUE),
-          x = 1, y = 2,
-         data = all_islets,
-         color = "patient_stage",
-         size = 2,
-         # shape = 'type',
-         loadings = TRUE, loadings.colour = 'steelblue3',
-         loadings.label = TRUE, loadings.label.size = 3,
-         loadings.label.repel = TRUE,
-         loadings.label.colour = 'black') +
+    x = 1, y = 2,
+    data = all_islets,
+    color = "patient_stage",
+    size = 2,
+    # shape = 'type',
+    loadings = TRUE, loadings.colour = "steelblue3",
+    loadings.label = TRUE, loadings.label.size = 3,
+    loadings.label.repel = TRUE,
+    loadings.label.colour = "black"
+) +
     scale_color_brewer(palette = "Dark2") +
-  theme_bw() +
-  coord_fixed()
+    theme_bw() +
+    coord_fixed()
 ```
 A boxplot reveals differences of the shape metrics between patient stages.
 
 ```{r, fig.width=8, fig.height=6}
-all_islets |> 
-  sf::st_drop_geometry() |> 
-  select(patient_stage, rownames(islet_shape_metrics)) |> 
-  pivot_longer(-patient_stage) |> 
-  ggplot(aes(x = patient_stage, y = value, fill = patient_stage)) +
-  geom_boxplot() +
-  facet_wrap(~name, scales = "free") +
-  scale_fill_brewer(palette = "Dark2") +
-  scale_x_discrete(guide = guide_axis(n.dodge = 2)) +
-  guides(fill = "none") +
-  theme_bw()
-  
+all_islets |>
+    sf::st_drop_geometry() |>
+    select(patient_stage, rownames(islet_shape_metrics)) |>
+    pivot_longer(-patient_stage) |>
+    ggplot(aes(x = patient_stage, y = value, fill = patient_stage)) +
+    geom_boxplot() +
+    facet_wrap(~name, scales = "free") +
+    scale_fill_brewer(palette = "Dark2") +
+    scale_x_discrete(guide = guide_axis(n.dodge = 2)) +
+    guides(fill = "none") +
+    theme_bw()
 ```
 
 # References

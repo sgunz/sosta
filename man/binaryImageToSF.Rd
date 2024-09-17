@@ -9,17 +9,31 @@ binaryImageToSF(binaryMatrix, xmin, xmax, ymin, ymax)
 \arguments{
 \item{binaryMatrix}{matrix; binary matrix}
 
-\item{xmin}{integer; minimum x coordinate of the window}
+\item{xmin}{integer; minimum x coordinate of the coordinate system}
 
-\item{xmax}{integer; maximum x coordinate of the window}
+\item{xmax}{integer; maximum x coordinate of the coordinate system}
 
-\item{ymin}{integer; minimum y coordinate of the window}
+\item{ymin}{integer; minimum y coordinate of the coordinate system}
 
-\item{ymax}{integer; maximum y coordinate of the window}
+\item{ymax}{integer; maximum y coordinate of the coordinate system}
 }
 \value{
 sf object
 }
 \description{
 Converts a binary matrix to an sf polygon
+}
+\examples{
+matrix_R <- matrix(c(
+0, 0, 0, 0, 0, 0, 0, 0, 0,
+0, 1, 1, 1, 1, 1, 0, 0, 0,
+0, 1, 1, 0, 0, 1, 1, 0, 0,
+0, 1, 1, 0, 0, 1, 1, 0, 0,
+0, 1, 1, 1, 1, 1, 0, 0, 0,
+0, 1, 1, 0, 1, 1, 0, 0, 0,
+0, 1, 1, 0, 0, 1, 1, 0, 0,
+0, 1, 1, 0, 0, 1, 1, 0, 0,
+0, 0, 0, 0, 0, 0, 0, 0, 0), nrow = 9, byrow = TRUE)
+poly_R <- binaryImageToSF(matrix_R, xmin = 0, xmax = 1, ymin = 0, ymax = 1)
+plot(poly_R)
 }

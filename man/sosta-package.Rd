@@ -18,7 +18,7 @@ Useful links:
 
 }
 \author{
-\strong{Maintainer}: Samuel Gunz \email{samuel.gunz@uzh.ch} (\href{https://orcid.org/000-0002-8909-0932}{ORCID})
+\strong{Maintainer}: Samuel Gunz \email{samuel.gunz@uzh.ch} (\href{https://orcid.org/0000-0002-8909-0932}{ORCID})
 
 Authors:
 \itemize{
