@@ -1,6 +1,7 @@
 #' Calculate the length of feature axes of an sf polygon
 #'
 #' @param sfPoly `POLYGON ` of class `sf`
+#' @importFrom sf st_minimum_rotated_rectangle st_coordinates
 #'
 #' @return list; list containing the major and minor axis lengths
 #' @export
@@ -20,22 +21,17 @@
 #' poly_R <- binaryImageToSF(matrix_R, xmin = 0, xmax = 1, ymin = 0, ymax = 1)
 #' st_feature_axes(poly_R)
 st_feature_axes <- function(sfPoly) {
-    minRect <- sf::st_minimum_rotated_rectangle(sfPoly)
-
-    coords <- sf::st_coordinates(minRect)[, c("X", "Y")]
+    minRect <- st_minimum_rotated_rectangle(sfPoly)
+    coords <- st_coordinates(minRect)[, c("X", "Y")]
 
     # Calculate the lengths of the rectangle sides
     side1Length <- sqrt((coords[1, "X"] - coords[2, "X"])^2 + (coords[1, "Y"] - coords[2, "Y"])^2)
     side2Length <- sqrt((coords[2, "X"] - coords[3, "X"])^2 + (coords[2, "Y"] - coords[3, "Y"])^2)
 
-    # Determine which side is the major axis
-    majorAxisLength <- max(side1Length, side2Length)
-    minorAxisLength <- min(side1Length, side2Length)
-
     # Return the mean and sum of the curvature values
     return(list(
-        majorAxisLength = majorAxisLength,
-        minorAxisLength = minorAxisLength
+        majorAxisLength = max(side1Length, side2Length),
+        minorAxisLength = min(side1Length, side2Length)
     ))
 }
 

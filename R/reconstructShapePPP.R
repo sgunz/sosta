@@ -104,11 +104,11 @@ shapeIntensityImage <- function(
 
     # plot density image
     den_im <- im_df |>
-        ggplot(aes(x = .data$x, y = .data$y, fill = .data$value)) +
+        ggplot(aes(x = .data$x, y = .data$y, color = .data$value)) +
         geom_tile() +
-        scale_color_viridis_c(option = "C") +
         coord_equal() +
         labs(color = "intensity") +
+        scale_color_viridis_c(option = "C") +
         theme_classic()
 
     # plot histogram

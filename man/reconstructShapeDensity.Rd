@@ -2,14 +2,14 @@
 % Please edit documentation in R/reconstructShapePPP.R
 \name{reconstructShapeDensity}
 \alias{reconstructShapeDensity}
-\title{Reconstruct structure from point pattern density}
+\title{Reconstruct polygon from point pattern density}
 \usage{
 reconstructShapeDensity(ppp, bndw, thres, dimyx)
 }
 \arguments{
 \item{ppp}{point pattern object of class \code{ppp}}
 
-\item{bndw}{banddwith of kernel density estimator}
+\item{bndw}{bandwidth of kernel density estimator}
 
 \item{thres}{intensity threshold for the reconstruction}
 
@@ -19,7 +19,9 @@ reconstructShapeDensity(ppp, bndw, thres, dimyx)
 sf object of class \code{POLYGON}
 }
 \description{
-Reconstruct structure from point pattern density
+This function estimates the density of a spatial point pattern (\code{ppp}),
+thresholds the density to create a binary image, and then converts it
+to a valid \code{sf} object (polygons).
 }
 \examples{
 spe <- imcdatasets::Damond_2019_Pancreas("spe", full_dataset = FALSE)

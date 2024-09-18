@@ -35,8 +35,8 @@ shapeMetrics <- function(sfPoly) {
     # Compactness: 0 and 1 (circle)
     shapeCompactness <- (shapePerimeter)^2 / (4 * pi * shapeArea)
     # Eccentricity: between 0 and 1
-    shapeEccentricity <- FeatureAxes$minorAxis /
-        FeatureAxes$majorAxis
+    shapeEccentricity <- FeatureAxes$minorAxisLength /
+      FeatureAxes$majorAxisLength
     # Circularity / roundness: 0 and 1 for round object
     shapeCircularity <- (4 * pi * shapeArea) / shapeConvexPerimeter^2
     #  Curl
@@ -80,13 +80,13 @@ shapeMetrics <- function(sfPoly) {
 #' totalShapeMetrics(islet_poly)
 totalShapeMetrics <- function(sfInput) {
     # cast into different objects, i.e the substructures
-    cast_sf <- st_cast(sfInput, "POLYGON")
+    cast_sf <- st_cast(st_geometry(sfInput), "POLYGON")
     # calculate tissue metrics on all substructures
     if (length(cast_sf) > 1) {
         shapeStruct <- vapply(
             st_geometry(cast_sf),
             function(x) unlist(shapeMetrics(st_sfc(x))),
-            numeric(8)
+            numeric(8) #length of metrics
         )
     } else {
         shapeStruct <- t(data.frame(shapeMetrics(cast_sf)))
