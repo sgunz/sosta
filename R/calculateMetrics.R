@@ -96,7 +96,7 @@ totalShapeMetrics <- function(sfInput) {
     rownames(shapeMat) <- rownames(shapeStruct)
     colnames(shapeMat) <- paste0(
         deparse(substitute(sfInput)),
-        rep(c(1:dim(shapeMat)[2]), each = 1)
+        seq_len(dim(shapeMat)[2])
     )
     return(shapeMat)
 }

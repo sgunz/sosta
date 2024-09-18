@@ -22,7 +22,7 @@ findCenterCoord <- function(sfe, m, mark, targetMark) {
 #' Function to generate gradient / line based on a set of points
 #'
 #' @param coords matrix; matrix of coordinates
-#' @param geom 	object of class sf, sfc or sfg
+#' @param geom object of class sf, sfc or sfg
 #'
 #' @return linestring; linestring based on the initial points
 #' @export

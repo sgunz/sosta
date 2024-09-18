@@ -1,7 +1,11 @@
-#' Reconstruct structure from point pattern density
+#' Reconstruct polygon from point pattern density
+#'
+#' This function estimates the density of a spatial point pattern (`ppp`),
+#' thresholds the density to create a binary image, and then converts it
+#' to a valid `sf` object (polygons).
 #'
 #' @param ppp point pattern object of class `ppp`
-#' @param bndw banddwith of kernel density estimator
+#' @param bndw bandwidth of kernel density estimator
 #' @param thres intensity threshold for the reconstruction
 #' @param dimyx pixel dimensions of the output image
 #'
@@ -18,20 +22,11 @@
 #' thres <- findIntensityThreshold(pp_sel, bndw = bndw, dimyx = dimyx)
 #' islet_poly <- reconstructShapeDensity(pp_sel, bndw = bndw, thres = thres, dimyx = dimyx)
 #' plot(islet_poly)
-reconstructShapeDensity <- function(ppp,
-    bndw,
-    thres,
-    dimyx) {
+reconstructShapeDensity <- function(ppp, bndw, thres, dimyx) {
     # estimate density
-    density_image <- density.ppp(ppp,
-        bndw,
-        dimyx = c(dimyx),
-        positive = TRUE
-    )
+    density_image <- density.ppp(ppp, bndw, dimyx = c(dimyx), positive = TRUE)
 
-    # TODO:
-    # Error when threshold is too small
-
+    # TODO: Error when threshold is too small
     # construct spatstat window from matrix with true false entries
     mat <- ifelse(t(as.matrix(density_image)) > thres, TRUE, FALSE)
 
@@ -40,10 +35,8 @@ reconstructShapeDensity <- function(ppp,
         st_make_valid(
             binaryImageToSF(
                 mat,
-                xmin = ppp$window$xrange[1],
-                xmax = ppp$window$xrange[2],
-                ymin = ppp$window$yrange[1],
-                ymax = ppp$window$yrange[2]
+                xmin = ppp$window$xrange[1], xmax = ppp$window$xrange[2],
+                ymin = ppp$window$yrange[1], ymax = ppp$window$yrange[2]
             )
         ),
         "POLYGON"
@@ -297,15 +290,9 @@ reconstructShapeDensitySPE <- function(spe, marks,
 #'     image_col = "image_name", mark_select = "islet", plot_hist = TRUE
 #' )
 estimateReconstructionParametersSPE <- function(
-        spe,
-        marks,
-        image_col,
-        mark_select = NULL,
-        nimages = NULL,
-        fun = "bw.diggle",
-        dim = 500,
-        ncores = 1,
-        plot_hist = TRUE) {
+        spe, marks, image_col,
+        mark_select = NULL, nimages = NULL, fun = "bw.diggle", dim = 500,
+        ncores = 1, plot_hist = TRUE) {
     # get the id's of all images
     all_images <- colData(spe)[[image_col]] |> unique()
     # default is to take all values
@@ -314,25 +301,18 @@ estimateReconstructionParametersSPE <- function(
     sample_images <- sample(all_images, nimages)
     # we calculate the bandwiths and thresholds
     res <- parallel::mclapply(sample_images, function(x) {
-        pp <- SPE2ppp(spe,
-            marks = marks,
-            image_col = image_col,
-            image_id = x
-        )
+        pp <- SPE2ppp(spe, marks = marks, image_col = image_col, image_id = x)
         # If selection of mark
         if (!is.null(mark_select)) pp <- subset(pp, marks %in% mark_select)
         # Estimate the bandwidth for the kernel estimation of point process intensity
         bndw <- do.call(fun, args = list(X = pp, warn = FALSE))
-
-        # Estimate the theshold for the recinstruction
+        # Estimate the threshold for the reconstruction
         # Get dimension of reconstruction
         dimyx <- getDimXY(pp, dim)
         thres <- findIntensityThreshold(pp, bndw = bndw, dimyx = dimyx)
-
         return(c("img" = x, "bndw" = as.numeric(bndw), "thres" = as.numeric(thres)))
     }, mc.cores = ncores)
 
-    # TODO: do.call(rbind, a) ?
     res <- dplyr::bind_rows(res)
     res$thres <- as.numeric(res$thres)
     res$bndw <- as.numeric(res$bndw)
