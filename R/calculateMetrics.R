@@ -106,7 +106,6 @@ totalShapeMetrics <- function(sfInput) {
 #' @param totalShapeMetricMatrix matrix of shape metrics
 #'
 #' @return matrix; matrix of mean shape metrics
-#' @import stats
 #' @export
 #' @examples
 #' spe <- imcdatasets::Damond_2019_Pancreas("spe", full_dataset = FALSE)

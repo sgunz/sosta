@@ -25,12 +25,13 @@ Imports:
     smoothr,
     spatstat.explore,
     spatstat.geom,
-    stats,
     SpatialExperiment,
-    SpatialFeatureExperiment,
     dplyr,
     ggplot2,
-    patchwork
+    patchwork,
+    SummarizedExperiment,
+    stats,
+    rlang
 Suggests:
     knitr,
     rmarkdown,

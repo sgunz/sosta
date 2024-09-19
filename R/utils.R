@@ -183,6 +183,7 @@ SPE2ppp <- function(
 #'
 #' @return numeric; estimated intensity threshold
 #' @import spatstat.explore
+#' @importFrom stats denstiy
 #' @export
 #'
 #' @examples

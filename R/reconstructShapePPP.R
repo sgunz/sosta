@@ -68,6 +68,8 @@ reconstructShapeDensity <- function(ppp, bndw, thres, dimyx) {
 #' labs coord_equal theme_classic scale_color_viridis_c
 #' @importFrom patchwork wrap_plots plot_annotation
 #' @importFrom dplyr filter
+#' @importFrom stats density
+#' @importFrom rlang .data
 #' @export
 #'
 #' @examples
@@ -274,11 +276,15 @@ reconstructShapeDensitySPE <- function(spe, marks,
 #' @param plot_hist logical; if histogram of estimated densities and thresholds
 #' should be plotted. Default = TRUE
 #'
+#' @import spatstat.explore
+#' @import SpatialExperiment
+#' @importFrom SummarizedExperiment colData
 #' @importFrom parallel mclapply
 #' @importFrom dplyr bind_rows
-#' @import spatstat.explore
 #' @importFrom patchwork wrap_plots
 #' @importFrom ggplot2 ggplot aes_string geom_histogram theme_light
+#' @importFrom rlang .data
+#'
 #' @return tibble; tibble with estimated intensities and thresholds
 #' @export
 #'
