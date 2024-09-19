@@ -35,8 +35,7 @@ shapeMetrics <- function(sfPoly) {
     # Compactness: 0 and 1 (circle)
     shapeCompactness <- (shapePerimeter)^2 / (4 * pi * shapeArea)
     # Eccentricity: between 0 and 1
-    shapeEccentricity <- FeatureAxes$minorAxisLength /
-      FeatureAxes$majorAxisLength
+    shapeEccentricity <- FeatureAxes$minorAxisLength / FeatureAxes$majorAxisLength
     # Circularity / roundness: 0 and 1 for round object
     shapeCircularity <- (4 * pi * shapeArea) / shapeConvexPerimeter^2
     #  Curl

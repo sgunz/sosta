@@ -1,5 +1,5 @@
 ---
-title: "Reconstrucion and analysis of pancreatic island from IMC data"
+title: "Reconstrucion and analysis of pancreatic islets from IMC data"
 author: 
   - name: "Samuel Gunz"
     affiliation:
@@ -14,9 +14,9 @@ package: "`r BiocStyle::Biocpkg('sosta')`"
 output:
   BiocStyle::html_document
 abstract: >
-  Reconstrucion and analysis of diabetes island from IMC data using the `sosta` package
+  Reconstrucion and analysis of pancreatic islets from IMC data using the `sosta` package
 vignette: >
-  %\VignetteIndexEntry{Reconstrucion and analysis of diabetes island from IMC data}
+  %\VignetteIndexEntry{Reconstrucion and analysis of pancreatic islets from IMC data}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}  
 ---
@@ -29,7 +29,7 @@ knitr::opts_chunk$set(
 )
 ```
 
-## Setup
+# Setup
 
 ```{r setup, message=FALSE}
 library("sosta")
@@ -45,19 +45,7 @@ library("imcdatasets")
 
 # Introduction
 
-In this vignette we will use data from the package `r BiocStyle::Biocpkg('imcdatasets')`. The dataset contains imaging mass cytometry (IMC) data of pancreatic islets human donors at different stages of type 1 diabetes (T1D) (Damond et al. (2019)).
-
-#[@damondMapHumanType2019]. 
-
-<!-- From the manual of `r BiocStyle::Biocpkg('imcdatasets')` and the original publication by @damondMapHumanType2019 we know that -->
-
-<!-- >The three donors in the subset present the following characteristics: -->
-<!-- > -->
-<!-- > 6126 is a non-diabetic donor, with large islets containing many beta cells, severe infiltration of the exocrine pancreas with myeloid cells but limited infiltration of islets. -->
-<!-- > -->
-<!-- > 6414 is a donor with recent T1D onset (shortly after diagnosis) showing partial beta cell destruction and mild infiltration of islets with T cells. -->
-<!-- > 6180 is a donor with long-duration T1D (11 years after diagnosis), showing near-total beta cell destruction and limited immune cell infiltration in both the islets and the pancreas. -->
-
+In this vignette we will use data from the package `r BiocStyle::Biocpkg('imcdatasets')`. The dataset contains imaging mass cytometry (IMC) data of pancreatic islets of human donors at different stages of type 1 diabetes (T1D) (Damond et al. (2019)). Note that we will only use a subset of the images `full_dataset = FALSE`.
 
 ```{r loading, echo=FALSE, message=FALSE}
 # load the data
@@ -66,173 +54,72 @@ spe <- imcdatasets::Damond_2019_Pancreas("spe", full_dataset = FALSE)
 
 First we plot the data for illustration. As we have multiple images per patient we will subset one patient and a few slides.
 
-
 ```{r}
 plotSpots(
     spe[, spe[["patient_id"]] == 6126 &
         spe[["image_name"]] %in% c("E02", "E03", "E04")],
     annotate = "cell_category",
-    sample_id = "image_name",
-    in_tissue = NULL
-) +
-    facet_wrap(~image_name)
+    sample_id = "image_number",
+    in_tissue = NULL,
+    y_reverse = FALSE
+) + facet_wrap(~image_name)
 ```
+The goal is to reconstruct and quantify the pancreatic islets.
 
 # Reconstruction of pancreatic islets
-
-<!-- ## Reconstruction of pancreatic islets for one image -->
-
-<!-- In this example we will reconstruct the density based on the point pattern density of the islet cells. For this we use functions from the package `r BiocStyle::CRANpkg('spatstat')` which is a convenient package for point pattern analysis. We show the workflow for one image, before continuing to all do it for all images. -->
-
-<!-- First we will create a `ppp` object using `SPE2ppp` -->
-
-<!-- ```{r} -->
-<!-- # Convert the spe object to a point pattern object -->
-<!-- pp <- SPE2ppp(spe, marks = "cell_category", image_col = "image_name", image_id = "E04") -->
-
-<!-- # Extract the islet cells -->
-<!-- pp.islet <- subset(pp, marks == "islet") -->
-<!-- ``` -->
-
-<!-- Next we will set the default dimension for the resulting image. A lower resolution speed up computation but lead to less exact reconstruction. We set a default of 500 pixels for the x dimension, the corresponding y dimension gets directly calculated. -->
-
-<!-- ```{r} -->
-<!-- # Set the dimensions of the resulting reconstruction -->
-<!-- dimyx <- getDimXY(pp.islet, 500) -->
-<!-- ``` -->
-
-<!-- To select the threshold for the reconstruction we look at the density of one image. The function `bw.diggle` estimates the bandwith for the smoothing kernel. The result is a image (m x n matrix with density values). -->
-
-<!-- ```{r} -->
-<!-- # plot the density of the image -->
-<!-- im <- density(pp.islet, sigma = bw.diggle(pp.islet), dimyx = dimyx) -->
-
-<!-- par(mfrow = c(1, 2)) -->
-<!-- plot(im) -->
-<!-- hist(im) -->
-<!-- ``` -->
-
-<!-- From the histogram and the density image we can see that there are a lot of pixels with 0 density. To set the threshold at 0.0025 to include as many cells as possible in the estimation of the islets. We then use the function `reconstructShapeDensity` to reconstruct the image. The result is a `r BiocStyle::CRANpkg('sf')` polygon. -->
 
 ## Reconstruction of pancreatic islets for one image
 
 In this example we will reconstruct the density based on the point pattern density of the islet cells. We will start with estimating the parameters that we use for reconstruction afterwards.
 
-The function `estimateReconstructionParametersSPE` returns two plots with the estimated parameters for each image. The parameter `bndw` is the bandwidth parameter that is used for estimating the intensity profile of the point pattern. The parameter `thres` is the estimated parameter for the density threshold for reconstruction.
+The function `estimateReconstructionParametersSPE` returns two plots with the estimated parameters for each image. The parameter `bndw` is the bandwidth parameter that is used for estimating the intensity profile of the point pattern. The parameter `thres` is the estimated parameter for the density threshold for reconstruction. We subset 20 images to speed up computation.
 
-```{r, eval=FALSE}
+```{r}
 n <- estimateReconstructionParametersSPE(
     spe,
     marks = "cell_category",
     image_col = "image_name",
     mark_select = "islet",
-    ncores = 5,
+    nimages = 20,
     plot_hist = TRUE
 )
-
-(thres <- mean(n$thres))
-(bndw <- mean(n$bndw))
 ```
 
-```{r, include=FALSE, eval=FALSE}
-colData(spe)$image_name |> unique()
 
-shapeIntensityImage(
-    spe,
-    marks = "cell_category",
-    image_col = "image_name",
-    image_id = "J13",
-    bndw = bndw,
-    mark_select = "islet"
-)
-
-
-p2 <- reconstructShapeDensityImage(
-    spe,
-    marks = "cell_category",
-    image_col = "image_name",
-    image_id = "J13",
-    mark_select = "islet"
-)
-
-spe_sel <- spe[, spe[["image_name"]] %in% c("J13")]
-spe_sel_df <- cbind(spatialCoords(spe_sel), colData(spe_sel))
-
-ggplot() +
-    geom_point(
-        data = spe_sel_df,
-        aes(x = cell_x, y = cell_y, color = cell_category), size = 0.75
-    ) +
-    theme_light() +
-    # scale_color_brewer(palette = "Set1") +
-    geom_sf(data = p2, fill = NA, color = "black")
+```{r}
+(thres_spe <- mean(n$thres))
+(bndw_spe <- mean(n$bndw))
 ```
+
 
 Using the `bdnw` parameter we can plot the density image and a distribution of the density values using the function `shapeIntensityImage`.
 
-```{r, eval=FALSE}
+```{r}
 shapeIntensityImage(
     spe,
     marks = "cell_category",
     image_col = "image_name",
     image_id = "E04",
-    bndw = bndw,
-    mark_select = "islet"
+    mark_select = "islet",
+    bndw = bndw_spe
 )
 ```
-```{r, eval=FALSE}
-pp <- SPE2ppp(
-    spe,
-    marks = "cell_category",
-    image_col = "image_name",
-    image_id = "E04"
-)
 
-pp_sel <- subset(pp, marks == "islet")
-plot(pp_sel)
-dimyx <- getDimXY(pp_sel, 500)
+The estimated threshold is roughly the mean between the two modes of the pixel density estimation.
+
+We then use the function `reconstructShapeDensity` to reconstruct the structure. The result is a `r BiocStyle::CRANpkg('sf')` polygon. 
 
 
-findIntensityThreshold(pp_sel, dimyx = dimyx)
-
-
-den_df <- as.data.frame(density(pp_sel,
-    sigma = bw.diggle(pp_sel),
-    dimyx = dimyx,
-    positive = TRUE
-))
-# take all densities greater than certain threshold due to numerical properties
-# of the density estimation
-new_den <- density(den_df$value[den_df$value > max(den_df$value) / 250])
-# define the peaks x values
-peaks <- new_den$x[which(diff(sign(diff(new_den$y))) == -2)]
-# define peak values
-peak_vals <- new_den$y[which(diff(sign(diff(new_den$y))) == -2)]
-
-order(peak_vals)[1]
-order(peak_vals)[2]
-
-thres <- (peaks[order(peak_vals)[1]] - peaks[order(peak_vals)[2]]) / 2
-
-thres
-```
-
-
-
-
-We then use the function `reconstructShapeDensity` to reconstruct the image. The result is a `r BiocStyle::CRANpkg('sf')` polygon. 
-
-
-```{r, eval=FALSE}
+```{r}
 islet <- reconstructShapeDensityImage(
     spe,
     marks = "cell_category",
     image_col = "image_name",
     image_id = "E04",
     mark_select = "islet",
-    bndw = bndw,
+    bndw = bndw_spe,
     dim = 500,
-    thres = thres
+    thres = thres_spe
 )
 ```
 
@@ -240,7 +127,27 @@ We can plot both the points and the estimated islets polygon.
 
 
 ```{r}
-islet <- reconstructShapeDensityImage(
+plotSpots(
+    spe[, spe[["image_name"]] %in% c("E04")],
+    annotate = "cell_category",
+    sample_id = "image_number",
+    in_tissue = NULL,
+    y_reverse = FALSE,
+    point_size = 0.75
+) +
+    geom_sf(
+        data = islet,
+        fill = NA,
+        color = "darkblue",
+        inherit.aes = FALSE,
+        linewidth = 0.75
+    ) 
+```
+
+The function `reconstructShapeDensityImage` can also estimate the reconstruction parameters internally.
+
+```{r}
+islet_2 <- reconstructShapeDensityImage(
     spe,
     marks = "cell_category",
     image_col = "image_name",
@@ -252,18 +159,21 @@ islet <- reconstructShapeDensityImage(
 
 
 ```{r}
-# Cannot easily add geom_df to plotSpots, therefore custom function here...
-spe_sel <- spe[, spe[["image_name"]] %in% c("E04")]
-spe_sel_df <- cbind(spatialCoords(spe_sel), colData(spe_sel))
-
-ggplot() +
-    geom_point(
-        data = spe_sel_df,
-        aes(x = cell_x, y = cell_y, color = cell_category), size = 0.75
-    ) +
-    theme_light() +
-    # scale_color_brewer(palette = "Set1") +
-    geom_sf(data = islet, fill = NA, color = "black")
+plotSpots(
+    spe[, spe[["image_name"]] %in% c("E04")],
+    annotate = "cell_category",
+    sample_id = "image_number",
+    in_tissue = NULL,
+    y_reverse = FALSE,
+    point_size = 0.75
+) +
+    geom_sf(
+        data = islet_2,
+        fill = NA,
+        color = "darkblue",
+        inherit.aes = FALSE,
+        linewidth = 0.75
+    ) 
 ```
 
 ## Reconstruction of pancreatic islets for all images
@@ -271,12 +181,13 @@ ggplot() +
 The function `reconstructShapeDensitySPE` reconstructs the islets for all images in the `spe` object.
 
 ```{r, eval=TRUE}
-all_islets <- reconstructShapeDensitySPE(spe,
+all_islets <- reconstructShapeDensitySPE(
+    spe,
     marks = "cell_category",
     image_col = "image_name",
     mark_select = "islet",
-    bndw = sigma,
-    thres = 0.0025,
+    bndw = bndw_spe,
+    thres = thres_spe,
     ncores = 2
 )
 ```
@@ -289,60 +200,54 @@ We use the function `totalShapeMetrics` to calculate a set of metrics related to
 islet_shape_metrics <- totalShapeMetrics(all_islets)
 ```
 
-<!-- ```{r} -->
-<!-- # This snippet selects all patient information that is not specific to the individual cell -->
-<!-- unique_columns <- colData(spe) |> -->
-<!--   as_tibble() |> -->
-<!--   group_by(image_name) |> -->
-<!--   summarize(across(everything(), ~n_distinct(.x) == 1)) %>%  # Check uniqueness for each column per patient_id -->
-<!--   summarise(across(everything(), all)) %>%                   # Identify columns that are unique across all patients -->
-<!--   select(-image_name) |> -->
-<!--   tidyr::pivot_longer(everything(), names_to = "column", values_to = "is_unique") %>% -->
-<!--   dplyr::filter(is_unique == TRUE) %>% -->
-<!--   pull(column) -->
-<!-- ``` -->
-
 The result is a simple feature collection with polygons. We will add some patient level information to the simple feature collection for plotting afterwards.
 
 ```{r}
 patient_data <- colData(spe) |>
     as_tibble() |>
     group_by(image_name) |>
-    select(all_of(c(
-        "patient_stage", "tissue_slide", "tissue_region",
-        "patient_id", "patient_disease_duration", "patient_age",
-        "patient_gender", "patient_ethnicity", "patient_BMI", "sample_id"
-    ))) |>
+    select(all_of(
+        c(
+            "patient_stage",
+            "tissue_slide",
+            "tissue_region",
+            "patient_id",
+            "patient_disease_duration",
+            "patient_age",
+            "patient_gender",
+            "patient_ethnicity",
+            "patient_BMI",
+            "sample_id"
+        )
+    )) |>
     unique()
 ```
 
 
 ```{r}
 all_islets <- dplyr::left_join(all_islets, patient_data, by = "image_name")
-```
-
-
-```{r}
 all_islets <- cbind(all_islets, t(islet_shape_metrics))
 ```
 
 ## Plot structure metrics
 
-
 We use PCA to get an overview of the different features. Each dot represent one structure.
-
 
 ```{r}
 library(ggfortify)
 
-autoplot(prcomp(t(islet_shape_metrics), scale. = TRUE),
-    x = 1, y = 2,
+autoplot(
+    prcomp(t(islet_shape_metrics), scale. = TRUE),
+    x = 1,
+    y = 2,
     data = all_islets,
     color = "patient_stage",
     size = 2,
     # shape = 'type',
-    loadings = TRUE, loadings.colour = "steelblue3",
-    loadings.label = TRUE, loadings.label.size = 3,
+    loadings = TRUE,
+    loadings.colour = "steelblue3",
+    loadings.label = TRUE,
+    loadings.label.size = 3,
     loadings.label.repel = TRUE,
     loadings.label.colour = "black"
 ) +
@@ -359,14 +264,14 @@ all_islets |>
     pivot_longer(-patient_stage) |>
     ggplot(aes(x = patient_stage, y = value, fill = patient_stage)) +
     geom_boxplot() +
-    facet_wrap(~name, scales = "free") +
+    facet_wrap( ~ name, scales = "free") +
     scale_fill_brewer(palette = "Dark2") +
     scale_x_discrete(guide = guide_axis(n.dodge = 2)) +
     guides(fill = "none") +
     theme_bw()
 ```
-
 # References
+
 - Damond N et al. (2019). A Map of Human Type 1 Diabetes Progression by Imaging Mass Cytometry. Cell Metab 29(3), 755-768.
 
 ```{r sessionInfo}

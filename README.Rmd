@@ -33,7 +33,7 @@ devtools::install_github("sgunz/sosta")
 
 ## Disclaimer
 
-This package is still under active development. This repository serves for preview purposes only.
+This package is still under active development.
 
 ## Feedback
 
