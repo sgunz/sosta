@@ -5,7 +5,7 @@ Authors@R: c(
     person("Samuel", "Gunz", , "samuel.gunz@uzh.ch", role = c("aut", "cre"),
            comment = c(ORCID = "0000-0002-8909-0932")),
     person("Mark D.", "Robinson", role=c("aut", "fnd"), 
-	    email="mark.robinson@uzh.ch"))
+	    email="mark.robinson@mls.uzh.ch"))
 Description: `sosta` (Spatial Omics STructure Analysis) is a package for analyzing
     spatial omics data to explore tissue organization at the anatomical structure level.
     It reconstructs morphologically relevant structures based on molecular features 
