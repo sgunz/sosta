@@ -1,5 +1,5 @@
 Package: sosta
-Title: A package for the analysis of morphologically-relevant structures in spatial omics data
+Title: A package for the analysis of anatomical tissue structures in spatial omics data
 Version: 0.99.0
 Authors@R: c(
     person("Samuel", "Gunz", , "samuel.gunz@uzh.ch", role = c("aut", "cre"),
