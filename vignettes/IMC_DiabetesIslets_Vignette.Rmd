@@ -18,7 +18,8 @@ abstract: >
 vignette: >
   %\VignetteIndexEntry{Reconstrucion and analysis of pancreatic islets from IMC data}
   %\VignetteEngine{knitr::rmarkdown}
-  %\VignetteEncoding{UTF-8}  
+  %\VignetteEncoding{UTF-8}
+bibliography: ../sosta.bib
 ---
 
 
@@ -45,7 +46,7 @@ library("imcdatasets")
 
 # Introduction
 
-In this vignette we will use data from the package `r BiocStyle::Biocpkg('imcdatasets')`. The dataset contains imaging mass cytometry (IMC) data of pancreatic islets of human donors at different stages of type 1 diabetes (T1D) (Damond et al. (2019)). Note that we will only use a subset of the images `full_dataset = FALSE`.
+In this vignette we will use data from the package `r BiocStyle::Biocpkg('imcdatasets')`. The dataset contains imaging mass cytometry (IMC) data of pancreatic islets of human donors at different stages of type 1 diabetes (T1D) [@damondMapHumanType2019]. Note that we will only use a subset of the images `full_dataset = FALSE`.
 
 ```{r loading, echo=FALSE, message=FALSE}
 # load the data
@@ -85,12 +86,10 @@ n <- estimateReconstructionParametersSPE(
 )
 ```
 
-
 ```{r}
 (thres_spe <- mean(n$thres))
 (bndw_spe <- mean(n$bndw))
 ```
-
 
 Using the `bdnw` parameter we can plot the density image and a distribution of the density values using the function `shapeIntensityImage`.
 
@@ -107,7 +106,7 @@ shapeIntensityImage(
 
 The estimated threshold is roughly the mean between the two modes of the pixel density estimation.
 
-We then use the function `reconstructShapeDensity` to reconstruct the structure. The result is a `r BiocStyle::CRANpkg('sf')` polygon. 
+We then use the function `reconstructShapeDensity` to reconstruct the structure. The result is a `r BiocStyle::CRANpkg('sf')` polygon [@pebesmaSimpleFeaturesStandardized2018]. 
 
 
 ```{r}
@@ -125,7 +124,6 @@ islet <- reconstructShapeDensityImage(
 
 We can plot both the points and the estimated islets polygon.
 
-
 ```{r}
 plotSpots(
     spe[, spe[["image_name"]] %in% c("E04")],
@@ -139,7 +137,7 @@ plotSpots(
         data = islet,
         fill = NA,
         color = "darkblue",
-        inherit.aes = FALSE,
+        inherit.aes = FALSE, # this is important
         linewidth = 0.75
     ) 
 ```
@@ -255,7 +253,6 @@ autoplot(
     theme_bw() +
     coord_fixed()
 ```
-A boxplot reveals differences of the shape metrics between patient stages.
 
 ```{r, fig.width=8, fig.height=6}
 all_islets |>
@@ -270,9 +267,8 @@ all_islets |>
     guides(fill = "none") +
     theme_bw()
 ```
-# References
 
-- Damond N et al. (2019). A Map of Human Type 1 Diabetes Progression by Imaging Mass Cytometry. Cell Metab 29(3), 755-768.
+We can use boxplots to investigate differences of shape metrics between patient stages.
 
 ```{r sessionInfo}
 sessionInfo()
