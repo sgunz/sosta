@@ -4,7 +4,7 @@
 \name{sosta-package}
 \alias{sosta}
 \alias{sosta-package}
-\title{sosta: A package for the analysis of morphologically-relevant structures in spatial omics data}
+\title{sosta: A package for the analysis of anatomical tissue structures in spatial omics data}
 \description{
 `sosta` (Spatial Omics STructure Analysis) is a package for analyzing spatial omics data to explore tissue organization at the anatomical structure level. It reconstructs morphologically relevant structures based on molecular features or cell types. It further calculates a range of structural and shape metrics to quantitatively describe tissue architecture. The package is designed to integrate with other packages for the analysis of spatial (omics) data.
 }
@@ -22,7 +22,7 @@ Useful links:
 
 Authors:
 \itemize{
-  \item Mark D. Robinson \email{mark.robinson@uzh.ch} [funder]
+  \item Mark D. Robinson \email{mark.robinson@mls.uzh.ch} [funder]
 }
 
 }

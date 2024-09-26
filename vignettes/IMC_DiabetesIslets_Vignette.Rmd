@@ -19,7 +19,7 @@ vignette: >
   %\VignetteIndexEntry{Reconstrucion and analysis of pancreatic islets from IMC data}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
-bibliography: ../sosta.bib
+bibliography: sosta.bib
 ---
 
 
