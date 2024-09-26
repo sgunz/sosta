@@ -1,6 +1,6 @@
 Package: sosta
 Title: A package for the analysis of anatomical tissue structures in spatial omics data
-Version: 0.99.0
+Version: 0.99.1
 Authors@R: c(
     person("Samuel", "Gunz", , "samuel.gunz@uzh.ch", role = c("aut", "cre"),
            comment = c(ORCID = "0000-0002-8909-0932")),
