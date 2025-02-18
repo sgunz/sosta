@@ -114,3 +114,7 @@ test_that(".intensityThreshold calculates a threshold based on density image", {
     expect_true(threshold >= min(density_image$v))
     expect_true(threshold <= max(density_image$v))
 })
+
+
+
+# TODO:  assingCellsToStructures

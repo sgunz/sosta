@@ -319,3 +319,115 @@ findIntensityThreshold <- function(ppp, mark_select = NULL,
     }
     return(thres)
 }
+
+
+
+
+#' Function to convert spatialCoords to an sf object
+#'
+#' @param spe SpatialExperiment; a object of class `SpatialExperiment`
+#'
+#' @returns sf; Simple feature collection of geometry type POINT
+#' @importFrom sf  st_as_sf
+#' @importFrom SpatialExperiment  spatialCoords
+#'
+#' @examples
+#' spe <- imcdatasets::Damond_2019_Pancreas("spe", full_dataset = FALSE)
+#' spe_sel <- spe[, spe[["image_name"]] == "E03"]
+#' spatialCoords2SF(spe_sel)
+#' @export
+spatialCoords2SF <- function(spe){
+    # Input checking
+    stopifnot(
+        "'spe' must be an object of class 'SpatialExperiment'" =
+            inherits(spe, "SpatialExperiment")
+    )
+    # creates sf points object from SPE
+    spatial_coords_sf <- st_as_sf(data.frame(spatialCoords(spe)),
+                                  coords = c(colnames(spatialCoords(spe))[1],
+                                             colnames(spatialCoords(spe))[2]))
+    return(spatial_coords_sf)
+}
+
+
+
+#' Function to assign spatial points to structures
+#'
+#' This function assigns each spatial point in a `SpatialExperiment` object (`spe`) to the first intersecting structure from a given set of spatial structures.
+#'
+#' @param spe SpatialExperiment; An object of class `SpatialExperiment` containing spatial point data.
+#' @param all_structs sf; A simple feature collection (sf object) representing spatial structures.
+#' @param image_col character; The column name in `spe` and `all_structs` that identifies the corresponding image.
+#' @param n_cores integer; The number of cores to use for parallel processing (default is 1).
+#'
+#' @returns A vector with structure assignments for each spatial point in `spe`. Points that do not overlap with any structure are assigned `NA`.
+#'
+#' @importFrom sf st_intersects
+#' @importFrom SpatialExperiment spatialCoords
+#' @importFrom parallel mclapply
+#'
+#' @examples
+#' spe <- imcdatasets::Damond_2019_Pancreas("spe", full_dataset = FALSE)
+#' all_islets <- reconstructShapeDensitySPE(spe_sel,
+#'     marks = "cell_category",
+#'     image_col = "image_name", mark_select = "islet", bndw = sigma, thres = 0.0025)
+#' assigned_structures <- assingCellsToStructures(spe, all_structs, "image_name", n_cores = 1)
+#
+#' @export
+assingCellsToStructures <- function(spe, all_structs, image_col, n_cores = 1) {
+    # Input checking
+    stopifnot(
+        "'spe' must be an object of class 'SpatialExperiment'" =
+            inherits(spe, "SpatialExperiment")
+    )
+    # Input checking
+    stopifnot(
+        "'all_structs' must be an object of class 'sf'" =
+            inherits(all_structs, "sf")
+    )
+    stopifnot(
+        "'image_col' must exist in colnames(all_structs)" =
+            image_col %in% colnames(all_structs)
+    )
+    # Extract unique image identifiers
+    all_images <- unique(all_structs[[image_col]])
+    # In order no to create memory problems we remove non relevant SPE entries
+    assays(spe) <- list()
+
+    # Using lapply to process each image separately
+    res <- mclapply(all_images, function(sel) {
+        # Create results vector with NA values
+        res_vect <- rep(NA, ncol(spe))
+
+        # Subset SPE object for the current image
+        spe_sel <- spe[, spe[[image_col]] == sel]
+
+        # Subset structure object for the current image
+        structs_sel <- all_structs[all_structs[[image_col]] == sel, ]
+
+        # Convert spatial coordinates to sf points object
+        spatial_coords_sf <- spatialCoords2SF(spe_sel)
+
+        # Compute intersections between spatial points and structures
+        n <- sf::st_intersects(spatial_coords_sf, structs_sel)
+
+        # Extract the first structure ID for each point (if multiple, take the first)
+        n_list <- unlist(lapply(n, function(x) ifelse(!is.na(x[1]), x[[1]], 0)))
+
+        # Assign structure ID or NA if no intersection
+        res <- ifelse(n_list == 0, NA, structs_sel[[image_col]][n_list])
+
+        # Store results in the vector
+        res_vect[spe[[image_col]] == sel] <- res
+        return(res_vect)
+    }, mc.cores = n_cores)
+
+    # Create a data frame from the results
+    df <- data.frame(do.call(cbind, res))
+
+    # Extract the first non-NA value per row
+    overlap_vect <- apply(df, 1, function(x) x[which(!is.na(x))[1]])
+
+    return(overlap_vect)
+}
+
