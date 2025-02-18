@@ -206,6 +206,7 @@ reconstructShapeDensityImage <- function(
 #' `mclapply`. Default = 1
 #'
 #' @importFrom parallel mclapply
+#' @importFrom SummarizedExperiment assays
 #'
 #' @return simple feature collection
 #' @export
@@ -223,6 +224,8 @@ reconstructShapeDensitySPE <- function(
         image_col, mark_select,
         dim = 500, bndw = NULL, thres,
         ncores = 1) {
+    # For computational reasonos delete all assays in SPE
+    SummarizedExperiment::assays(spe) <- list()
     # Get all unique image ids
     all_images <- spe[[image_col]] |> unique()
     # Calculate polygon for each id using multiple cores
@@ -233,6 +236,7 @@ reconstructShapeDensitySPE <- function(
             thres
         )
         # assign image_id
+        res[["structID"]] <- paste0(x, "_", c(1:dim(res)[1]))
         res[[image_col]] <- x
         return(res)
     }, mc.cores = ncores)
