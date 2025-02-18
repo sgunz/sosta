@@ -162,8 +162,9 @@ getDimXY <- function(ppp, ydim) {
 #' @importFrom spatstat.geom as.ppp setmarks
 #'
 #' @examples
-#' spe <- imcdatasets::Damond_2019_Pancreas("spe", full_dataset = FALSE)
-#' SPE2ppp(spe, marks = "cell_category", image_col = "image_name", image_id = "E04")
+#' data(sostaSPE)
+#' SPE2ppp(sostaSPE, marks = "cell_type", image_col = "image_name",
+#' image_id = "image1")
 SPE2ppp <- function(spe,
     marks,
     image_col = NULL,
@@ -225,9 +226,9 @@ SPE2ppp <- function(spe,
 #' @export
 #'
 #' @examples
-#' spe <- imcdatasets::Damond_2019_Pancreas("spe", full_dataset = FALSE)
-#' ppp <- SPE2ppp(spe, marks = "cell_category", image_col = "image_name", image_id = "E04")
-#' findIntensityThreshold(ppp, mark_select = "islet", dim = 250)
+#' data(sostaSPE)
+#' ppp <- SPE2ppp(sostaSPE, marks = "cell_type", image_col = "image_name", image_id = "image1")
+#' findIntensityThreshold(ppp, mark_select = "A", dim = 250)
 findIntensityThreshold <- function(ppp, mark_select = NULL,
     bndw = NULL, dim,
     steps = 250) {
@@ -320,9 +321,6 @@ findIntensityThreshold <- function(ppp, mark_select = NULL,
     return(thres)
 }
 
-
-
-
 #' Function to convert spatialCoords to an sf object
 #'
 #' @param spe SpatialExperiment; a object of class `SpatialExperiment`
@@ -332,8 +330,8 @@ findIntensityThreshold <- function(ppp, mark_select = NULL,
 #' @importFrom SpatialExperiment  spatialCoords
 #'
 #' @examples
-#' spe <- imcdatasets::Damond_2019_Pancreas("spe", full_dataset = FALSE)
-#' spe_sel <- spe[, spe[["image_name"]] == "E03"]
+#' data(sostaSPE)
+#' spe_sel <- sostaSPE[, sostaSPE[["image_name"]] == "image1"]
 #' spatialCoords2SF(spe_sel)
 #' @export
 spatialCoords2SF <- function(spe){
@@ -363,15 +361,16 @@ spatialCoords2SF <- function(spe){
 #' @returns A vector with structure assignments for each spatial point in `spe`. Points that do not overlap with any structure are assigned `NA`.
 #'
 #' @importFrom sf st_intersects
-#' @importFrom SpatialExperiment spatialCoords
+#' @importFrom SummarizedExperiment assays
 #' @importFrom parallel mclapply
 #'
 #' @examples
-#' spe <- imcdatasets::Damond_2019_Pancreas("spe", full_dataset = FALSE)
-#' all_islets <- reconstructShapeDensitySPE(spe_sel,
-#'     marks = "cell_category",
-#'     image_col = "image_name", mark_select = "islet", bndw = sigma, thres = 0.0025)
-#' assigned_structures <- assingCellsToStructures(spe, all_structs, "image_name", n_cores = 1)
+#' data(sostaSPE)
+#' assigned_structures <- reconstructShapeDensitySPE(sostaSPE,
+#'     marks = "cell_type", image_col = "image_name",
+#'     mark_select = "A", bndw = 3.5, thres = 0.005
+#' )
+#' assigned_structures <- assingCellsToStructures(sostaSPE, assigned_structures, "image_name", n_cores = 1)
 #
 #' @export
 assingCellsToStructures <- function(spe, all_structs, image_col, n_cores = 1) {
@@ -392,7 +391,7 @@ assingCellsToStructures <- function(spe, all_structs, image_col, n_cores = 1) {
     # Extract unique image identifiers
     all_images <- unique(all_structs[[image_col]])
     # In order no to create memory problems we remove non relevant SPE entries
-    assays(spe) <- list()
+    SummarizedExperiment::assays(spe) <- list()
 
     # Using lapply to process each image separately
     res <- mclapply(all_images, function(sel) {

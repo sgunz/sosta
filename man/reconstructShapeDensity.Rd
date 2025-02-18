@@ -33,9 +33,9 @@ thresholds the density to create a binary image, and then converts it
 to a valid \code{sf} object (polygons).
 }
 \examples{
-spe <- imcdatasets::Damond_2019_Pancreas("spe", full_dataset = FALSE)
-ppp <- SPE2ppp(spe, marks = "cell_category", image_col = "image_name", image_id = "E04")
-thres <- findIntensityThreshold(ppp, mark_select = "islet", dim = 500)
-islet_poly <- reconstructShapeDensity(ppp, mark_select = "islet", thres = thres, dim = 500)
+data(sostaSPE)
+ppp <- SPE2ppp(sostaSPE, marks = "cell_type", image_col = "image_name", image_id = "image1")
+thres <- findIntensityThreshold(ppp, mark_select = "A", dim = 500)
+islet_poly <- reconstructShapeDensity(ppp, mark_select = "A", thres = thres, dim = 500)
 plot(islet_poly)
 }

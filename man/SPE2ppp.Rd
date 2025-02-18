@@ -24,6 +24,7 @@ ppp; object of type \code{ppp}
 Function to convert spatial coordinates of a \code{SpatialExperiment} object to a \code{ppp} object
 }
 \examples{
-spe <- imcdatasets::Damond_2019_Pancreas("spe", full_dataset = FALSE)
-SPE2ppp(spe, marks = "cell_category", image_col = "image_name", image_id = "E04")
+data(sostaSPE)
+SPE2ppp(sostaSPE, marks = "cell_type", image_col = "image_name",
+image_id = "image1")
 }

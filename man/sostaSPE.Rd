@@ -23,14 +23,11 @@ contain different cell types (\code{A}, \code{B}, and \code{C}), distributed acc
 tissue structures.
 }
 \details{
-\subsection{Data Simulation Process}{
-
 The dataset was generated as follows:
 \itemize{
 \item Three tissue images were simulated using \code{simulateTissueBlobs()}.
 \item Spatial point patterns were created for each tissue using \code{createPointPatternTissue()}.
 \item The point pattern data was converted into a \code{SpatialExperiment} object with spatial coordinates.
-}
 }
 }
 \keyword{datasets}

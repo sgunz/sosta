@@ -16,10 +16,10 @@
 #' @export
 #'
 #' @examples
-#' spe <- imcdatasets::Damond_2019_Pancreas("spe", full_dataset = FALSE)
-#' ppp <- SPE2ppp(spe, marks = "cell_category", image_col = "image_name", image_id = "E04")
-#' thres <- findIntensityThreshold(ppp, mark_select = "islet", dim = 500)
-#' islet_poly <- reconstructShapeDensity(ppp, mark_select = "islet", thres = thres, dim = 500)
+#' data(sostaSPE)
+#' ppp <- SPE2ppp(sostaSPE, marks = "cell_type", image_col = "image_name", image_id = "image1")
+#' thres <- findIntensityThreshold(ppp, mark_select = "A", dim = 500)
+#' islet_poly <- reconstructShapeDensity(ppp, mark_select = "A", thres = thres, dim = 500)
 #' plot(islet_poly)
 reconstructShapeDensity <- function(ppp, mark_select = NULL,
     bndw = NULL, thres = NULL, dim) {
@@ -90,10 +90,10 @@ reconstructShapeDensity <- function(ppp, mark_select = NULL,
 #' @export
 #'
 #' @examples
-#' spe <- imcdatasets::Damond_2019_Pancreas("spe", full_dataset = FALSE)
-#' shapeIntensityImage(spe,
-#'     marks = "cell_category", image_col = "image_name",
-#'     image_id = "E04", mark_select = "islet"
+#' data(sostaSPE)
+#' shapeIntensityImage(sostaSPE,
+#'     marks = "cell_type", image_col = "image_name",
+#'     image_id = "image1", mark_select = "A"
 #' )
 shapeIntensityImage <- function(spe, marks,
     image_col,
@@ -167,10 +167,10 @@ shapeIntensityImage <- function(spe, marks,
 #' @export
 #'
 #' @examples
-#' spe <- imcdatasets::Damond_2019_Pancreas("spe", full_dataset = FALSE)
-#' islet_poly <- reconstructShapeDensityImage(spe,
-#'     marks = "cell_category",
-#'     image_col = "image_name", image_id = "E04", mark_select = "islet", dim = 500
+#' data(sostaSPE)
+#' islet_poly <- reconstructShapeDensityImage(sostaSPE,
+#'     marks = "cell_type", image_col = "image_name", image_id = "image1",
+#'     mark_select = "A", dim = 500
 #' )
 #' plot(islet_poly)
 reconstructShapeDensityImage <- function(
@@ -212,11 +212,10 @@ reconstructShapeDensityImage <- function(
 #' @export
 #'
 #' @examples
-#' spe <- imcdatasets::Damond_2019_Pancreas("spe", full_dataset = FALSE)
-#' spe_sel <- spe[, spe[["image_name"]] %in% c("E02", "E03", "E04")]
-#' all_islets <- reconstructShapeDensitySPE(spe_sel,
-#'     marks = "cell_category",
-#'     image_col = "image_name", mark_select = "islet", bndw = sigma, thres = 0.0025
+#' data(sostaSPE)
+#' all_islets <- reconstructShapeDensitySPE(sostaSPE,
+#'     marks = "cell_type", image_col = "image_name",
+#'     mark_select = "A", bndw = 3.5, thres = 0.005
 #' )
 #' all_islets
 reconstructShapeDensitySPE <- function(
@@ -276,11 +275,10 @@ reconstructShapeDensitySPE <- function(
 #' @export
 #'
 #' @examples
-#' spe <- imcdatasets::Damond_2019_Pancreas("spe", full_dataset = FALSE)
-#' spe_sel <- spe[, spe[["image_name"]] %in% c("E02", "E03", "E04")]
-#' estimateReconstructionParametersSPE(spe_sel,
-#'     marks = "cell_category",
-#'     image_col = "image_name", mark_select = "islet", plot_hist = TRUE
+#' data(sostaSPE)
+#' estimateReconstructionParametersSPE(sostaSPE,
+#'     marks = "cell_type", image_col = "image_name",
+#'     mark_select = "A", plot_hist = TRUE
 #' )
 estimateReconstructionParametersSPE <- function(spe,
     marks,

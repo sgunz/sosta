@@ -29,7 +29,7 @@ numeric; estimated intensity threshold
 Estimate the intensity threshold for the reconstruction of spatial structures
 }
 \examples{
-spe <- imcdatasets::Damond_2019_Pancreas("spe", full_dataset = FALSE)
-ppp <- SPE2ppp(spe, marks = "cell_category", image_col = "image_name", image_id = "E04")
-findIntensityThreshold(ppp, mark_select = "islet", dim = 250)
+data(sostaSPE)
+ppp <- SPE2ppp(sostaSPE, marks = "cell_type", image_col = "image_name", image_id = "image1")
+findIntensityThreshold(ppp, mark_select = "A", dim = 250)
 }

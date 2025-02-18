@@ -44,9 +44,9 @@ a histogram of the intensity values. Note that intensities less than
 largest intensity value divided by 250 are not displayed in the histogram.
 }
 \examples{
-spe <- imcdatasets::Damond_2019_Pancreas("spe", full_dataset = FALSE)
-shapeIntensityImage(spe,
-    marks = "cell_category", image_col = "image_name",
-    image_id = "E04", mark_select = "islet"
+data(sostaSPE)
+shapeIntensityImage(sostaSPE,
+    marks = "cell_type", image_col = "image_name",
+    image_id = "image1", mark_select = "A"
 )
 }
