@@ -22,9 +22,10 @@ A vector with structure assignments for each spatial point in \code{spe}. Points
 This function assigns each spatial point in a \code{SpatialExperiment} object (\code{spe}) to the first intersecting structure from a given set of spatial structures.
 }
 \examples{
-spe <- imcdatasets::Damond_2019_Pancreas("spe", full_dataset = FALSE)
-all_islets <- reconstructShapeDensitySPE(spe_sel,
-    marks = "cell_category",
-    image_col = "image_name", mark_select = "islet", bndw = sigma, thres = 0.0025)
-assigned_structures <- assingCellsToStructures(spe, all_structs, "image_name", n_cores = 1)
+data(sostaSPE)
+assigned_structures <- reconstructShapeDensitySPE(sostaSPE,
+    marks = "cell_type", image_col = "image_name",
+    mark_select = "A", bndw = 3.5, thres = 0.005
+)
+assigned_structures <- assingCellsToStructures(sostaSPE, assigned_structures, "image_name", n_cores = 1)
 }

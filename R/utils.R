@@ -44,7 +44,7 @@ binaryImageToSF <- function(
     # rescale to correct windwow
     set.ext(r, c(xmin, xmax, ymin, ymax))
     # convert to polygons
-    poly <- as.polygons(r)
+    poly <- as.polygons(r) # Why does it print "hardcopy" here?
     # polygons is a SpatVector. Convert it to an sf object
     polygonsSF <- st_as_sf(poly)
     # Merge polygons to a single multipolygon
@@ -366,12 +366,15 @@ spatialCoords2SF <- function(spe){
 #'
 #' @examples
 #' data(sostaSPE)
-#' assigned_structures <- reconstructShapeDensitySPE(sostaSPE,
+#' all_structures <- reconstructShapeDensitySPE(sostaSPE,
 #'     marks = "cell_type", image_col = "image_name",
-#'     mark_select = "A", bndw = 3.5, thres = 0.005
-#' )
-#' assigned_structures <- assingCellsToStructures(sostaSPE, assigned_structures, "image_name", n_cores = 1)
-#
+#'     mark_select = "A", bndw = 3.5, thres = 0.045)
+#' colData(sostaSPE)$struct_assign <- assingCellsToStructures(sostaSPE,
+#'     all_structures, "image_name")
+#' ggspavis::plotSpots(sostaSPE[, sostaSPE[["image_name"]] == "image1"],
+#'     annotate = "struct_assign", sample_id = "sample_id",
+#'     in_tissue = NULL, y_reverse = FALSE)
+#'
 #' @export
 assingCellsToStructures <- function(spe, all_structs, image_col, n_cores = 1) {
     # Input checking
@@ -408,13 +411,13 @@ assingCellsToStructures <- function(spe, all_structs, image_col, n_cores = 1) {
         spatial_coords_sf <- spatialCoords2SF(spe_sel)
 
         # Compute intersections between spatial points and structures
-        n <- sf::st_intersects(spatial_coords_sf, structs_sel)
+        n <- sf::st_intersects(spatial_coords_sf, structs_sel, sparse = FALSE)
 
         # Extract the first structure ID for each point (if multiple, take the first)
-        n_list <- unlist(lapply(n, function(x) ifelse(!is.na(x[1]), x[[1]], 0)))
+        n_list <- apply(n, 1, function(x) which(x == TRUE)[1])
 
         # Assign structure ID or NA if no intersection
-        res <- ifelse(n_list == 0, NA, structs_sel[[image_col]][n_list])
+        res <- ifelse(n_list == 0, NA, structs_sel[["structID"]][n_list])
 
         # Store results in the vector
         res_vect[spe[[image_col]] == sel] <- res

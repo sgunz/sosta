@@ -16,7 +16,7 @@ sf; Simple feature collection of geometry type POINT
 Function to convert spatialCoords to an sf object
 }
 \examples{
-spe <- imcdatasets::Damond_2019_Pancreas("spe", full_dataset = FALSE)
-spe_sel <- spe[, spe[["image_name"]] == "E03"]
+data(sostaSPE)
+spe_sel <- sostaSPE[, sostaSPE[["image_name"]] == "image1"]
 spatialCoords2SF(spe_sel)
 }
