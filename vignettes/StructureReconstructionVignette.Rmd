@@ -1,5 +1,5 @@
 ---
-title: "Reconstruction of anatomical structures"
+title: "Reconstruction and quantification of anatomical structures"
 author: 
   - name: "Samuel Gunz"
     affiliation:
@@ -14,9 +14,9 @@ package: "`r BiocStyle::Biocpkg('sosta')`"
 output:
   BiocStyle::html_document
 abstract: >
-  Reconstruction and analysis of pancreatic islets from IMC data using the `sosta` package
+  Reconstruction and analysis of anatimical structures using the `sosta` package
 vignette: >
-  %\VignetteIndexEntry{Reconstruction and analysis of pancreatic islets from IMC data}
+  %\VignetteIndexEntry{ Reconstruction and analysis of anatomical structures}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
 bibliography: sosta.bib
@@ -53,13 +53,12 @@ library("imcdatasets")
 
 # Introduction
 
+As an example, we will load an simulated dataset with three different images and three cell types A, B and C.
 
 ```{r loading, echo=FALSE, message=FALSE}
 # load the data
 data("sostaSPE")
 ``` 
-
-First we plot the data for illustration. As we have multiple images per patient we will subset one patient and a few slides.
 
 ```{r}
 plotSpots(
@@ -72,6 +71,8 @@ plotSpots(
 ```
 
 The goal is to reconstruct / segment the structures given by cell type A.
+
+# Structure reconstruction
 
 ## Reconstruction of structures for one image
 
@@ -89,7 +90,7 @@ shapeIntensityImage(
 
 We see the density (pixel) image on the left and a histogram of the intensity values on the right. The estimated threshold is roughly the mean between the two modes of the (truncated) pixel intensity distribution.
 
-This was done for one image. The function `estimateReconstructionParametersSPE` returns two plots with the estimated parameters for each image. The parameter `bndw` is the bandwidth parameter that is used for estimating the intensity profile of the point pattern. The parameter `thres` is the estimated parameter for the density threshold for reconstruction. We subset 20 images to speed up computation.
+This was done for one image. The function `estimateReconstructionParametersSPE` returns two plots with the estimated parameters for each image. The parameter `bndw` is the bandwidth parameter that is used for estimating the intensity profile of the point pattern. The parameter `thres` is the estimated parameter for the density threshold for reconstruction.
 
 ```{r}
 n <- estimateReconstructionParametersSPE(
@@ -122,7 +123,7 @@ struct <- reconstructShapeDensityImage(
 )
 ```
 
-We can plot both the points and the estimated islets polygon.
+We can plot both the points and the segmented polygon.
 
 ```{r}
 plotSpots(
@@ -188,12 +189,12 @@ all_structs <- reconstructShapeDensitySPE(
 )
 ```
 
-# Instersection with cells
+## Instersection with cells
 
-Here we will assign cells in the `SingleCellExperiment` object to the specific islet.
+Here we will assign cells in the `SingleCellExperiment` object to the specific structure.
 
 ```{r}
-assign <- assingCellsToStructures(sostaSPE, all_structs, image_col = "image_name", n_cores = 8)
+assign <- assingCellsToStructures(sostaSPE, all_structs, image_col = "image_name", n_cores = 1)
 colData(sostaSPE)$struct_assign <- assign
 ```
 
@@ -206,50 +207,30 @@ plotSpots(
     y_reverse = FALSE
 ) + facet_wrap(~image_name)
 ```
-# Border cells
+
+# Cell level metrics
+
+## Distance to structure border
 
 ```{r}
-st_all_structs
+colData(sostaSPE)$min_dist <- computeMinBoundaryDistances(sostaSPE,
+     "image_name", "struct_assign", all_structs)
+plotSpots(sostaSPE, annotate = "min_dist", in_tissue = NULL, y_reverse = FALSE) +
+    scale_colour_gradient2() +
+    geom_sf(data = all_structs, fill = NA, inherit.aes = FALSE) +
+    facet_wrap(~image_name)
 ```
 
+This info can be used to define border cells by thresholding to a range of positive and negative values.
 
-# Distance to cell types
+# Structure level metrics
+
+## Proportion of cell types within structures
 
 ```{r}
-
-all_structures
-
-
-
-
-
-
-
-
-computeDistances <- function(spe, struct_column, cell_type_column) {
-    # Extract structure assignments from column in SPE
-    structs <- unique(spe[[struct_column]])
-    # Remove NA values
-    structs <- structs[!is.na(structs)]
-    # Compute the proportion of each cell type within each structure
-    res <- lapply(structs, function(sel) {
-        sub_spe <- sostaSPE[, sostaSPE[["image_name"]] %in% sel]
-        sub_struct <- all_structures[all_structures[["image_name"]] %in% sel,]
-        dist <- st_distance(spatialCoords2SF(sub_spe), sub_struct)
-        res <- apply(dist, 1, min)
-
-    })
-    # Combine into single df and name with structs id
-    res_mat <- do.call(rbind, res) |> as.data.frame()
-    rownames(res_mat) <- structs
-    return(res_mat)
-}
-
+colData(sostaSPE)$struct_assign <- assingCellsToStructures(sostaSPE,
+     all_structs, "image_name")
+cellTypeProportions(sostaSPE, "struct_assign", "cell_type")
 ```
 
-# Distance to cell types
-
-```{r}
-
-```
 

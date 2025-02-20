@@ -127,3 +127,72 @@ cellTypeProportions <- function(spe, struct_column, cell_type_column) {
 }
 
 
+#' Compute minimum boundary distances for each cell within its corresponding image structures
+#'
+#' @param spe SpatialExperiment object
+#' @param image_column character; name of the `colData` column specifying the image name
+#' @param struct_column character; name of the `colData` column specifying structure assignments
+#' @param all_structures sf object; contains spatial structures with corresponding image names
+#'
+#' @return A numeric vector containing the minimum distances between cells and structure boundaries,
+#' values within structures have negative values.
+#'
+#' @importFrom sf st_distance st_boundary
+#'
+#' @export
+#'
+#' @examples
+#' data(sostaSPE)
+#' all_structures <- reconstructShapeDensitySPE(sostaSPE,
+#'     marks = "cell_type", image_col = "image_name",
+#'     mark_select = "A", bndw = 3.5, thres = 0.045)
+#' colData(sostaSPE)$struct_assign <- assingCellsToStructures(sostaSPE,
+#'     all_structures, "image_name")
+#' colData(sostaSPE)$min_dist <- computeMinBoundaryDistances(sostaSPE,
+#'     "image_name", "struct_assign", all_structures)
+#' plotSpots(sostaSPE, annotate = "min_dist", in_tissue = NULL, y_reverse = FALSE) +
+#'     scale_colour_gradient2() +
+#'     geom_sf(data = all_structures, fill = NA, inherit.aes = FALSE) +
+#'     facet_wrap(~image_name)
+computeMinBoundaryDistances <- function(spe, image_column, struct_column, all_structures) {
+
+    # Extract unique image names and remove NAs
+    images <- unique(spe[[image_column]])
+    images <- images[!is.na(images)]
+
+    # Compute the minimum distance to structure boundaries for each cell
+    res <- lapply(images, function(sel) {
+        res_vect <- rep(NA, ncol(spe))
+
+        # Subset SPE and structures for the given image
+        sub_spe <- spe[, spe[[image_column]] %in% sel]
+        sub_struct <- all_structures[all_structures[[image_column]] %in% sel, ]
+
+        # If no structures exist for this image, return NA vector
+        if (nrow(sub_struct) == 0) {
+            return(res_vect)
+        }
+
+        # Compute distances between cell coordinates and structure boundaries
+        dist <- sf::st_distance(spatialCoords2SF(sub_spe), sf::st_boundary(sub_struct))
+
+        # Store the minimum distance for each cell
+        res <- apply(dist, 1, min)
+        res_vect[spe[[image_column]] %in% sel] <- res
+        return(res_vect)
+    })
+
+    # Combine results into a data frame
+    df <- data.frame(do.call(cbind, res))
+
+    # Extract the first non-NA value per row
+    overlap_vect <- apply(df, 1, function(x) x[which(!is.na(x))[1]])
+
+    # Negate distances for assigned structures
+    overlap_vect[!is.na(spe[[struct_column]])] <- -overlap_vect[!is.na(spe[[struct_column]])]
+
+    return(overlap_vect)
+}
+
+
+
