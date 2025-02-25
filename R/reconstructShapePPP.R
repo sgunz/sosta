@@ -56,8 +56,9 @@ reconstructShapeDensity <- function(ppp, mark_select = NULL,
     ) # make valid is important
     stCast <- stCast[!st_is_empty(stCast), drop = FALSE]
 
-    # return sf object
-    return(st_sf(st_cast(stCast, "POLYGON")))
+    obj <- st_sf(st_cast(stCast, "POLYGON"))
+    st_geometry(obj) <- "sostaPolygon"
+    return(obj)
 }
 
 

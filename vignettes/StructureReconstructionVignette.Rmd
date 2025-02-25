@@ -49,6 +49,7 @@ library("tidyr")
 library("ggplot2")
 library("ggspavis")
 library("imcdatasets")
+library("sf")
 ```
 
 # Introduction
@@ -213,15 +214,70 @@ plotSpots(
 ## Distance to structure border
 
 ```{r}
-colData(sostaSPE)$min_dist <- computeMinBoundaryDistances(sostaSPE,
-     "image_name", "struct_assign", all_structs)
-plotSpots(sostaSPE, annotate = "min_dist", in_tissue = NULL, y_reverse = FALSE) +
+colData(sostaSPE)$min_dist <- computeMinBoundaryDistances(sostaSPE, "image_name",
+                                                          "struct_assign", all_structs)
+plotSpots(
+    sostaSPE,
+    annotate = "min_dist",
+    in_tissue = NULL,
+    y_reverse = FALSE
+) +
     scale_colour_gradient2() +
-    geom_sf(data = all_structs, fill = NA, inherit.aes = FALSE) +
-    facet_wrap(~image_name)
+    geom_sf(data = all_structs,
+            fill = NA,
+            inherit.aes = FALSE) +
+    facet_wrap( ~ image_name)
 ```
 
 This info can be used to define border cells by thresholding to a range of positive and negative values.
+
+```{r}
+idx <- colData(sostaSPE)$min_dist > -3 & colData(sostaSPE)$min_dist < 3
+
+colData(sostaSPE)$boder <- FALSE
+colData(sostaSPE[, idx])$boder <- TRUE
+
+plotSpots(
+    sostaSPE,
+    annotate = "boder",
+    in_tissue = NULL,
+    y_reverse = FALSE
+) + geom_sf(data = all_structs,
+            fill = NA,
+            inherit.aes = FALSE) +
+    facet_wrap( ~ image_name)
+
+```
+
+Alternatively borders can be defined using `st_difference` and `st_buffer` on the structure object.
+
+```{r}
+
+borders <- lapply(st_geometry(all_structs),
+                  \(x) st_difference(st_buffer(x, 3), st_buffer(x, -3))) |>
+    st_as_sfc() |> st_as_sf()
+
+borders$image_name <- all_structs$image_name
+borders$borderID <- paste0("border_", all_structs$structID)
+    
+
+
+colData(sostaSPE)$borderSf <- assingCellsToStructures(sostaSPE,
+                                                      borders, 
+                                                      image_col = "image_name",
+                                                      unique_id = "borderID",
+                                                      n_cores = 1)
+
+plotSpots(
+    sostaSPE,
+    annotate = "borderSf",
+    in_tissue = NULL,
+    y_reverse = FALSE
+) + geom_sf(data = borders,
+            fill = NA,
+            inherit.aes = FALSE) +
+    facet_wrap( ~ image_name)
+```
 
 # Structure level metrics
 
