@@ -4,18 +4,18 @@
 \alias{createPointPatternTissue}
 \title{Create a Point Pattern on a Simulated Tissue Image}
 \usage{
-createPointPatternTissue(tissue_image, int_a, int_b, int_c_in_a, int_c_in_b)
+createPointPatternTissue(tissueImage, intA, intB, intCInA, intCInB)
 }
 \arguments{
-\item{tissue_image}{Matrix; A binary matrix representing the simulated tissue.}
+\item{tissueImage}{Matrix; A binary matrix representing the simulated tissue.}
 
-\item{int_a}{Numeric; Intensity of type "A" points (points per unit area) on tissue regions.}
+\item{intA}{Numeric; Intensity of type "A" points (points per unit area) on tissue regions.}
 
-\item{int_b}{Numeric; Intensity of type "B" points (points per unit area) on non-tissue regions.}
+\item{intB}{Numeric; Intensity of type "B" points (points per unit area) on non-tissue regions.}
 
-\item{int_c_in_a}{Numeric; Intensity of type "C" points placed in extended regions around tissue.}
+\item{intCInA}{Numeric; Intensity of type "C" points placed in extended regions around tissue.}
 
-\item{int_c_in_b}{Numeric; Intensity of type "C" points placed within tissue.}
+\item{intCInB}{Numeric; Intensity of type "C" points placed within tissue.}
 }
 \value{
 A \code{ppp} object representing the spatial point pattern.
@@ -24,7 +24,7 @@ A \code{ppp} object representing the spatial point pattern.
 This function generates a spatial point pattern with different types of points (\code{A}, \code{B}, \code{C}) distributed over the simulated tissue structure.
 }
 \examples{
-tissue_image <- simulateTissueBlobs(128, 100, 7)
-point_pattern <- createPointPatternTissue(tissue_image, 0.1, 0.1, 0.005, 0.005)
+tissueImage <- simulateTissueBlobs(128, 100, 7)
+createPointPatternTissue(tissueImage, 0.1, 0.1, 0.005, 0.005)
 
 }

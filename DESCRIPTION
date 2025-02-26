@@ -27,6 +27,7 @@ Imports:
     spatstat.explore,
     spatstat.geom,
     SpatialExperiment,
+    SingleCellExperiment,
     dplyr,
     ggplot2,
     patchwork,

@@ -7,7 +7,7 @@
 #' @export
 #'
 #' @examples
-#' matrix_R <- matrix(c(
+#' matrixR <- matrix(c(
 #'     0, 0, 0, 0, 0, 0, 0, 0, 0,
 #'     0, 1, 1, 1, 1, 1, 0, 0, 0,
 #'     0, 1, 1, 0, 0, 1, 1, 0, 0,
@@ -18,9 +18,9 @@
 #'     0, 1, 1, 0, 0, 1, 1, 0, 0,
 #'     0, 0, 0, 0, 0, 0, 0, 0, 0
 #' ), nrow = 9, byrow = TRUE)
-#' poly_R <- binaryImageToSF(matrix_R, xmin = 0, xmax = 1, ymin = 0, ymax = 1)
-#' st_feature_axes(poly_R)
-st_feature_axes <- function(sfPoly) {
+#' polyR <- binaryImageToSF(matrixR, xmin = 0, xmax = 1, ymin = 0, ymax = 1)
+#' stFeatureAxes(polyR)
+stFeatureAxes <- function(sfPoly) {
     # Input checks
     stopifnot("'sfPoly' must be a valid sfc object" = inherits(sfPoly, "sfc"))
     stopifnot("'sfPoly' must be of type POLYGON" = st_geometry_type(sfPoly) == "POLYGON")
@@ -39,7 +39,7 @@ st_feature_axes <- function(sfPoly) {
     ))
 }
 
-#' Title
+#' Calculate curvature of sf object
 #'
 #' @param sfPoly `POLYGON ` of class `sf`
 #' @param smoothness list; curvature measures
@@ -51,7 +51,7 @@ st_feature_axes <- function(sfPoly) {
 #'
 #' @references https://stackoverflow.com/questions/62250151/calculate-curvature-of-a-closed-object-in-r
 #' @examples
-#' matrix_R <- matrix(c(
+#' matrixR <- matrix(c(
 #'     0, 0, 0, 0, 0, 0, 0, 0, 0,
 #'     0, 1, 1, 1, 1, 1, 0, 0, 0,
 #'     0, 1, 1, 0, 0, 1, 1, 0, 0,
@@ -62,9 +62,9 @@ st_feature_axes <- function(sfPoly) {
 #'     0, 1, 1, 0, 0, 1, 1, 0, 0,
 #'     0, 0, 0, 0, 0, 0, 0, 0, 0
 #' ), nrow = 9, byrow = TRUE)
-#' poly_R <- binaryImageToSF(matrix_R, xmin = 0, xmax = 1, ymin = 0, ymax = 1)
-#' st_calculateCurvature(poly_R)
-st_calculateCurvature <- function(sfPoly, smoothness = 5) {
+#' polyR <- binaryImageToSF(matrixR, xmin = 0, xmax = 1, ymin = 0, ymax = 1)
+#' stCalculateCurvature(polyR)
+stCalculateCurvature <- function(sfPoly, smoothness = 5) {
     # Input checks
     stopifnot("'sfPoly' must be a valid sfc object" = inherits(sfPoly, "sfc"))
     stopifnot("'sfPoly' must be of type POLYGON" = st_geometry_type(sfPoly) == "POLYGON")
@@ -118,7 +118,7 @@ st_calculateCurvature <- function(sfPoly, smoothness = 5) {
 #' @export
 #'
 #' @examples
-#' matrix_R <- matrix(c(
+#' matrixR <- matrix(c(
 #'     1, 1, 1, 1, 1, 0,
 #'     1, 1, 0, 0, 1, 1,
 #'     1, 1, 0, 0, 1, 1,
@@ -127,14 +127,14 @@ st_calculateCurvature <- function(sfPoly, smoothness = 5) {
 #'     1, 1, 0, 0, 1, 1,
 #'     1, 1, 0, 0, 1, 1
 #' ), nrow = 7, byrow = TRUE)
-#' poly_R <- binaryImageToSF(matrix_R, xmin = 0, xmax = 1, ymin = 0, ymax = 1)
-#' st_calculateShapeCurl(poly_R)
-st_calculateShapeCurl <- function(sfPoly) {
+#' polyR <- binaryImageToSF(matrixR, xmin = 0, xmax = 1, ymin = 0, ymax = 1)
+#' stCalculateShapeCurl(polyR)
+stCalculateShapeCurl <- function(sfPoly) {
     # Input checks
     stopifnot("'sfPoly' must be a valid sfc object" = inherits(sfPoly, "sfc"))
     stopifnot("'sfPoly' must be of type POLYGON" = st_geometry_type(sfPoly) == "POLYGON")
     # Major axis length
-    length <- st_feature_axes(sfPoly)$majorAxisLength
+    length <- stFeatureAxes(sfPoly)$majorAxisLength
     # Calculate perimeter
     perimeter <- st_length(st_boundary(sfPoly))
     # Calculate radicand

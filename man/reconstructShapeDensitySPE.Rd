@@ -7,8 +7,8 @@
 reconstructShapeDensitySPE(
   spe,
   marks,
-  image_col,
-  mark_select,
+  imageCol,
+  markSelect,
   dim = 500,
   bndw = NULL,
   thres,
@@ -21,10 +21,10 @@ reconstructShapeDensitySPE(
 \item{marks}{character; name of column in \code{colData} that will correspond
 to the \code{ppp} marks}
 
-\item{image_col}{character; name of a column in \code{colData} that corresponds
+\item{imageCol}{character; name of a column in \code{colData} that corresponds
 to the image}
 
-\item{mark_select}{character; name of mark that is to be selected for the
+\item{markSelect}{character; name of mark that is to be selected for the
 reconstruction}
 
 \item{dim}{numeric; x dimension of the final reconstruction.
@@ -48,9 +48,9 @@ Reconstruct structure from spatial experiment object per image id
 }
 \examples{
 data(sostaSPE)
-all_islets <- reconstructShapeDensitySPE(sostaSPE,
-    marks = "cell_type", image_col = "image_name",
-    mark_select = "A", bndw = 3.5, thres = 0.005
+allStructs <- reconstructShapeDensitySPE(sostaSPE,
+    marks = "cellType", imageCol = "imageName",
+    markSelect = "A", bndw = 3.5, thres = 0.005
 )
-all_islets
+allStructs
 }

@@ -20,7 +20,7 @@ A binary matrix representing the simulated tissue structure.
 This function generates a simulated tissue-like structure using a Gaussian blur technique.
 }
 \examples{
-tissue_image <- simulateTissueBlobs(128, 100, 7)
-image(tissue_image)
+tissueImage <- simulateTissueBlobs(128, 100, 7)
+image(tissueImage)
 
 }

@@ -31,6 +31,7 @@
 #' @importFrom sf st_length
 #' @importFrom sf st_make_valid
 #' @importFrom sf st_minimum_rotated_rectangle
+#' @importFrom sf st_set_geometry
 #' @importFrom sf st_sfc
 #' @importFrom sf st_union
 #' @importFrom smoothr smooth

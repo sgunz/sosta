@@ -7,9 +7,9 @@
 shapeIntensityImage(
   spe,
   marks,
-  image_col,
-  image_id,
-  mark_select,
+  imageCol,
+  imageId,
+  markSelect,
   bndw = NULL,
   dim = 500
 )
@@ -20,12 +20,12 @@ shapeIntensityImage(
 \item{marks}{character; name of column in \code{colData} that will correspond to
 the \code{ppp} marks}
 
-\item{image_col}{character; name of a column in \code{colData} that corresponds to
+\item{imageCol}{character; name of a column in \code{colData} that corresponds to
 the image}
 
-\item{image_id}{character; image id, must be present in image_col}
+\item{imageId}{character; image id, must be present in imageCol}
 
-\item{mark_select}{character; name of mark that is to be selected for the
+\item{markSelect}{character; name of mark that is to be selected for the
 reconstruction}
 
 \item{bndw}{numeric; bandwith of the sigma parameter in the density estimation,
@@ -46,7 +46,7 @@ largest intensity value divided by 250 are not displayed in the histogram.
 \examples{
 data(sostaSPE)
 shapeIntensityImage(sostaSPE,
-    marks = "cell_type", image_col = "image_name",
-    image_id = "image1", mark_select = "A"
+    marks = "cellType", imageCol = "imageName",
+    imageId = "image1", markSelect = "A"
 )
 }

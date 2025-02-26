@@ -6,20 +6,22 @@
 \usage{
 assingCellsToStructures(
   spe,
-  all_structs,
-  image_col,
-  unique_id = "structID",
-  n_cores = 1
+  allStructs,
+  imageCol,
+  uniqueId = "structID",
+  nCores = 1
 )
 }
 \arguments{
 \item{spe}{SpatialExperiment; An object of class \code{SpatialExperiment} containing spatial point data.}
 
-\item{all_structs}{sf; A simple feature collection (sf object) representing spatial structures. Must contain a column which contains a unique identifier for each structure. Default = \code{structID}.}
+\item{allStructs}{sf; A simple feature collection (sf object) representing spatial structures. Must contain a column which contains a unique identifier for each structure. Default = \code{structID}.}
 
-\item{image_col}{character; The column name in \code{spe} and \code{all_structs} that identifies the corresponding image.}
+\item{imageCol}{character; The column name in \code{spe} and \code{allStructs} that identifies the corresponding image.}
 
-\item{n_cores}{integer; The number of cores to use for parallel processing (default is 1).}
+\item{uniqueId}{character; The column name in the simple feature collection for which to compute the assignment.}
+
+\item{nCores}{integer; The number of cores to use for parallel processing (default is 1).}
 }
 \value{
 A vector with structure assignments for each spatial point in \code{spe}. Points that do not overlap with any structure are assigned \code{NA}.
@@ -28,14 +30,16 @@ A vector with structure assignments for each spatial point in \code{spe}. Points
 This function assigns each spatial point in a \code{SpatialExperiment} object (\code{spe}) to the first intersecting structure from a given set of spatial structures.
 }
 \examples{
+library(ggspavis)
+library(SpatialExperiment)
 data(sostaSPE)
-all_structures <- reconstructShapeDensitySPE(sostaSPE,
-    marks = "cell_type", image_col = "image_name",
-    mark_select = "A", bndw = 3.5, thres = 0.045)
-colData(sostaSPE)$struct_assign <- assingCellsToStructures(sostaSPE,
-    all_structures, "image_name")
-ggspavis::plotSpots(sostaSPE[, sostaSPE[["image_name"]] == "image1"],
-    annotate = "struct_assign", sample_id = "sample_id",
-    in_tissue = NULL, y_reverse = FALSE) + facet_wrap(~image_name)
+allStructs <- reconstructShapeDensitySPE(sostaSPE,
+    marks = "cellType", imageCol = "imageName",
+    markSelect = "A", bndw = 3.5, thres = 0.045)
+colData(sostaSPE)$structAssign <- assingCellsToStructures(sostaSPE,
+    allStructs, "imageName")
+plotSpots(sostaSPE[, sostaSPE[["imageName"]] == "image1"],
+    annotate = "structAssign", sample_id = "sample_id",
+    in_tissue = NULL, y_reverse = FALSE) + facet_wrap(~imageName)
 
 }

@@ -17,6 +17,6 @@ Function to convert spatialCoords to an sf object
 }
 \examples{
 data(sostaSPE)
-spe_sel <- sostaSPE[, sostaSPE[["image_name"]] == "image1"]
-spatialCoords2SF(spe_sel)
+speSel <- sostaSPE[, sostaSPE[["imageName"]] == "image1"]
+spatialCoords2SF(speSel)
 }

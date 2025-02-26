@@ -7,9 +7,9 @@
 reconstructShapeDensityImage(
   spe,
   marks,
-  image_col,
-  image_id,
-  mark_select,
+  imageCol,
+  imageId,
+  markSelect,
   dim = 500,
   bndw = NULL,
   thres = NULL
@@ -21,12 +21,12 @@ reconstructShapeDensityImage(
 \item{marks}{character; name of column in \code{colData} that will correspond
 to the \code{ppp} marks}
 
-\item{image_col}{character; name of a column in \code{colData} that corresponds
+\item{imageCol}{character; name of a column in \code{colData} that corresponds
 to the image}
 
-\item{image_id}{character; image id, must be present in image_col}
+\item{imageId}{character; image id, must be present in imageCol}
 
-\item{mark_select}{character; name of mark that is to be selected for the
+\item{markSelect}{character; name of mark that is to be selected for the
 reconstruction}
 
 \item{dim}{numeric; x dimension of the final reconstruction.
@@ -47,9 +47,9 @@ Reconstruct structure from spe object with given image id
 }
 \examples{
 data(sostaSPE)
-islet_poly <- reconstructShapeDensityImage(sostaSPE,
-    marks = "cell_type", image_col = "image_name", image_id = "image1",
-    mark_select = "A", dim = 500
+struct <- reconstructShapeDensityImage(sostaSPE,
+    marks = "cellType", imageCol = "imageName", imageId = "image1",
+    markSelect = "A", dim = 500
 )
-plot(islet_poly)
+plot(struct)
 }

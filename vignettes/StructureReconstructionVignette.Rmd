@@ -50,6 +50,8 @@ library("ggplot2")
 library("ggspavis")
 library("imcdatasets")
 library("sf")
+
+theme_set(theme_bw())
 ```
 
 # Introduction
@@ -64,11 +66,11 @@ data("sostaSPE")
 ```{r}
 plotSpots(
     sostaSPE,
-    annotate = "cell_type",
+    annotate = "cellType",
     sample_id = "sample_id",
     in_tissue = NULL,
     y_reverse = FALSE
-) + facet_wrap(~image_name)
+) + facet_wrap(~imageName)
 ```
 
 The goal is to reconstruct / segment the structures given by cell type A.
@@ -82,10 +84,10 @@ In this example we will reconstruct the islets based on the point pattern densit
 ```{r}
 shapeIntensityImage(
     sostaSPE,
-    marks = "cell_type",
-    image_col = "image_name",
-    image_id = "image1",
-    mark_select = "A"
+    marks = "cellType",
+    imageCol = "imageName",
+    imageId = "image1",
+    markSelect = "A"
 )
 ```
 
@@ -96,17 +98,17 @@ This was done for one image. The function `estimateReconstructionParametersSPE` 
 ```{r}
 n <- estimateReconstructionParametersSPE(
     sostaSPE,
-    marks = "cell_type",
-    image_col = "image_name",
-    mark_select = "A",
-    plot_hist = TRUE
+    marks = "cellType",
+    imageCol = "imageName",
+    markSelect = "A",
+    plotHist = TRUE
 )
 ```
 We will use the mean of the two estimated vectors as our parameters.
 
 ```{r}
-(thres_spe <- mean(n$thres))
-(bndw_spe <- mean(n$bndw))
+(thresSPE <- mean(n$thres))
+(bndwSPE <- mean(n$bndw))
 ```
 
 We cam now use the function `reconstructShapeDensity` to segment the islet of one image. The result is a `r BiocStyle::CRANpkg('sf')` polygon [@pebesmaSimpleFeaturesStandardized2018]. 
@@ -114,13 +116,13 @@ We cam now use the function `reconstructShapeDensity` to segment the islet of on
 ```{r}
 struct <- reconstructShapeDensityImage(
     sostaSPE,
-    marks = "cell_type",
-    image_col = "image_name",
-    image_id = "image1",
-    mark_select = "A",
-    bndw = bndw_spe,
+    marks = "cellType",
+    imageCol = "imageName",
+    imageId = "image1",
+    markSelect = "A",
+    bndw = bndwSPE,
     dim = 500,
-    thres = thres_spe
+    thres = thresSPE
 )
 ```
 
@@ -128,8 +130,8 @@ We can plot both the points and the segmented polygon.
 
 ```{r}
 plotSpots(
-    sostaSPE[, sostaSPE[["image_name"]] %in% c("image1")],
-    annotate = "cell_type",
+    sostaSPE[, sostaSPE[["imageName"]] %in% c("image1")],
+    annotate = "cellType",
     sample_id = "sample_id",
     in_tissue = NULL,
     y_reverse = FALSE,
@@ -148,10 +150,10 @@ If no arguments are given, the function `reconstructShapeDensityImage` estimates
 ```{r}
 struct2 <- reconstructShapeDensityImage(
     sostaSPE,
-    marks = "cell_type",
-    image_col = "image_name",
-    image_id = "image1",
-    mark_select = "A",
+    marks = "cellType",
+    imageCol = "imageName",
+    imageId = "image1",
+    markSelect = "A",
     dim = 500
 )
 ```
@@ -159,8 +161,8 @@ struct2 <- reconstructShapeDensityImage(
 
 ```{r}
 plotSpots(
-    sostaSPE[, sostaSPE[["image_name"]] %in% c("image1")],
-    annotate = "cell_type",
+    sostaSPE[, sostaSPE[["imageName"]] %in% c("image1")],
+    annotate = "cellType",
     sample_id = "sample_id",
     in_tissue = NULL,
     y_reverse = FALSE,
@@ -179,13 +181,13 @@ plotSpots(
 The function `reconstructShapeDensitySPE` reconstructs the islets for all images in the `spe` object. We use the estimated parameters from above.
 
 ```{r, eval=TRUE}
-all_structs <- reconstructShapeDensitySPE(
+allStructs <- reconstructShapeDensitySPE(
     sostaSPE,
-    marks = "cell_type",
-    image_col = "image_name",
-    mark_select = "A",
-    bndw = bndw_spe,
-    thres = thres_spe,
+    marks = "cellType",
+    imageCol = "imageName",
+    markSelect = "A",
+    bndw = bndwSPE,
+    thres = thresSPE,
     ncores = 1
 )
 ```
@@ -195,18 +197,18 @@ all_structs <- reconstructShapeDensitySPE(
 Here we will assign cells in the `SingleCellExperiment` object to the specific structure.
 
 ```{r}
-assign <- assingCellsToStructures(sostaSPE, all_structs, image_col = "image_name", n_cores = 1)
-colData(sostaSPE)$struct_assign <- assign
+assign <- assingCellsToStructures(sostaSPE, allStructs, imageCol = "imageName", nCores = 1)
+colData(sostaSPE)$structAssign <- assign
 ```
 
 
 ```{r}
 plotSpots(
     sostaSPE,
-    annotate = "struct_assign",
+    annotate = "structAssign",
     in_tissue = NULL,
     y_reverse = FALSE
-) + facet_wrap(~image_name)
+) + facet_wrap(~imageName)
 ```
 
 # Cell level metrics
@@ -214,25 +216,25 @@ plotSpots(
 ## Distance to structure border
 
 ```{r}
-colData(sostaSPE)$min_dist <- computeMinBoundaryDistances(sostaSPE, "image_name",
-                                                          "struct_assign", all_structs)
+colData(sostaSPE)$minDist <- minBoundaryDistances(sostaSPE, "imageName",
+                                                          "struct_assign", allStructs)
 plotSpots(
     sostaSPE,
-    annotate = "min_dist",
+    annotate = "minDist",
     in_tissue = NULL,
     y_reverse = FALSE
 ) +
     scale_colour_gradient2() +
-    geom_sf(data = all_structs,
+    geom_sf(data = allStructs,
             fill = NA,
             inherit.aes = FALSE) +
-    facet_wrap( ~ image_name)
+    facet_wrap( ~ imageName)
 ```
 
 This info can be used to define border cells by thresholding to a range of positive and negative values.
 
 ```{r}
-idx <- colData(sostaSPE)$min_dist > -3 & colData(sostaSPE)$min_dist < 3
+idx <- colData(sostaSPE)$minDist > -3 & colData(sostaSPE)$minDist < 3
 
 colData(sostaSPE)$boder <- FALSE
 colData(sostaSPE[, idx])$boder <- TRUE
@@ -242,31 +244,30 @@ plotSpots(
     annotate = "boder",
     in_tissue = NULL,
     y_reverse = FALSE
-) + geom_sf(data = all_structs,
+) + geom_sf(data = allStructs,
             fill = NA,
             inherit.aes = FALSE) +
-    facet_wrap( ~ image_name)
+    facet_wrap( ~ imageName)
 
 ```
 
 Alternatively borders can be defined using `st_difference` and `st_buffer` on the structure object.
 
 ```{r}
-
-borders <- lapply(st_geometry(all_structs),
+borders <- lapply(st_geometry(allStructs),
                   \(x) st_difference(st_buffer(x, 3), st_buffer(x, -3))) |>
     st_as_sfc() |> st_as_sf()
 
-borders$image_name <- all_structs$image_name
-borders$borderID <- paste0("border_", all_structs$structID)
+borders$imageName <- allStructs$imageName
+borders$borderID <- paste0("border_", allStructs$structID)
     
 
 
 colData(sostaSPE)$borderSf <- assingCellsToStructures(sostaSPE,
                                                       borders, 
-                                                      image_col = "image_name",
-                                                      unique_id = "borderID",
-                                                      n_cores = 1)
+                                                      imageCol = "imageName",
+                                                      uniqueId = "borderID",
+                                                      nCores = 1)
 
 plotSpots(
     sostaSPE,
@@ -276,7 +277,7 @@ plotSpots(
 ) + geom_sf(data = borders,
             fill = NA,
             inherit.aes = FALSE) +
-    facet_wrap( ~ image_name)
+    facet_wrap( ~ imageName)
 ```
 
 # Structure level metrics
@@ -284,9 +285,68 @@ plotSpots(
 ## Proportion of cell types within structures
 
 ```{r}
-colData(sostaSPE)$struct_assign <- assingCellsToStructures(sostaSPE,
-     all_structs, "image_name")
-cellTypeProportions(sostaSPE, "struct_assign", "cell_type")
+cellTypeProportions(sostaSPE, "structAssign", "cellType")
+```
+
+## Shape Metrics
+
+```{r}
+shapeMetrics <- totalShapeMetrics(allStructs)
+shapeMetrics
+
+cbind(allStructs, t(shapeMetrics)) |> 
+    ggplot() +
+    geom_sf(aes(fill = Area)) +
+    facet_wrap( ~ imageName)
+```
+
+# Alternative coordinate systems
+
+
+```{r}
+idx <- colData(sostaSPE)[["structAssign"]] %in% c("image2_2")
+
+speSub <- sostaSPE[, idx]
+
+speSub |> 
+    plotSpots(
+    annotate = "minDist",
+    in_tissue = NULL,
+    y_reverse = FALSE
+)
+
+```
+
+```{r}
+dis <- vegdist(spatialCoords(sostaSPE[, idx]), method = "euclidean")
+ord <- isomap(dis, k=6)
 ```
 
 
+```{r}
+colData(speSub)$ord1 <- scores(ord)[,1]
+colData(speSub)$ord2 <- scores(ord)[,2]
+colData(speSub)$ord3 <- scores(ord)[,3]
+
+
+speSub |> 
+    plotSpots(
+    annotate = "ord1",
+    in_tissue = NULL,
+    y_reverse = FALSE
+) + scale_colour_gradient2() 
+
+speSub |> 
+    plotSpots(
+    annotate = "ord2",
+    in_tissue = NULL,
+    y_reverse = FALSE
+) + scale_colour_gradient2() 
+
+speSub |> 
+    plotSpots(
+    annotate = "ord3",
+    in_tissue = NULL,
+    y_reverse = FALSE
+) + scale_colour_gradient2() 
+```

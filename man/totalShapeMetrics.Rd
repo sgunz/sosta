@@ -22,9 +22,9 @@ The function calculates all metrics that are implemented in the function
 }
 \examples{
 data(sostaSPE)
-islet_poly <- reconstructShapeDensityImage(sostaSPE,
-    marks = "cell_type", image_col = "image_name",
-    image_id = "image1", mark_select = "A", dim = 500
+struct <- reconstructShapeDensityImage(sostaSPE,
+    marks = "cellType", imageCol = "imageName",
+    imageId = "image1", markSelect = "A", dim = 500
 )
-totalShapeMetrics(islet_poly)
+totalShapeMetrics(struct)
 }

@@ -7,13 +7,13 @@
 estimateReconstructionParametersSPE(
   spe,
   marks,
-  image_col,
-  mark_select = NULL,
+  imageCol,
+  markSelect = NULL,
   nimages = NULL,
   fun = "bw.diggle",
   dim = 500,
   ncores = 1,
-  plot_hist = TRUE
+  plotHist = TRUE
 )
 }
 \arguments{
@@ -22,10 +22,10 @@ estimateReconstructionParametersSPE(
 \item{marks}{character; name of column in \code{colData} that will correspond to
 the \code{ppp} marks}
 
-\item{image_col}{character; name of a column in \code{colData} that corresponds
+\item{imageCol}{character; name of a column in \code{colData} that corresponds
 to the image}
 
-\item{mark_select}{character; name of mark that is to be selected for the
+\item{markSelect}{character; name of mark that is to be selected for the
 reconstruction}
 
 \item{nimages}{integer; number of images for the estimation. Will be randomly
@@ -41,7 +41,7 @@ Default = 500}
 \item{ncores}{numeric; number of cores for parallel processing using \code{mclapply}.
 Default = 1}
 
-\item{plot_hist}{logical; if histogram of estimated densities and thresholds
+\item{plotHist}{logical; if histogram of estimated densities and thresholds
 should be plotted. Default = TRUE}
 }
 \value{
@@ -53,7 +53,7 @@ Estimate reconstruction parameters from a set of images
 \examples{
 data(sostaSPE)
 estimateReconstructionParametersSPE(sostaSPE,
-    marks = "cell_type", image_col = "image_name",
-    mark_select = "A", plot_hist = TRUE
+    marks = "cellType", imageCol = "imageName",
+    markSelect = "A", plotHist = TRUE
 )
 }

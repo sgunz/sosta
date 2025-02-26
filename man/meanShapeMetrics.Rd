@@ -17,10 +17,10 @@ Calculate mean shape metrics of a set of polygons
 }
 \examples{
 data(sostaSPE)
-islet_poly <- reconstructShapeDensityImage(sostaSPE,
-    marks = "cell_type", image_col = "image_name",
-    image_id = "image1", mark_select = "A", dim = 500
+struct <- reconstructShapeDensityImage(sostaSPE,
+    marks = "cellType", imageCol = "imageName",
+    imageId = "image1", markSelect = "A", dim = 500
 )
-shape_metrics <- totalShapeMetrics(islet_poly)
-meanShapeMetrics(shape_metrics)
+shapeMetrics <- totalShapeMetrics(struct)
+meanShapeMetrics(shapeMetrics)
 }

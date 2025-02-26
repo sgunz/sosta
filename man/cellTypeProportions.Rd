@@ -4,14 +4,14 @@
 \alias{cellTypeProportions}
 \title{Calculate the proportion of each cell type within spatial structures}
 \usage{
-cellTypeProportions(spe, struct_column, cell_type_column)
+cellTypeProportions(spe, structColumn, cellTypeColumn)
 }
 \arguments{
 \item{spe}{SpatialExperiment object}
 
-\item{struct_column}{character; name of the \code{colData} column specifying the structure assignments}
+\item{structColumn}{character; name of the \code{colData} column specifying the structure assignments}
 
-\item{cell_type_column}{character; name of the \code{colData} column specifying cell types}
+\item{cellTypeColumn}{character; name of the \code{colData} column specifying cell types}
 }
 \value{
 A data frame where rows correspond to unique structures and columns correspond to cell types,
@@ -21,11 +21,12 @@ containing the proportion of each cell type within each structure.
 Calculate the proportion of each cell type within spatial structures
 }
 \examples{
+library(SpatialExperiment)
 data(sostaSPE)
-all_structures <- reconstructShapeDensitySPE(sostaSPE,
-    marks = "cell_type", image_col = "image_name",
-    mark_select = "A", bndw = 3.5, thres = 0.045)
-colData(sostaSPE)$struct_assign <- assingCellsToStructures(sostaSPE,
-    all_structures, "image_name")
-cellTypeProportions(sostaSPE, "struct_assign", "cell_type")
+allStructs <- reconstructShapeDensitySPE(sostaSPE,
+    marks = "cellType", imageCol = "imageName",
+    markSelect = "A", bndw = 3.5, thres = 0.045)
+colData(sostaSPE)$structAssign <- assingCellsToStructures(sostaSPE,
+    allStructs, "imageName")
+cellTypeProportions(sostaSPE, "structAssign", "cellType")
 }

@@ -66,7 +66,7 @@ test_that("findIntensityThreshold calculates threshold correctly", {
         x = runif(100, 0, 1), y = runif(100, 0, 1),
         window = spatstat.geom::owin(c(0, 2), c(0, 2))
     )
-    threshold <- findIntensityThreshold(ppp, mark_select = NULL, dim = 100)
+    threshold <- findIntensityThreshold(ppp, markSelect = NULL, dim = 100)
     expect_true(is.numeric(threshold))
 })
 
@@ -79,22 +79,22 @@ test_that(".intensityImage generates density image correctly", {
 
     # Test with and without a specified bandwidth
     dim <- 100
-    result_with_bandwidth <- .intensityImage(ppp, bndw = 0.1, dim = dim)
-    result_without_bandwidth <- .intensityImage(ppp, dim = dim)
+    resultWithBandwidth <- .intensityImage(ppp, bndw = 0.1, dim = dim)
+    resultWithoutBandwidth <- .intensityImage(ppp, dim = dim)
 
     # Ensure result is a list with expected elements
-    expect_type(result_with_bandwidth, "list")
-    expect_named(result_with_bandwidth, c("den_im", "bndw", "dimyx"))
+    expect_type(resultWithBandwidth, "list")
+    expect_named(resultWithBandwidth, c("denIm", "bndw", "dimyx"))
 
-    expect_type(result_without_bandwidth, "list")
-    expect_named(result_without_bandwidth, c("den_im", "bndw", "dimyx"))
+    expect_type(resultWithoutBandwidth, "list")
+    expect_named(resultWithoutBandwidth, c("denIm", "bndw", "dimyx"))
 
-    # Check that 'den_im' is of correct class and contains density values
-    expect_s3_class(result_with_bandwidth$den_im, "im")
-    expect_true(all(result_with_bandwidth$den_im$v >= 0))
+    # Check that 'denIm' is of correct class and contains density values
+    expect_s3_class(resultWithBandwidth$denIm, "im")
+    expect_true(all(resultWithBandwidth$denIm$v >= 0))
 
     # Validate that dimensions are calculated based on dim input
-    expect_equal(result_with_bandwidth$dimyx[1], dim)
+    expect_equal(resultWithBandwidth$dimyx[1], dim)
 })
 
 test_that(".intensityThreshold calculates a threshold based on density image", {
@@ -104,15 +104,15 @@ test_that(".intensityThreshold calculates a threshold based on density image", {
         window = spatstat.geom::owin(c(0, 1), c(0, 1))
     )
 
-    density_image <- density.ppp(ppp)
+    densityImage <- density.ppp(ppp)
 
     # Calculate threshold
-    threshold <- .intensityThreshold(density_image, steps = 100)
+    threshold <- .intensityThreshold(densityImage, steps = 100)
 
     # Check threshold is numeric and within density range
     expect_true(is.numeric(threshold))
-    expect_true(threshold >= min(density_image$v))
-    expect_true(threshold <= max(density_image$v))
+    expect_true(threshold >= min(densityImage$v))
+    expect_true(threshold <= max(densityImage$v))
 })
 
 

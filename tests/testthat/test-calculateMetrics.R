@@ -1,15 +1,16 @@
 # load data for tests
-spe <- imcdatasets::Damond_2019_Pancreas("spe", full_dataset = FALSE)
-islet_poly <- reconstructShapeDensityImage(spe,
-    marks = "cell_category",
-    image_col = "image_name", image_id = "E04", mark_select = "islet", dim = 500
+data(sostaSPE)
+allStructs <- reconstructShapeDensitySPE(sostaSPE,
+     marks = "cellType", imageCol = "imageName",
+     markSelect = "A", bndw = 3.5, thres = 0.005
 )
-metrics_matrix <- totalShapeMetrics(islet_poly)
+allStructs
+metricsMatrix <- totalShapeMetrics(allStructs)
 
 
 test_that("shapeMetrics computes correct shape metrics", {
     # Create a simple polygon
-    matrix_R <- matrix(c(
+    matrixR <- matrix(c(
         0, 0, 0, 0, 0, 0, 0, 0, 0,
         0, 1, 1, 1, 1, 1, 0, 0, 0,
         0, 1, 1, 0, 0, 1, 1, 0, 0,
@@ -21,10 +22,10 @@ test_that("shapeMetrics computes correct shape metrics", {
         0, 0, 0, 0, 0, 0, 0, 0, 0
     ), nrow = 9, byrow = TRUE)
 
-    poly_R <- binaryImageToSF(matrix_R, xmin = 0, xmax = 1, ymin = 0, ymax = 1)
+    polyR <- binaryImageToSF(matrixR, xmin = 0, xmax = 1, ymin = 0, ymax = 1)
 
     # Test function
-    metrics <- shapeMetrics(poly_R)
+    metrics <- shapeMetrics(polyR)
 
     expect_type(metrics, "list")
     expect_named(metrics, c(
@@ -48,33 +49,33 @@ test_that("shapeMetrics computes correct shape metrics", {
 
 test_that("totalShapeMetrics computes shape metrics matrix correctly", {
     # Test function
-    expect_type(metrics_matrix, "double")
-    expect_true(ncol(metrics_matrix) > 0)
-    expect_true(nrow(metrics_matrix) >= 1)
+    expect_type(metricsMatrix, "double")
+    expect_true(ncol(metricsMatrix) > 0)
+    expect_true(nrow(metricsMatrix) >= 1)
 })
 
 test_that("meanShapeMetrics computes mean shape metrics correctly", {
     # Test function
-    mean_metrics <- meanShapeMetrics(metrics_matrix)
-    expect_true(ncol(mean_metrics) == 1)
+    meanMetrics <- meanShapeMetrics(metricsMatrix)
+    expect_true(ncol(meanMetrics) == 1)
 })
 
 ### Invalid inputs
 
 test_that("shapeMetrics throws an error for invalid input", {
-    invalid_input <- list("not a polygon")
+    invalidInput <- list("not a polygon")
 
-    expect_error(shapeMetrics(invalid_input), "'sfPoly' must be a valid sfc object")
+    expect_error(shapeMetrics(invalidInput), "'sfPoly' must be a valid sfc object")
 })
 
 test_that("totalShapeMetrics throws an error for invalid input", {
-    invalid_input <- list("not a multipolygon")
+    invalidInput <- list("not a multipolygon")
 
-    expect_error(totalShapeMetrics(invalid_input), "'sfInput' must be a valid sf object")
+    expect_error(totalShapeMetrics(invalidInput), "'sfInput' must be a valid sf object")
 })
 
 test_that("meanShapeMetrics throws an error for invalid input", {
-    invalid_input <- list("not a matrix")
+    invalidInput <- list("not a matrix")
 
-    expect_error(meanShapeMetrics(invalid_input), "'totalShapeMetricMatrix' must be a matrix")
+    expect_error(meanShapeMetrics(invalidInput), "'totalShapeMetricMatrix' must be a matrix")
 })

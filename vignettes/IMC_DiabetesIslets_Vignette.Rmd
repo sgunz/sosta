@@ -58,7 +58,7 @@ In this vignette we will use data from the package `r BiocStyle::Biocpkg('imcdat
 ```{r loading, echo=FALSE, message=FALSE}
 # load the data
 spe <- imcdatasets::Damond_2019_Pancreas("spe", full_dataset = FALSE)
-``` 
+```
 
 First we plot the data for illustration. As we have multiple images per patient we will subset one patient and a few slides.
 
@@ -85,9 +85,9 @@ In this example we will reconstruct the islets based on the point pattern densit
 shapeIntensityImage(
     spe,
     marks = "cell_category",
-    image_col = "image_name",
-    image_id = "E04",
-    mark_select = "islet"
+    imageCol = "image_name",
+    imageId = "E04",
+    markSelect = "islet"
 )
 ```
 
@@ -99,17 +99,18 @@ This was done for one image. The function `estimateReconstructionParametersSPE` 
 n <- estimateReconstructionParametersSPE(
     spe,
     marks = "cell_category",
-    image_col = "image_name",
-    mark_select = "islet",
+    imageCol = "image_name",
+    markSelect = "islet",
     nimages = 20,
-    plot_hist = TRUE
+    plotHist = TRUE
 )
 ```
+
 We will use the mean of the two estimated vectors as our parameters.
 
 ```{r}
-(thres_spe <- mean(n$thres))
-(bndw_spe <- mean(n$bndw))
+(thresSPE <- mean(n$thres))
+(bndwSPE <- mean(n$bndw))
 ```
 
 ## Reconstruction of pancreatic islets for all images
@@ -117,13 +118,13 @@ We will use the mean of the two estimated vectors as our parameters.
 The function `reconstructShapeDensitySPE` reconstructs the islets for all images in the `spe` object. We use the estimated parameters from above.
 
 ```{r, eval=TRUE}
-all_islets <- reconstructShapeDensitySPE(
+allIslets <- reconstructShapeDensitySPE(
     spe,
     marks = "cell_category",
-    image_col = "image_name",
-    mark_select = "islet",
-    bndw = bndw_spe,
-    thres = thres_spe,
+    imageCol = "image_name",
+    markSelect = "islet",
+    bndw = bndwSPE,
+    thres = thresSPE,
     ncores = 1
 )
 ```
@@ -133,13 +134,13 @@ all_islets <- reconstructShapeDensitySPE(
 As we have islets for all images, we now use the function `totalShapeMetrics` to calculate a set of metrics related to the shape of the islets.
 
 ```{r}
-islet_shape_metrics <- totalShapeMetrics(all_islets)
+isletMetrics <- totalShapeMetrics(allIslets)
 ```
 
 The result is a simple feature collection with polygons. We will add some patient level information to the simple feature collection for plotting afterwards.
 
 ```{r}
-patient_data <- colData(spe) |>
+patientData <- colData(spe) |>
     as_tibble() |>
     group_by(image_name) |>
     select(all_of(
@@ -161,8 +162,8 @@ patient_data <- colData(spe) |>
 
 
 ```{r}
-all_islets <- dplyr::left_join(all_islets, patient_data, by = "image_name")
-all_islets <- cbind(all_islets, t(islet_shape_metrics))
+allIslets <- dplyr::left_join(allIslets, patientData, by = "image_name")
+allIslets <- cbind(allIslets, t(isletMetrics))
 ```
 
 ## Plot structure metrics
@@ -173,10 +174,10 @@ We use PCA to get an overview of the different features. Each dot represent one 
 library(ggfortify)
 
 autoplot(
-    prcomp(t(islet_shape_metrics), scale. = TRUE),
+    prcomp(t(isletMetrics), scale. = TRUE),
     x = 1,
     y = 2,
-    data = all_islets,
+    data = allIslets,
     color = "patient_stage",
     size = 2,
     # shape = 'type',
@@ -195,9 +196,9 @@ autoplot(
 We can use boxplots to investigate differences of shape metrics between patient stages.
 
 ```{r, fig.width=8, fig.height=6}
-all_islets |>
+allIslets |>
     sf::st_drop_geometry() |>
-    select(patient_stage, rownames(islet_shape_metrics)) |>
+    select(patient_stage, rownames(isletMetrics)) |>
     pivot_longer(-patient_stage) |>
     ggplot(aes(x = patient_stage, y = value, fill = patient_stage)) +
     geom_boxplot() +
@@ -207,6 +208,26 @@ all_islets |>
     guides(fill = "none") +
     theme_bw()
 ```
+
+```{r}
+library(lmerTest)
+
+allIslets
+
+
+mod <- lmer(Area ~ patient_stage + (1|image_name), data = allIslets)
+
+
+aov(mod)
+
+summary(mod)
+
+anova(mod)
+print(mod)
+confint(mod)
+coef(mod)
+```
+
 
 ```{r sessionInfo}
 sessionInfo()
