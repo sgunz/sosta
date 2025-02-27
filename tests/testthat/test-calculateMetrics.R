@@ -1,8 +1,8 @@
 # load data for tests
 data(sostaSPE)
 allStructs <- reconstructShapeDensitySPE(sostaSPE,
-     marks = "cellType", imageCol = "imageName",
-     markSelect = "A", bndw = 3.5, thres = 0.005
+    marks = "cellType", imageCol = "imageName",
+    markSelect = "A", bndw = 3.5, thres = 0.005
 )
 allStructs
 metricsMatrix <- totalShapeMetrics(allStructs)

@@ -16,13 +16,14 @@
 #' @export
 #'
 #' @examples
-#' data(sostaSPE)
+#' data("sostaSPE")
 #' ppp <- SPE2ppp(sostaSPE, marks = "cellType", imageCol = "imageName", imageId = "image1")
 #' thres <- findIntensityThreshold(ppp, markSelect = "A", dim = 500)
 #' struct <- reconstructShapeDensity(ppp, markSelect = "A", thres = thres, dim = 500)
 #' plot(struct)
-reconstructShapeDensity <- function(ppp, markSelect = NULL,
-    bndw = NULL, thres = NULL, dim) {
+reconstructShapeDensity <- function(
+        ppp, markSelect = NULL,
+        bndw = NULL, thres = NULL, dim) {
     # estimate density
     res <- .intensityImage(ppp, markSelect, bndw, dim)
 
@@ -91,17 +92,18 @@ reconstructShapeDensity <- function(ppp, markSelect = NULL,
 #' @export
 #'
 #' @examples
-#' data(sostaSPE)
+#' data("sostaSPE")
 #' shapeIntensityImage(sostaSPE,
 #'     marks = "cellType", imageCol = "imageName",
 #'     imageId = "image1", markSelect = "A"
 #' )
-shapeIntensityImage <- function(spe, marks,
-    imageCol,
-    imageId,
-    markSelect,
-    bndw = NULL,
-    dim = 500) {
+shapeIntensityImage <- function(
+        spe, marks,
+        imageCol,
+        imageId,
+        markSelect,
+        bndw = NULL,
+        dim = 500) {
     # Convert the spe object to a point pattern object
     ppp <- SPE2ppp(spe, marks = marks, imageCol = imageCol, imageId = imageId)
 
@@ -168,15 +170,14 @@ shapeIntensityImage <- function(spe, marks,
 #' @export
 #'
 #' @examples
-#' data(sostaSPE)
+#' data("sostaSPE")
 #' struct <- reconstructShapeDensityImage(sostaSPE,
 #'     marks = "cellType", imageCol = "imageName", imageId = "image1",
 #'     markSelect = "A", dim = 500
 #' )
 #' plot(struct)
-reconstructShapeDensityImage <- function(
-        spe, marks,
-        imageCol, imageId, markSelect, dim = 500, bndw = NULL, thres = NULL) {
+reconstructShapeDensityImage <- function(spe, marks,
+    imageCol, imageId, markSelect, dim = 500, bndw = NULL, thres = NULL) {
     # Convert the spe object to a point pattern object
     ppp <- SPE2ppp(spe, marks, imageCol, imageId)
 
@@ -213,17 +214,16 @@ reconstructShapeDensityImage <- function(
 #' @export
 #'
 #' @examples
-#' data(sostaSPE)
+#' data("sostaSPE")
 #' allStructs <- reconstructShapeDensitySPE(sostaSPE,
 #'     marks = "cellType", imageCol = "imageName",
 #'     markSelect = "A", bndw = 3.5, thres = 0.005
 #' )
 #' allStructs
-reconstructShapeDensitySPE <- function(
-        spe, marks,
-        imageCol, markSelect,
-        dim = 500, bndw = NULL, thres,
-        ncores = 1) {
+reconstructShapeDensitySPE <- function(spe, marks,
+    imageCol, markSelect,
+    dim = 500, bndw = NULL, thres,
+    ncores = 1) {
     # For computational reasonos delete all assays in SPE
     SummarizedExperiment::assays(spe) <- list()
     # Get all unique image ids
@@ -276,20 +276,21 @@ reconstructShapeDensitySPE <- function(
 #' @export
 #'
 #' @examples
-#' data(sostaSPE)
+#' data("sostaSPE")
 #' estimateReconstructionParametersSPE(sostaSPE,
 #'     marks = "cellType", imageCol = "imageName",
 #'     markSelect = "A", plotHist = TRUE
 #' )
-estimateReconstructionParametersSPE <- function(spe,
-    marks,
-    imageCol,
-    markSelect = NULL,
-    nimages = NULL,
-    fun = "bw.diggle",
-    dim = 500,
-    ncores = 1,
-    plotHist = TRUE) {
+estimateReconstructionParametersSPE <- function(
+        spe,
+        marks,
+        imageCol,
+        markSelect = NULL,
+        nimages = NULL,
+        fun = "bw.diggle",
+        dim = 500,
+        ncores = 1,
+        plotHist = TRUE) {
     # Input checks
     if (!is.null(nimages)) {
         stopifnot("'nimages' must be numeric" = is.numeric(nimages))

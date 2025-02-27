@@ -51,7 +51,7 @@ tibble; tibble with estimated intensities and thresholds
 Estimate reconstruction parameters from a set of images
 }
 \examples{
-data(sostaSPE)
+data("sostaSPE")
 estimateReconstructionParametersSPE(sostaSPE,
     marks = "cellType", imageCol = "imageName",
     markSelect = "A", plotHist = TRUE

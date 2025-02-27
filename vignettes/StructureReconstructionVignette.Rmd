@@ -48,7 +48,6 @@ library("dplyr")
 library("tidyr")
 library("ggplot2")
 library("ggspavis")
-library("imcdatasets")
 library("sf")
 
 theme_set(theme_bw())
@@ -194,7 +193,7 @@ allStructs <- reconstructShapeDensitySPE(
 
 ## Instersection with cells
 
-Here we will assign cells in the `SingleCellExperiment` object to the specific structure.
+Here we will assign cells in the `SingleCellExperiment` object to the specific structure. 
 
 ```{r}
 assign <- assingCellsToStructures(sostaSPE, allStructs, imageCol = "imageName", nCores = 1)
@@ -215,9 +214,13 @@ plotSpots(
 
 ## Distance to structure border
 
+Using the function `minBoundaryDistances` we can compute the distance to the border structure. Negative values indicate that the points lie inside the structure.
+
 ```{r}
-colData(sostaSPE)$minDist <- minBoundaryDistances(sostaSPE, "imageName",
-                                                          "struct_assign", allStructs)
+colData(sostaSPE)$minDist <- minBoundaryDistances(
+    sostaSPE, "imageName",
+    "structAssign", allStructs
+)
 plotSpots(
     sostaSPE,
     annotate = "minDist",
@@ -225,10 +228,12 @@ plotSpots(
     y_reverse = FALSE
 ) +
     scale_colour_gradient2() +
-    geom_sf(data = allStructs,
-            fill = NA,
-            inherit.aes = FALSE) +
-    facet_wrap( ~ imageName)
+    geom_sf(
+        data = allStructs,
+        fill = NA,
+        inherit.aes = FALSE
+    ) +
+    facet_wrap(~imageName)
 ```
 
 This info can be used to define border cells by thresholding to a range of positive and negative values.
@@ -244,45 +249,51 @@ plotSpots(
     annotate = "boder",
     in_tissue = NULL,
     y_reverse = FALSE
-) + geom_sf(data = allStructs,
-            fill = NA,
-            inherit.aes = FALSE) +
-    facet_wrap( ~ imageName)
-
+) + geom_sf(
+    data = allStructs,
+    fill = NA,
+    inherit.aes = FALSE
+) +
+    facet_wrap(~imageName)
 ```
 
-Alternatively borders can be defined using `st_difference` and `st_buffer` on the structure object.
+Alternatively borders can be defined using `st_difference` and `st_buffer` on the structure object. In this case we will have an `sf` polygon that correspond to the border region.
 
 ```{r}
-borders <- lapply(st_geometry(allStructs),
-                  \(x) st_difference(st_buffer(x, 3), st_buffer(x, -3))) |>
+borders <- lapply(
+    st_geometry(allStructs),
+    \(x) st_difference(st_buffer(x, 3), st_buffer(x, -3))
+) |>
+    # both needed for proper conversion
     st_as_sfc() |> st_as_sf()
 
 borders$imageName <- allStructs$imageName
 borders$borderID <- paste0("border_", allStructs$structID)
-    
-
 
 colData(sostaSPE)$borderSf <- assingCellsToStructures(sostaSPE,
-                                                      borders, 
-                                                      imageCol = "imageName",
-                                                      uniqueId = "borderID",
-                                                      nCores = 1)
-
+    borders,
+    imageCol = "imageName",
+    uniqueId = "borderID",
+    nCores = 1
+)
 plotSpots(
     sostaSPE,
     annotate = "borderSf",
     in_tissue = NULL,
     y_reverse = FALSE
-) + geom_sf(data = borders,
-            fill = NA,
-            inherit.aes = FALSE) +
-    facet_wrap( ~ imageName)
+) + geom_sf(
+    data = borders,
+    fill = NA,
+    inherit.aes = FALSE
+) +
+    facet_wrap(~imageName)
 ```
 
 # Structure level metrics
 
 ## Proportion of cell types within structures
+
+Using the function `cellTypeProportions` we can estimate the proportion of cell types witin each individual structure.
 
 ```{r}
 cellTypeProportions(sostaSPE, "structAssign", "cellType")
@@ -290,63 +301,23 @@ cellTypeProportions(sostaSPE, "structAssign", "cellType")
 
 ## Shape Metrics
 
+
+The function `totalShapeMetrics` calculates a set of metrics related to the shape of the structures
+
 ```{r}
 shapeMetrics <- totalShapeMetrics(allStructs)
 shapeMetrics
 
-cbind(allStructs, t(shapeMetrics)) |> 
+cbind(allStructs, t(shapeMetrics)) |>
     ggplot() +
     geom_sf(aes(fill = Area)) +
-    facet_wrap( ~ imageName)
+    facet_wrap(~imageName)
 ```
 
-# Alternative coordinate systems
+# Session Info
 
-
-```{r}
-idx <- colData(sostaSPE)[["structAssign"]] %in% c("image2_2")
-
-speSub <- sostaSPE[, idx]
-
-speSub |> 
-    plotSpots(
-    annotate = "minDist",
-    in_tissue = NULL,
-    y_reverse = FALSE
-)
-
+```{r sessionInfo}
+sessionInfo()
 ```
 
-```{r}
-dis <- vegdist(spatialCoords(sostaSPE[, idx]), method = "euclidean")
-ord <- isomap(dis, k=6)
-```
-
-
-```{r}
-colData(speSub)$ord1 <- scores(ord)[,1]
-colData(speSub)$ord2 <- scores(ord)[,2]
-colData(speSub)$ord3 <- scores(ord)[,3]
-
-
-speSub |> 
-    plotSpots(
-    annotate = "ord1",
-    in_tissue = NULL,
-    y_reverse = FALSE
-) + scale_colour_gradient2() 
-
-speSub |> 
-    plotSpots(
-    annotate = "ord2",
-    in_tissue = NULL,
-    y_reverse = FALSE
-) + scale_colour_gradient2() 
-
-speSub |> 
-    plotSpots(
-    annotate = "ord3",
-    in_tissue = NULL,
-    y_reverse = FALSE
-) + scale_colour_gradient2() 
-```
+# References

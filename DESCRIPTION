@@ -42,7 +42,8 @@ Suggests:
     rmarkdown,
     ggspavis,
     BiocStyle,
-    imcdatasets,
+    ExperimentHub,
+    lme4,
     ggfortify,
     tidyr,
     testthat (>= 3.0.0)

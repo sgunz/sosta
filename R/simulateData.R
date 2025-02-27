@@ -80,8 +80,8 @@ createPointPatternTissue <- function(tissueImage, intA, intB, intCInA, intCInB) 
 
     # Combine all points into a single pattern
     pointPattern <- superimpose(pointsA, aNoise, pointsB, pointsC, pointsC2,
-                                W = extendedWindow)
+        W = extendedWindow
+    )
 
     return(pointPattern)
 }
-

@@ -20,16 +20,14 @@ df3 <- as.data.frame(pointPattern3)
 df3$imageName <- "image3"
 
 # Combine
-dfAll <- rbind(df1,df2,df3)
+dfAll <- rbind(df1, df2, df3)
 colnames(dfAll)[3] <- "cellType"
 
 
 sostaSPE <- SpatialExperiment::SpatialExperiment(
     colData = dfAll,
-    spatialCoordsNames = c("x", "y"))
+    spatialCoordsNames = c("x", "y")
+)
 
 
 usethis::use_data(sostaSPE, overwrite = TRUE)
-
-
-

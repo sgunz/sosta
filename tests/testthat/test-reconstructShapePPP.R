@@ -41,7 +41,7 @@ test_that("reconstructShapeDensity returns valid polygons", {
 test_that("reconstructShapeDensity handles invalid thresholds", {
     # Test low threshold
     expect_error(
-        reconstructShapeDensity(ppp, thres = 0,bndw = 1, dim = 500),
+        reconstructShapeDensity(ppp, thres = 0, bndw = 1, dim = 500),
         "Threshold too low"
     )
 
@@ -123,4 +123,3 @@ test_that("estimateReconstructionParameterssostaSPE handles edge cases", {
         "must be smaller or equal to the number of images"
     )
 })
-

@@ -27,7 +27,7 @@ thresholds the density to create a binary image, and then converts it
 to a valid \code{sf} object (polygons).
 }
 \examples{
-data(sostaSPE)
+data("sostaSPE")
 ppp <- SPE2ppp(sostaSPE, marks = "cellType", imageCol = "imageName", imageId = "image1")
 thres <- findIntensityThreshold(ppp, markSelect = "A", dim = 500)
 struct <- reconstructShapeDensity(ppp, markSelect = "A", thres = thres, dim = 500)

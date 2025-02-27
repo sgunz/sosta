@@ -30,16 +30,20 @@ A vector with structure assignments for each spatial point in \code{spe}. Points
 This function assigns each spatial point in a \code{SpatialExperiment} object (\code{spe}) to the first intersecting structure from a given set of spatial structures.
 }
 \examples{
-library(ggspavis)
-library(SpatialExperiment)
-data(sostaSPE)
+library("SpatialExperiment")
+data("sostaSPE")
 allStructs <- reconstructShapeDensitySPE(sostaSPE,
     marks = "cellType", imageCol = "imageName",
-    markSelect = "A", bndw = 3.5, thres = 0.045)
-colData(sostaSPE)$structAssign <- assingCellsToStructures(sostaSPE,
-    allStructs, "imageName")
-plotSpots(sostaSPE[, sostaSPE[["imageName"]] == "image1"],
-    annotate = "structAssign", sample_id = "sample_id",
-    in_tissue = NULL, y_reverse = FALSE) + facet_wrap(~imageName)
-
+    markSelect = "A", bndw = 3.5, thres = 0.045
+)
+colData(sostaSPE)$structAssign <- assingCellsToStructures(
+    sostaSPE,
+    allStructs, "imageName"
+)
+if (require("ggspavis")) {
+    plotSpots(sostaSPE[, sostaSPE[["imageName"]] == "image1"],
+        annotate = "structAssign", sample_id = "sample_id",
+        in_tissue = NULL, y_reverse = FALSE
+    ) + facet_wrap(~imageName)
+}
 }

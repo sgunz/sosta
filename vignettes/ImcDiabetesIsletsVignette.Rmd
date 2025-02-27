@@ -48,24 +48,36 @@ library("dplyr")
 library("tidyr")
 library("ggplot2")
 library("ggspavis")
-library("imcdatasets")
+library("ExperimentHub")
+library("SpatialExperiment")
 ```
 
 # Introduction
 
-In this vignette we will use data from the package `r BiocStyle::Biocpkg('imcdatasets')`. The dataset contains imaging mass cytometry (IMC) data of pancreatic islets of human donors at different stages of type 1 diabetes (T1D) and healthy controls [@damondMapHumanType2019]. Note that we will only use a subset of the images `full_dataset = FALSE`.
+In this vignette we will use a dataset containing imaging mass cytometry (IMC) data of pancreatic islets of human donors at different stages of type 1 diabetes (T1D) and healthy controls [@damondMapHumanType2019]. Note that we will only use a subset of the patients.
 
 ```{r loading, echo=FALSE, message=FALSE}
-# load the data
-spe <- imcdatasets::Damond_2019_Pancreas("spe", full_dataset = FALSE)
+# load experiment hub
+eh <- ExperimentHub()
+objectId <- names(eh[eh$title == "Damond_2019_Pancreas - sce - v1 - full"])
+
+# Load single cell experiment object
+spe <- eh[[objectId]]
+# Convert to spatial experiment object
+spe <- toSpatialExperiment(spe,
+    sample_id = "image_name",
+    spatialCoordsNames = c("cell_x", "cell_y")
+)
+# Subset the data for computational reasons
+spe <- spe[, spe[["patient_id"]] %in% c(6089, 6180, 6126, 6134, 6228, 6414)]
 ```
+
 
 First we plot the data for illustration. As we have multiple images per patient we will subset one patient and a few slides.
 
 ```{r}
 plotSpots(
-    spe[, spe[["patient_id"]] == 6126 &
-        spe[["image_name"]] %in% c("E02", "E03", "E04")],
+    spe[, spe[["image_name"]] %in% c("E04", "E03", "G01", "K01")],
     annotate = "cell_category",
     sample_id = "image_number",
     in_tissue = NULL,
@@ -86,7 +98,7 @@ shapeIntensityImage(
     spe,
     marks = "cell_category",
     imageCol = "image_name",
-    imageId = "E04",
+    imageId = "G01",
     markSelect = "islet"
 )
 ```
@@ -118,6 +130,8 @@ We will use the mean of the two estimated vectors as our parameters.
 The function `reconstructShapeDensitySPE` reconstructs the islets for all images in the `spe` object. We use the estimated parameters from above.
 
 ```{r, eval=TRUE}
+start <- Sys.time()
+
 allIslets <- reconstructShapeDensitySPE(
     spe,
     marks = "cell_category",
@@ -127,9 +141,16 @@ allIslets <- reconstructShapeDensitySPE(
     thres = thresSPE,
     ncores = 1
 )
+
+end <- Sys.time()
+
+# computation time with one core
+(difftime(end, start))
 ```
 
-# Calculation of structure metrics
+# Calculation of metrics
+
+## Structure metrics
 
 As we have islets for all images, we now use the function `totalShapeMetrics` to calculate a set of metrics related to the shape of the islets.
 
@@ -152,8 +173,6 @@ patientData <- colData(spe) |>
             "patient_disease_duration",
             "patient_age",
             "patient_gender",
-            "patient_ethnicity",
-            "patient_BMI",
             "sample_id"
         )
     )) |>
@@ -164,11 +183,21 @@ patientData <- colData(spe) |>
 ```{r}
 allIslets <- dplyr::left_join(allIslets, patientData, by = "image_name")
 allIslets <- cbind(allIslets, t(isletMetrics))
+
+# specify factor levels
+allIslets$patient_stage <- factor(allIslets$patient_stage,
+    levels = c(
+        "Non-diabetic", "Onset",
+        "Long-duration"
+    )
+)
 ```
+
+# Investigate metrics
 
 ## Plot structure metrics
 
-We use PCA to get an overview of the different features. Each dot represent one structure.
+We use PCA to get an overview of the different features. Each dot represents one structure.
 
 ```{r}
 library(ggfortify)
@@ -193,13 +222,14 @@ autoplot(
     coord_fixed()
 ```
 
-We can use boxplots to investigate differences of shape metrics between patient stages.
+We can use boxplots to investigate differences of shape metrics between patient stages. We will subset to a few metrics that are not colinear in the PCA plot.
 
 ```{r, fig.width=8, fig.height=6}
 allIslets |>
     sf::st_drop_geometry() |>
     select(patient_stage, rownames(isletMetrics)) |>
     pivot_longer(-patient_stage) |>
+    filter(name %in% c("Area", "Compactness", "Curl")) |>
     ggplot(aes(x = patient_stage, y = value, fill = patient_stage)) +
     geom_boxplot() +
     facet_wrap(~name, scales = "free") +
@@ -209,25 +239,24 @@ allIslets |>
     theme_bw()
 ```
 
+## Testing using mixed effects models
+
+As the individual structure level metrics are not indepentent we have to account for dependence between measurements. This dependence can lie on the level of the patient and the slide as we have repeated measurements for each level.
+
+To account for this we will use mixed linear models with random effects for the patient and the individual slides (image name). We will use the `r BiocStyle::CRANpkg('lme4')` package for fitting linear mixed effects models [@batesFittingLinearMixedEffects2015]. 
+
+To see differences between the Area of the islets between conditions we can test as follows.
+
 ```{r}
-library(lmerTest)
+library(lme4)
 
-allIslets
-
-
-mod <- lmer(Area ~ patient_stage + (1|image_name), data = allIslets)
-
-
-aov(mod)
-
+mod <- lmer(Area ~ patient_stage + (1 | patient_id) + (1 | image_name), data = allIslets)
 summary(mod)
-
-anova(mod)
-print(mod)
-confint(mod)
-coef(mod)
 ```
 
+As we can see from `summary(mod)` there is a signification difference in islet area of long-duration patients with respect to non-diabetic patients.
+
+# Session Info
 
 ```{r sessionInfo}
 sessionInfo()

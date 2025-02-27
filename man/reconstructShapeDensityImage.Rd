@@ -46,7 +46,7 @@ sf object of class \code{POLYGON}
 Reconstruct structure from spe object with given image id
 }
 \examples{
-data(sostaSPE)
+data("sostaSPE")
 struct <- reconstructShapeDensityImage(sostaSPE,
     marks = "cellType", imageCol = "imageName", imageId = "image1",
     markSelect = "A", dim = 500

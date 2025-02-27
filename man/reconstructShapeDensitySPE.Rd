@@ -47,7 +47,7 @@ simple feature collection
 Reconstruct structure from spatial experiment object per image id
 }
 \examples{
-data(sostaSPE)
+data("sostaSPE")
 allStructs <- reconstructShapeDensitySPE(sostaSPE,
     marks = "cellType", imageCol = "imageName",
     markSelect = "A", bndw = 3.5, thres = 0.005

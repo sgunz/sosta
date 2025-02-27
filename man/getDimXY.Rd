@@ -19,7 +19,9 @@ Function to get the dimension based on dim of y axis
 }
 \examples{
 data(sostaSPE)
-pp <- SPE2ppp(sostaSPE, marks = "cellType", imageCol = "imageName",
-imageId = "image1")
+pp <- SPE2ppp(sostaSPE,
+    marks = "cellType", imageCol = "imageName",
+    imageId = "image1"
+)
 getDimXY(pp, 500)
 }

@@ -4,7 +4,7 @@
 \alias{minBoundaryDistances}
 \title{Compute minimum boundary distances for each cell within its corresponding image structures}
 \usage{
-minBoundaryDistances(spe, imageColumn, structColumn, allStructs)
+minBoundaryDistances(spe, imageColumn, structColumn, allStructs, nCores = 1)
 }
 \arguments{
 \item{spe}{SpatialExperiment object}
@@ -14,6 +14,8 @@ minBoundaryDistances(spe, imageColumn, structColumn, allStructs)
 \item{structColumn}{character; name of the \code{colData} column specifying structure assignments}
 
 \item{allStructs}{sf object; contains spatial structures with corresponding image names}
+
+\item{nCores}{integer; The number of cores to use for parallel processing (default is 1).}
 }
 \value{
 A numeric vector containing the minimum distances between cells and structure boundaries,
@@ -23,18 +25,24 @@ values within structures have negative values.
 Compute minimum boundary distances for each cell within its corresponding image structures
 }
 \examples{
-library(ggspavis)
-library(SpatialExperiment)
-data(sostaSPE)
+library("SpatialExperiment")
+data("sostaSPE")
 allStructs <- reconstructShapeDensitySPE(sostaSPE,
     marks = "cellType", imageCol = "imageName",
-    markSelect = "A", bndw = 3.5, thres = 0.045)
-colData(sostaSPE)$structAssign <- assingCellsToStructures(sostaSPE,
-    allStructs, "imageName")
-colData(sostaSPE)$minDist <- minBoundaryDistances(sostaSPE,
-    "imageName", "structAssign", allStructs)
-plotSpots(sostaSPE, annotate = "minDist", in_tissue = NULL, y_reverse = FALSE) +
-    scale_colour_gradient2() +
-    geom_sf(data = allStructs, fill = NA, inherit.aes = FALSE) +
-    facet_wrap(~imageName)
+    markSelect = "A", bndw = 3.5, thres = 0.045
+)
+colData(sostaSPE)$structAssign <- assingCellsToStructures(
+    sostaSPE,
+    allStructs, "imageName"
+)
+colData(sostaSPE)$minDist <- minBoundaryDistances(
+    sostaSPE,
+    "imageName", "structAssign", allStructs
+)
+if (require("ggspavis")) {
+    plotSpots(sostaSPE, annotate = "minDist", in_tissue = NULL, y_reverse = FALSE) +
+        scale_colour_gradient2() +
+        geom_sf(data = allStructs, fill = NA, inherit.aes = FALSE) +
+        facet_wrap(~imageName)
+}
 }

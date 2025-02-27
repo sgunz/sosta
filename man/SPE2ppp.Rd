@@ -25,6 +25,8 @@ Function to convert spatial coordinates of a \code{SpatialExperiment} object to 
 }
 \examples{
 data(sostaSPE)
-SPE2ppp(sostaSPE, marks = "cellType", imageCol = "imageName",
-imageId = "image1")
+SPE2ppp(sostaSPE,
+    marks = "cellType", imageCol = "imageName",
+    imageId = "image1"
+)
 }

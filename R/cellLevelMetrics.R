@@ -14,20 +14,25 @@
 #' @importFrom SummarizedExperiment assays
 #' @importFrom parallel mclapply
 #'
+#' @export
+#'
 #' @examples
-#' library(ggspavis)
-#' library(SpatialExperiment)
-#' data(sostaSPE)
+#' library("SpatialExperiment")
+#' data("sostaSPE")
 #' allStructs <- reconstructShapeDensitySPE(sostaSPE,
 #'     marks = "cellType", imageCol = "imageName",
-#'     markSelect = "A", bndw = 3.5, thres = 0.045)
-#' colData(sostaSPE)$structAssign <- assingCellsToStructures(sostaSPE,
-#'     allStructs, "imageName")
-#' plotSpots(sostaSPE[, sostaSPE[["imageName"]] == "image1"],
-#'     annotate = "structAssign", sample_id = "sample_id",
-#'     in_tissue = NULL, y_reverse = FALSE) + facet_wrap(~imageName)
-#'
-#' @export
+#'     markSelect = "A", bndw = 3.5, thres = 0.045
+#' )
+#' colData(sostaSPE)$structAssign <- assingCellsToStructures(
+#'     sostaSPE,
+#'     allStructs, "imageName"
+#' )
+#' if (require("ggspavis")) {
+#'     plotSpots(sostaSPE[, sostaSPE[["imageName"]] == "image1"],
+#'         annotate = "structAssign", sample_id = "sample_id",
+#'         in_tissue = NULL, y_reverse = FALSE
+#'     ) + facet_wrap(~imageName)
+#' }
 assingCellsToStructures <- function(spe, allStructs, imageCol, uniqueId = "structID", nCores = 1) {
     # Input checking
     stopifnot(
@@ -93,24 +98,29 @@ assingCellsToStructures <- function(spe, allStructs, imageCol, uniqueId = "struc
 #' @param spe SpatialExperiment object
 #' @param structColumn character; name of the `colData` column specifying the structure assignments
 #' @param cellTypeColumn character; name of the `colData` column specifying cell types
+#' @param nCores integer; The number of cores to use for parallel processing (default is 1).
 #'
 #' @return A data frame where rows correspond to unique structures and columns correspond to cell types,
 #' containing the proportion of each cell type within each structure.
 #'
 #' @importFrom SingleCellExperiment colData
+#' @importFrom parallel mclapply
 #'
 #' @export
 #'
 #' @examples
-#' library(SpatialExperiment)
-#' data(sostaSPE)
+#' library("SpatialExperiment")
+#' data("sostaSPE")
 #' allStructs <- reconstructShapeDensitySPE(sostaSPE,
 #'     marks = "cellType", imageCol = "imageName",
-#'     markSelect = "A", bndw = 3.5, thres = 0.045)
-#' colData(sostaSPE)$structAssign <- assingCellsToStructures(sostaSPE,
-#'     allStructs, "imageName")
+#'     markSelect = "A", bndw = 3.5, thres = 0.045
+#' )
+#' colData(sostaSPE)$structAssign <- assingCellsToStructures(
+#'     sostaSPE,
+#'     allStructs, "imageName"
+#' )
 #' cellTypeProportions(sostaSPE, "structAssign", "cellType")
-cellTypeProportions <- function(spe, structColumn, cellTypeColumn) {
+cellTypeProportions <- function(spe, structColumn, cellTypeColumn, nCores = 1) {
     # Extract structure assignments from column in SPE
     structs <- unique(spe[[structColumn]])
     # Remove NA values
@@ -118,12 +128,12 @@ cellTypeProportions <- function(spe, structColumn, cellTypeColumn) {
     # Unique cell types from the specified column
     allTypes <- unique(spe[[cellTypeColumn]])
     # Compute the proportion of each cell type within each structure
-    res <- lapply(structs, function(sel) {
+    res <- mclapply(structs, function(sel) {
         sub_df <- colData(spe[, spe[[structColumn]] %in% sel])
         # Compute the frequency and normalize
         return(table(factor(sub_df[[cellTypeColumn]], levels = allTypes)) /
-                   length(sub_df[[cellTypeColumn]]))
-    })
+            length(sub_df[[cellTypeColumn]]))
+    }, mc.cores = nCores)
     # Combine into single df and name with structs id
     res_mat <- do.call(rbind, res) |> as.data.frame()
     rownames(res_mat) <- structs
@@ -137,37 +147,45 @@ cellTypeProportions <- function(spe, structColumn, cellTypeColumn) {
 #' @param imageColumn character; name of the `colData` column specifying the image name
 #' @param structColumn character; name of the `colData` column specifying structure assignments
 #' @param allStructs sf object; contains spatial structures with corresponding image names
+#' @param nCores integer; The number of cores to use for parallel processing (default is 1).
 #'
 #' @return A numeric vector containing the minimum distances between cells and structure boundaries,
 #' values within structures have negative values.
 #'
 #' @importFrom sf st_distance st_boundary
+#' @importFrom parallel mclapply
 #'
 #' @export
 #'
 #' @examples
-#' library(ggspavis)
-#' library(SpatialExperiment)
-#' data(sostaSPE)
+#' library("SpatialExperiment")
+#' data("sostaSPE")
 #' allStructs <- reconstructShapeDensitySPE(sostaSPE,
 #'     marks = "cellType", imageCol = "imageName",
-#'     markSelect = "A", bndw = 3.5, thres = 0.045)
-#' colData(sostaSPE)$structAssign <- assingCellsToStructures(sostaSPE,
-#'     allStructs, "imageName")
-#' colData(sostaSPE)$minDist <- minBoundaryDistances(sostaSPE,
-#'     "imageName", "structAssign", allStructs)
-#' plotSpots(sostaSPE, annotate = "minDist", in_tissue = NULL, y_reverse = FALSE) +
-#'     scale_colour_gradient2() +
-#'     geom_sf(data = allStructs, fill = NA, inherit.aes = FALSE) +
-#'     facet_wrap(~imageName)
-minBoundaryDistances <- function(spe, imageColumn, structColumn, allStructs) {
-
+#'     markSelect = "A", bndw = 3.5, thres = 0.045
+#' )
+#' colData(sostaSPE)$structAssign <- assingCellsToStructures(
+#'     sostaSPE,
+#'     allStructs, "imageName"
+#' )
+#' colData(sostaSPE)$minDist <- minBoundaryDistances(
+#'     sostaSPE,
+#'     "imageName", "structAssign", allStructs
+#' )
+#' if (require("ggspavis")) {
+#'     plotSpots(sostaSPE, annotate = "minDist", in_tissue = NULL, y_reverse = FALSE) +
+#'         scale_colour_gradient2() +
+#'         geom_sf(data = allStructs, fill = NA, inherit.aes = FALSE) +
+#'         facet_wrap(~imageName)
+#' }
+minBoundaryDistances <- function(spe, imageColumn,
+    structColumn, allStructs, nCores = 1) {
     # Extract unique image names and remove NAs
     images <- unique(spe[[imageColumn]])
     images <- images[!is.na(images)]
 
     # Compute the minimum distance to structure boundaries for each cell
-    res <- lapply(images, function(sel) {
+    res <- mclapply(images, function(sel) {
         resVect <- rep(NA, ncol(spe))
 
         # Subset SPE and structures for the given image
@@ -186,7 +204,7 @@ minBoundaryDistances <- function(spe, imageColumn, structColumn, allStructs) {
         res <- apply(dist, 1, min)
         resVect[spe[[imageColumn]] %in% sel] <- res
         return(resVect)
-    })
+    }, mc.cores = nCores)
 
     # Combine results into a data frame
     df <- data.frame(do.call(cbind, res))
@@ -199,6 +217,3 @@ minBoundaryDistances <- function(spe, imageColumn, structColumn, allStructs) {
 
     return(overlap_vect)
 }
-
-
-

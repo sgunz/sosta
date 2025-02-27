@@ -101,9 +101,14 @@ totalShapeMetrics <- function(sfInput) {
     shapeMat <- matrix(as.numeric(shapeStruct), nrow = dim(shapeStruct)[1])
     rownames(shapeMat) <- rownames(shapeStruct)
 
-    if(!is.null(sfInput[["structID"]])) colNames <- sfInput[["structID"]]
-    else colNames <- paste0(deparse(substitute(sfInput)),
-                            seq_len(dim(shapeMat)[2]))
+    if (!is.null(sfInput[["structID"]])) {
+        colNames <- sfInput[["structID"]]
+    } else {
+        colNames <- paste0(
+            deparse(substitute(sfInput)),
+            seq_len(dim(shapeMat)[2])
+        )
+    }
 
     colnames(shapeMat) <- colNames
     return(shapeMat)

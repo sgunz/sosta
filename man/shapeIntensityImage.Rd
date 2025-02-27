@@ -44,7 +44,7 @@ a histogram of the intensity values. Note that intensities less than
 largest intensity value divided by 250 are not displayed in the histogram.
 }
 \examples{
-data(sostaSPE)
+data("sostaSPE")
 shapeIntensityImage(sostaSPE,
     marks = "cellType", imageCol = "imageName",
     imageId = "image1", markSelect = "A"
