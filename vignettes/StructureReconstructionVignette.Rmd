@@ -49,6 +49,7 @@ library("tidyr")
 library("ggplot2")
 library("ggspavis")
 library("sf")
+library("SpatialExperiment")
 
 theme_set(theme_bw())
 ```
