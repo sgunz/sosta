@@ -17,9 +17,11 @@ abstract: >
   Reconstruction and analysis of pancreatic islets from IMC data using the `sosta` package
 vignette: >
   %\VignetteIndexEntry{Reconstruction and analysis of pancreatic islets from IMC data}
-  %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
+  %\VignetteEngine{knitr::rmarkdown}
 bibliography: sosta.bib
+editor_options: 
+  chunk_output_type: console
 ---
 
 ```{r, include = FALSE}
@@ -31,7 +33,7 @@ knitr::opts_chunk$set(
 
 # Installation
 
-`r BiocStyle::Biocpkg('sosta')` can be loaded from Bioconductor and installed as follows
+The `r BiocStyle::Biocpkg('sosta')` package can be installed from Bioconductor as follows
 
 ```{r installation, include = TRUE, eval=FALSE}
 if (!requireNamespace("BiocManager")) {
@@ -41,6 +43,8 @@ BiocManager::install("sosta")
 ```
 
 # Setup
+
+For this vignette, we will need several additional packages:
 
 ```{r setup, message=FALSE}
 library("sosta")
@@ -54,30 +58,30 @@ library("SpatialExperiment")
 
 # Introduction
 
-In this vignette we will use a dataset containing imaging mass cytometry (IMC) data of pancreatic islets of human donors at different stages of type 1 diabetes (T1D) and healthy controls [@damondMapHumanType2019]. Note that we will only use a subset of the patients.
+In this vignette, we will use an imaging mass cytometry (IMC) dataset of pancreatic islets from human donors at different stages of type 1 diabetes (T1D) and healthy controls [@damondMapHumanType2019]. Note that we will only use a subset of the patients.
 
-```{r loading, echo=FALSE, message=FALSE}
+```{r loading, echo=TRUE, message=FALSE}
 # load experiment hub
 eh <- ExperimentHub()
-objectId <- names(eh[eh$title == "Damond_2019_Pancreas - sce - v1 - full"])
+oid <- names(eh[eh$title == "Damond_2019_Pancreas - sce - v1 - full"])
 
 # Load single cell experiment object
-spe <- eh[[objectId]]
+spe <- eh[[oid]]
 # Convert to spatial experiment object
 spe <- toSpatialExperiment(spe,
     sample_id = "image_name",
     spatialCoordsNames = c("cell_x", "cell_y")
 )
 # Subset the data for computational reasons
-spe <- spe[, spe[["patient_id"]] %in% c(6089, 6180, 6126, 6134, 6228, 6414)]
+spe <- spe[, spe$patient_id %in% c(6089, 6180, 6126, 6134, 6228, 6414)]
 ```
 
 
-First we plot the data for illustration. As we have multiple images per patient we will subset one patient and a few slides.
+First, we plot the data for illustration. As we have multiple images per patient, we will subset one patient and a few slides.
 
 ```{r}
 plotSpots(
-    spe[, spe[["image_name"]] %in% c("E04", "E03", "G01", "K01")],
+    spe[, spe$image_name %in% c("E04", "E03", "G01", "K01")],
     annotate = "cell_category",
     sample_id = "image_number",
     in_tissue = NULL,
