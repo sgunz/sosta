@@ -86,7 +86,7 @@ plotSpots(
     sample_id = "image_number",
     in_tissue = NULL,
     y_reverse = FALSE
-) + facet_wrap(~image_name, scales = "free")
+) + facet_grid(~image_name)
 ```
 
 The goal is to reconstruct / segment and quantify the pancreatic islets.
