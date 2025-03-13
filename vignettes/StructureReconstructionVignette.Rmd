@@ -14,12 +14,14 @@ package: "`r BiocStyle::Biocpkg('sosta')`"
 output:
   BiocStyle::html_document
 abstract: >
-  Reconstruction and analysis of anatimical structures using the `sosta` package
+  Reconstruction and analysis of anatomical structures using the `sosta` package
 vignette: >
   %\VignetteIndexEntry{ Reconstruction and analysis of anatomical structures}
-  %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
+  %\VignetteEngine{knitr::rmarkdown}
 bibliography: sosta.bib
+editor_options: 
+  chunk_output_type: console
 ---
 
 ```{r, include = FALSE}
@@ -31,7 +33,7 @@ knitr::opts_chunk$set(
 
 # Installation
 
-`r BiocStyle::Biocpkg('sosta')` can be loaded from Bioconductor and installed as follows
+The `r BiocStyle::Biocpkg('sosta')` package can be installed from Bioconductor as follows:
 
 ```{r installation, include = TRUE, eval=FALSE}
 if (!requireNamespace("BiocManager")) {
@@ -41,6 +43,8 @@ BiocManager::install("sosta")
 ```
 
 # Setup
+
+For this vignette, we will need several additional packages:
 
 ```{r setup, message=FALSE}
 library("sosta")
@@ -56,11 +60,12 @@ theme_set(theme_bw())
 
 # Introduction
 
-As an example, we will load an simulated dataset with three different images and three cell types A, B and C.
+As an example, we will load an simulated dataset with three images and three cell types A, B and C, which are stored in a `r BiocStyle::Biocpkg('SpatialExperiment')` object:
 
-```{r loading, echo=FALSE, message=FALSE}
+```{r loading, echo=TRUE, message=FALSE}
 # load the data
 data("sostaSPE")
+sostaSPE
 ``` 
 
 ```{r}
@@ -69,17 +74,18 @@ plotSpots(
     annotate = "cellType",
     sample_id = "sample_id",
     in_tissue = NULL,
+    point_size = .75,
     y_reverse = FALSE
 ) + facet_wrap(~imageName)
 ```
 
-The goal is to reconstruct / segment the structures given by cell type A.
+The goal is to reconstruct, or segment, the *structures* given by cell type A.
 
 # Structure reconstruction
 
 ## Reconstruction of structures for one image
 
-In this example we will reconstruct the islets based on the point pattern density of the cells of type A. We will start with estimating the parameters that we use for reconstruction afterwards. For one image this can be illustrated as follows.
+In this example, we will reconstruct cellular "structures" based on the point pattern density of the cells of type A. We will start with estimating parameters that are used for reconstruction afterwards. For one image, this can be illustrated as follows:
 
 ```{r}
 shapeIntensityImage(
@@ -91,7 +97,7 @@ shapeIntensityImage(
 )
 ```
 
-We see the density (pixel) image on the left and a histogram of the intensity values on the right. The estimated threshold is roughly the mean between the two modes of the (truncated) pixel intensity distribution.
+We see the pixel-wise density image on the left and a histogram of the intensity values on the right. The estimated threshold is roughly the mean between the two modes of the (truncated) pixel intensity distribution.
 
 This was done for one image. The function `estimateReconstructionParametersSPE` returns two plots with the estimated parameters for each image. The parameter `bndw` is the bandwidth parameter that is used for estimating the intensity profile of the point pattern. The parameter `thres` is the estimated parameter for the density threshold for reconstruction.
 
@@ -111,10 +117,10 @@ We will use the mean of the two estimated vectors as our parameters.
 (bndwSPE <- mean(n$bndw))
 ```
 
-We cam now use the function `reconstructShapeDensity` to segment the islet of one image. The result is a `r BiocStyle::CRANpkg('sf')` polygon [@pebesmaSimpleFeaturesStandardized2018]. 
+We can now use the function `reconstructShapeDensity` to segment the cell-type-A structure into regions, the result of which is `r BiocStyle::CRANpkg('sf')` polygon [@pebesmaSimpleFeaturesStandardized2018]. 
 
 ```{r}
-struct <- reconstructShapeDensityImage(
+(struct <- reconstructShapeDensityImage(
     sostaSPE,
     marks = "cellType",
     imageCol = "imageName",
@@ -123,16 +129,17 @@ struct <- reconstructShapeDensityImage(
     bndw = bndwSPE,
     dim = 500,
     thres = thresSPE
-)
+))
 ```
 
-We can plot both the points and the segmented polygon.
+We can then plot both the points and the segmented polygon.
 
 ```{r}
 plotSpots(
-    sostaSPE[, sostaSPE[["imageName"]] %in% c("image1")],
+    sostaSPE[, sostaSPE$imageName == "image1"],
     annotate = "cellType",
     sample_id = "sample_id",
+    point_size = 1,
     in_tissue = NULL,
     y_reverse = FALSE,
 ) +
@@ -141,7 +148,7 @@ plotSpots(
         fill = NA,
         color = "darkblue",
         inherit.aes = FALSE, # this is important
-        linewidth = 0.75
+        linewidth = 1
     )
 ```
 
@@ -161,9 +168,10 @@ struct2 <- reconstructShapeDensityImage(
 
 ```{r}
 plotSpots(
-    sostaSPE[, sostaSPE[["imageName"]] %in% c("image1")],
+    sostaSPE[, sostaSPE$imageName == "image1"],
     annotate = "cellType",
     sample_id = "sample_id",
+    point_size = 1,
     in_tissue = NULL,
     y_reverse = FALSE,
 ) +
@@ -172,13 +180,13 @@ plotSpots(
         fill = NA,
         color = "darkblue",
         inherit.aes = FALSE, # this is important
-        linewidth = 0.75
+        linewidth = 1
     )
 ```
 
 ## Reconstruction of structures for all images
 
-The function `reconstructShapeDensitySPE` reconstructs the islets for all images in the `spe` object. We use the estimated parameters from above.
+The function `reconstructShapeDensitySPE` reconstructs the cell-type-A structure for all images in the `spe` object. We use the estimated parameters from above.
 
 ```{r, eval=TRUE}
 allStructs <- reconstructShapeDensitySPE(
@@ -192,13 +200,14 @@ allStructs <- reconstructShapeDensitySPE(
 )
 ```
 
-## Instersection with cells
+## Intersection with cells
 
-Here we will assign cells in the `SingleCellExperiment` object to the specific structure. 
+Next, we assign cells in the `SingleCellExperiment` object to their specific structure. 
 
 ```{r}
-assign <- assingCellsToStructures(sostaSPE, allStructs, imageCol = "imageName", nCores = 1)
-colData(sostaSPE)$structAssign <- assign
+assign <- assingCellsToStructures(sostaSPE, allStructs, 
+                                  imageCol = "imageName", nCores = 1)
+sostaSPE$structAssign <- assign
 ```
 
 
@@ -215,17 +224,17 @@ plotSpots(
 
 ## Distance to structure border
 
-Using the function `minBoundaryDistances` we can compute the distance to the border structure. Negative values indicate that the points lie inside the structure.
+Using the function `minBoundaryDistances`, we can compute the distance to the border structure. Negative values indicate that the points lie inside the structure.
 
 ```{r}
-colData(sostaSPE)$minDist <- minBoundaryDistances(
-    sostaSPE, "imageName",
-    "structAssign", allStructs
-)
+sostaSPE$minDist <- minBoundaryDistances(sostaSPE, "imageName",
+                                         "structAssign", allStructs)
+
 plotSpots(
     sostaSPE,
     annotate = "minDist",
     in_tissue = NULL,
+    point_size = .75,
     y_reverse = FALSE
 ) +
     scale_colour_gradient2() +
@@ -237,18 +246,17 @@ plotSpots(
     facet_wrap(~imageName)
 ```
 
-This info can be used to define border cells by thresholding to a range of positive and negative values.
+This information can be used to define border cells by thresholding to a range of positive and negative values.
 
 ```{r}
-idx <- colData(sostaSPE)$minDist > -3 & colData(sostaSPE)$minDist < 3
+sostaSPE$border <- ifelse(abs(sostaSPE$minDist) < 3, TRUE, FALSE)
 
-colData(sostaSPE)$boder <- FALSE
-colData(sostaSPE[, idx])$boder <- TRUE
 
 plotSpots(
     sostaSPE,
-    annotate = "boder",
+    annotate = "border",
     in_tissue = NULL,
+    point_size = .75,
     y_reverse = FALSE
 ) + geom_sf(
     data = allStructs,
@@ -258,7 +266,7 @@ plotSpots(
     facet_wrap(~imageName)
 ```
 
-Alternatively borders can be defined using `st_difference` and `st_buffer` on the structure object. In this case we will have an `sf` polygon that correspond to the border region.
+Alternatively, borders can be defined using `st_difference` and `st_buffer` on the structure object. In this case we will have an `sf` polygon that correspond to the border region.
 
 ```{r}
 borders <- lapply(
@@ -267,11 +275,13 @@ borders <- lapply(
 ) |>
     # both needed for proper conversion
     st_as_sfc() |> st_as_sf()
+borders
 
 borders$imageName <- allStructs$imageName
 borders$borderID <- paste0("border_", allStructs$structID)
+borders
 
-colData(sostaSPE)$borderSf <- assingCellsToStructures(sostaSPE,
+sostaSPE$borderSf <- assingCellsToStructures(sostaSPE,
     borders,
     imageCol = "imageName",
     uniqueId = "borderID",
@@ -281,6 +291,7 @@ plotSpots(
     sostaSPE,
     annotate = "borderSf",
     in_tissue = NULL,
+    point_size = .75,
     y_reverse = FALSE
 ) + geom_sf(
     data = borders,
@@ -294,7 +305,7 @@ plotSpots(
 
 ## Proportion of cell types within structures
 
-Using the function `cellTypeProportions` we can estimate the proportion of cell types witin each individual structure.
+Using the function `cellTypeProportions`, we can estimate the proportion of cell types witin each individual structure.
 
 ```{r}
 cellTypeProportions(sostaSPE, "structAssign", "cellType")
@@ -306,8 +317,7 @@ cellTypeProportions(sostaSPE, "structAssign", "cellType")
 The function `totalShapeMetrics` calculates a set of metrics related to the shape of the structures
 
 ```{r}
-shapeMetrics <- totalShapeMetrics(allStructs)
-shapeMetrics
+(shapeMetrics <- totalShapeMetrics(allStructs))
 
 cbind(allStructs, t(shapeMetrics)) |>
     ggplot() +

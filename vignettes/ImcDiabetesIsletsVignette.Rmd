@@ -33,7 +33,7 @@ knitr::opts_chunk$set(
 
 # Installation
 
-The `r BiocStyle::Biocpkg('sosta')` package can be installed from Bioconductor as follows
+The `r BiocStyle::Biocpkg('sosta')` package can be installed from Bioconductor as follows:
 
 ```{r installation, include = TRUE, eval=FALSE}
 if (!requireNamespace("BiocManager")) {
