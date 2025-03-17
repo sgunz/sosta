@@ -40,7 +40,6 @@ Imports:
 Suggests:
     knitr,
     rmarkdown,
-    ggspavis,
     BiocStyle,
     ExperimentHub,
     lme4,

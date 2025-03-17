@@ -33,11 +33,14 @@ reconstruction}
 A lower resolution speed up computation but lead to less exact reconstruction.
 Default = 500}
 
-\item{bndw}{numeric; bandwith of the sigma parameter in the density estimation,
-if no value is given the bandwith is estimated using cross validation with
+\item{bndw}{numeric; smoothing bandwidth in the density estimation,
+corresponds to the \code{sigma} parameter in the \code{density.ppp} function,
+if no value is given the bandwidth is estimated using cross validation with
 the \code{bw.diggle} function.}
 
-\item{thres}{numeric; intensity threshold for the reconstruction}
+\item{thres}{numeric; intensity threshold for the reconstruction;
+if NULL the threshold is set as the mean between the mode of the pixel intensity
+distributions}
 }
 \value{
 sf object of class \code{POLYGON}

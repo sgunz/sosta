@@ -77,14 +77,15 @@ reconstructShapeDensity <- function(
 #' @param imageId character; image id, must be present in imageCol
 #' @param markSelect character; name of mark that is to be selected for the
 #' reconstruction
-#' @param bndw numeric; bandwith of the sigma parameter in the density estimation,
-#' if no value is given the bandwith is estimated using cross validation with
+#' @param bndw numeric; smoothing bandwidth in the density estimation,
+#' corresponds to the `sigma` parameter in the `density.ppp` function,
+#' if no value is given the bandwidth is estimated using cross validation with
 #' the `bw.diggle` function.
 #' @param dim numeric; x dimension of the final reconstruction. A lower resolution
 #' speeds up computation but lead to less exact reconstruction. Default = 500
 #' @return ggplot object with intensity image and histogram
 #' @importFrom ggplot2 ggplot aes_string geom_histogram theme_light geom_tile
-#' labs coord_equal theme_classic scale_color_viridis_c geom_vline
+#' labs coord_equal theme_classic scale_color_viridis_c geom_vline theme element_text
 #' @importFrom patchwork wrap_plots plot_annotation
 #' @importFrom dplyr filter
 #' @importFrom rlang .data
@@ -139,9 +140,10 @@ shapeIntensityImage <- function(
                 round(thres, 4)
             ),
             caption = paste0(
-                "Pixel image dimensions: ", res$dimyx[1],
+                "Dimension of the density image (pixels): ", res$dimyx[1],
                 "x", res$dimyx[2]
-            )
+            ),
+            theme = theme(plot.caption = element_text(hjust = 0))
         )
 
     return(p)
@@ -161,10 +163,13 @@ shapeIntensityImage <- function(
 #' @param dim numeric; x dimension of the final reconstruction.
 #' A lower resolution speed up computation but lead to less exact reconstruction.
 #'  Default = 500
-#' @param bndw numeric; bandwith of the sigma parameter in the density estimation,
-#' if no value is given the bandwith is estimated using cross validation with
+#' @param bndw numeric; smoothing bandwidth in the density estimation,
+#' corresponds to the `sigma` parameter in the `density.ppp` function,
+#' if no value is given the bandwidth is estimated using cross validation with
 #' the `bw.diggle` function.
-#' @param thres numeric; intensity threshold for the reconstruction
+#' @param thres numeric; intensity threshold for the reconstruction;
+#' if NULL the threshold is set as the mean between the mode of the pixel intensity
+#' distributions
 #' @return sf object of class `POLYGON`
 #' @importFrom spatstat.geom subset.ppp
 #' @export
@@ -200,11 +205,13 @@ reconstructShapeDensityImage <- function(spe, marks,
 #' @param dim numeric; x dimension of the final reconstruction.
 #' A lower resolution speed up computation but lead to less exact reconstruction.
 #' Default = 500
-#' @param bndw numeric; bandwith of the sigma parameter in the density estimation,
-#' if no value is given the bandwith is estimated using cross validation with
-#' the `bw.diggle` function.
-#' @param thres numeric; intensity threshold for the reconstruction
-#' @param ncores numeric; number of cores for parallel processing using
+#' @param bndw numeric; bandwidth of the sigma parameter in the density estimation,
+#' if no value is given the bandwidth is estimated using cross validation with
+#' the `bw.diggle` function for each image individually.
+#' @param thres numeric; intensity threshold for the reconstruction;
+#' if NULL the threshold is set as the mean between the mode of the pixel intensity
+#' distributions estimated for each image individual
+#' @param nCores numeric; number of cores for parallel processing using
 #' `mclapply`. Default = 1
 #'
 #' @importFrom parallel mclapply
@@ -222,8 +229,8 @@ reconstructShapeDensityImage <- function(spe, marks,
 #' allStructs
 reconstructShapeDensitySPE <- function(spe, marks,
     imageCol, markSelect,
-    dim = 500, bndw = NULL, thres,
-    ncores = 1) {
+    dim = 500, bndw = NULL, thres = NULL,
+    nCores = 1) {
     # For computational reasonos delete all assays in SPE
     SummarizedExperiment::assays(spe) <- list()
     # Get all unique image ids
@@ -231,15 +238,12 @@ reconstructShapeDensitySPE <- function(spe, marks,
     # Calculate polygon for each id using multiple cores
     res_all <- mclapply(allImages, function(x) {
         res <- reconstructShapeDensityImage(spe, marks, imageCol,
-            x, markSelect,
-            dim = 500, bndw = NULL,
-            thres
-        )
+            x, markSelect, dim , bndw, thres)
         # assign imageId
         res[["structID"]] <- paste0(x, "_", c(1:dim(res)[1]))
         res[[imageCol]] <- x
         return(res)
-    }, mc.cores = ncores)
+    }, mc.cores = nCores)
     # return data frame with all structures
     return(do.call(rbind, res_all))
 }
@@ -253,14 +257,14 @@ reconstructShapeDensitySPE <- function(spe, marks,
 #' to the image
 #' @param markSelect character; name of mark that is to be selected for the
 #' reconstruction
-#' @param nimages integer; number of images for the estimation. Will be randomly
+#' @param nImages integer; number of images for the estimation. Will be randomly
 #' sampled
 #' @param fun character; function to estimate the kernel density. Default
 #' bw.diggle.
 #' @param dim numeric; x dimension of the final reconstruction.
 #' A lower resolution speed up computation but lead to less exact reconstruction.
 #' Default = 500
-#' @param ncores numeric; number of cores for parallel processing using `mclapply`.
+#' @param nCores numeric; number of cores for parallel processing using `mclapply`.
 #' Default = 1
 #' @param plotHist logical; if histogram of estimated densities and thresholds
 #' should be plotted. Default = TRUE
@@ -286,48 +290,48 @@ estimateReconstructionParametersSPE <- function(
         marks,
         imageCol,
         markSelect = NULL,
-        nimages = NULL,
+        nImages = NULL,
         fun = "bw.diggle",
         dim = 500,
-        ncores = 1,
+        nCores = 1,
         plotHist = TRUE) {
     # Input checks
-    if (!is.null(nimages)) {
-        stopifnot("'nimages' must be numeric" = is.numeric(nimages))
+    if (!is.null(nImages)) {
+        stopifnot("'nImages' must be numeric" = is.numeric(nImages))
         stopifnot(
-            "'nimages' must be smaller or equal to the number of images in the `SpatialExperiment`" =
-                (nimages < length(unique(colData(spe)[[imageCol]])))
+            "'nImages' must be smaller or equal to the number of images in the `SpatialExperiment`" =
+                (nImages < length(unique(colData(spe)[[imageCol]])))
         )
     }
 
     # get the id's of all images
     allImages <- colData(spe)[[imageCol]] |> unique()
     # default is to take all values
-    if (is.null(nimages)) nimages <- length(allImages)
+    if (is.null(nImages)) nImages <- length(allImages)
     # alternatively we sample some images
-    sampleImages <- sample(allImages, nimages)
+    sampleImages <- sample(allImages, nImages)
     # we calculate the bandwidths and thresholds
     res <- mclapply(sampleImages, function(x) {
         ppp <- SPE2ppp(spe, marks = marks, imageCol = imageCol, imageId = x)
         res_x <- .intensityImage(ppp, markSelect, dim = dim)
         thres <- .intensityThreshold(res_x$denIm)
         return(list(img = x, bndw = as.numeric(res_x$bndw), thres = as.numeric(thres)))
-    }, mc.cores = ncores)
+    }, mc.cores = nCores)
 
     # collect in one data frame
     res <- as.data.frame(do.call(rbind, res))
     res$bndw <- as.numeric(res$bndw)
     res$thres <- as.numeric(res$thres)
 
-    if (plotHist == TRUE & nimages > 1) {
+    if (plotHist == TRUE & nImages > 1) {
         p1 <- res |>
             ggplot(aes(x = .data$bndw)) +
-            geom_histogram(bins = round(nimages / 2)) +
+            geom_histogram(bins = round(nImages / 2)) +
             theme_light()
 
         p2 <- res |>
             ggplot(aes(x = .data$thres)) +
-            geom_histogram(bins = round(nimages / 2)) +
+            geom_histogram(bins = round(nImages / 2)) +
             theme_light()
 
         plot(wrap_plots(p1, p2, ncol = 2))

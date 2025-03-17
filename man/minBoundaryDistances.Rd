@@ -39,8 +39,11 @@ colData(sostaSPE)$minDist <- minBoundaryDistances(
     sostaSPE,
     "imageName", "structAssign", allStructs
 )
-if (require("ggspavis")) {
-    plotSpots(sostaSPE, annotate = "minDist", in_tissue = NULL, y_reverse = FALSE) +
+if (require("ggplot2")) {
+    cbind(colData(sostaSPE), spatialCoords(sostaSPE)) |>
+    as.data.frame() |>
+    ggplot(aes(x = x, y = y, color = minDist)) +
+        geom_point(size = 0.25) +
         scale_colour_gradient2() +
         geom_sf(data = allStructs, fill = NA, inherit.aes = FALSE) +
         facet_wrap(~imageName)

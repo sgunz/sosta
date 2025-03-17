@@ -40,10 +40,12 @@ colData(sostaSPE)$structAssign <- assingCellsToStructures(
     sostaSPE,
     allStructs, "imageName"
 )
-if (require("ggspavis")) {
-    plotSpots(sostaSPE[, sostaSPE[["imageName"]] == "image1"],
-        annotate = "structAssign", sample_id = "sample_id",
-        in_tissue = NULL, y_reverse = FALSE
-    ) + facet_wrap(~imageName)
+if (require("ggplot2")) {
+    cbind(colData(sostaSPE[, sostaSPE[["imageName"]] == "image1"]),
+          spatialCoords(sostaSPE[, sostaSPE[["imageName"]] == "image1"])) |>
+    as.data.frame() |>
+    ggplot(aes(x = x, y = y, color = structAssign)) +
+        geom_point(size = 0.25) +
+        coord_equal()
 }
 }

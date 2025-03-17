@@ -51,7 +51,6 @@ library("sosta")
 library("dplyr")
 library("tidyr")
 library("ggplot2")
-library("ggspavis")
 library("sf")
 library("SpatialExperiment")
 
@@ -97,7 +96,7 @@ shapeIntensityImage(
 )
 ```
 
-We see the pixel-wise density image on the left and a histogram of the intensity values on the right. The estimated threshold is roughly the mean between the two modes of the (truncated) pixel intensity distribution.
+We see the pixel-wise density image on the left and a histogram of the intensity values on the right. The estimated threshold is roughly the mean between the two modes of the (truncated) pixel intensity distribution. The dimensions of the pixel image are specified on the bottom left. The dimensions correspond to the density image, setting a higher value for the `dim` parameter will result in a higher resolution density image but will not change how many points are within a pixel. This can be changed by varying the smoothing parameter (`bndw`).
 
 This was done for one image. The function `estimateReconstructionParametersSPE` returns two plots with the estimated parameters for each image. The parameter `bndw` is the bandwidth parameter that is used for estimating the intensity profile of the point pattern. The parameter `thres` is the estimated parameter for the density threshold for reconstruction.
 
@@ -152,7 +151,7 @@ plotSpots(
     )
 ```
 
-If no arguments are given, the function `reconstructShapeDensityImage` estimates the reconstruction parameters internally.
+If no arguments are given, the function `reconstructShapeDensityImage` estimates the reconstruction parameters internally. The bandwidth is estimated using cross validation using the function `bw.diggle` of the `r BiocStyle::CRANpkg('spatstat.explore')` package. The threshold is estimated by taking the mean between the two modes of the pixel intensity distribution as illustrated above.
 
 ```{r}
 struct2 <- reconstructShapeDensityImage(
@@ -196,7 +195,7 @@ allStructs <- reconstructShapeDensitySPE(
     markSelect = "A",
     bndw = bndwSPE,
     thres = thresSPE,
-    ncores = 1
+    nCores = 1
 )
 ```
 

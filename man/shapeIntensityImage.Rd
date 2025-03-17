@@ -28,8 +28,9 @@ the image}
 \item{markSelect}{character; name of mark that is to be selected for the
 reconstruction}
 
-\item{bndw}{numeric; bandwith of the sigma parameter in the density estimation,
-if no value is given the bandwith is estimated using cross validation with
+\item{bndw}{numeric; smoothing bandwidth in the density estimation,
+corresponds to the \code{sigma} parameter in the \code{density.ppp} function,
+if no value is given the bandwidth is estimated using cross validation with
 the \code{bw.diggle} function.}
 
 \item{dim}{numeric; x dimension of the final reconstruction. A lower resolution

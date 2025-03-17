@@ -9,10 +9,10 @@ estimateReconstructionParametersSPE(
   marks,
   imageCol,
   markSelect = NULL,
-  nimages = NULL,
+  nImages = NULL,
   fun = "bw.diggle",
   dim = 500,
-  ncores = 1,
+  nCores = 1,
   plotHist = TRUE
 )
 }
@@ -28,7 +28,7 @@ to the image}
 \item{markSelect}{character; name of mark that is to be selected for the
 reconstruction}
 
-\item{nimages}{integer; number of images for the estimation. Will be randomly
+\item{nImages}{integer; number of images for the estimation. Will be randomly
 sampled}
 
 \item{fun}{character; function to estimate the kernel density. Default
@@ -38,7 +38,7 @@ bw.diggle.}
 A lower resolution speed up computation but lead to less exact reconstruction.
 Default = 500}
 
-\item{ncores}{numeric; number of cores for parallel processing using \code{mclapply}.
+\item{nCores}{numeric; number of cores for parallel processing using \code{mclapply}.
 Default = 1}
 
 \item{plotHist}{logical; if histogram of estimated densities and thresholds

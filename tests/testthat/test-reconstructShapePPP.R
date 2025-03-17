@@ -84,7 +84,7 @@ test_that("estimateReconstructionParameterssostaSPE estimates valid parameters",
         marks = "cellType",
         imageCol = "imageName",
         markSelect = "A",
-        nimages = 2,
+        nImages = 2,
         dim = 500,
         plotHist = FALSE
     )
@@ -116,7 +116,7 @@ test_that("estimateReconstructionParameterssostaSPE handles edge cases", {
             marks = "cellType",
             imageCol = "imageName",
             markSelect = "A",
-            nimages = 50,
+            nImages = 50,
             dim = 500,
             plotHist = FALSE
         ),

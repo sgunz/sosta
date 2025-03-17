@@ -29,6 +29,7 @@ knitr::opts_chunk$set(
     collapse = TRUE,
     comment = "#>"
 )
+set.seed(42)
 ```
 
 # Installation
@@ -51,7 +52,6 @@ library("sosta")
 library("dplyr")
 library("tidyr")
 library("ggplot2")
-library("ggspavis")
 library("ExperimentHub")
 library("SpatialExperiment")
 ```
@@ -72,21 +72,20 @@ spe <- toSpatialExperiment(spe,
     sample_id = "image_name",
     spatialCoordsNames = c("cell_x", "cell_y")
 )
-# Subset the data for computational reasons
-spe <- spe[, spe$patient_id %in% c(6089, 6180, 6126, 6134, 6228, 6414)]
 ```
 
 
-First, we plot the data for illustration. As we have multiple images per patient, we will subset one patient and a few slides.
+First, we plot the data for illustration. As we have multiple images per patient, we will subset to a few slides. As can be seen, the dimensions of the field of view are different per image.
 
 ```{r}
-plotSpots(
-    spe[, spe$image_name %in% c("E04", "E03", "G01", "K01")],
-    annotate = "cell_category",
-    sample_id = "image_number",
-    in_tissue = NULL,
-    y_reverse = FALSE
-) + facet_grid(~image_name)
+df <- cbind(colData(spe[, spe$image_name %in% c("E04", "E03", "G01", "J02")]),
+            spatialCoords(spe[, spe$image_name %in% c("E04", "E03", "G01", "J02")]))
+df |> 
+    as.data.frame() |> 
+    ggplot(aes(x = cell_x, y = cell_y, color = cell_category)) +
+    geom_point(size = 0.25) +
+    facet_wrap(~image_name, ncol = 2) +
+    coord_equal()
 ```
 
 The goal is to reconstruct / segment and quantify the pancreatic islets.
@@ -117,7 +116,7 @@ n <- estimateReconstructionParametersSPE(
     marks = "cell_category",
     imageCol = "image_name",
     markSelect = "islet",
-    nimages = 20,
+    nImages = 20,
     plotHist = TRUE
 )
 ```
@@ -131,11 +130,15 @@ We will use the mean of the two estimated vectors as our parameters.
 
 ## Reconstruction of pancreatic islets for all images
 
-The function `reconstructShapeDensitySPE` reconstructs the islets for all images in the `spe` object. We use the estimated parameters from above.
+The function `reconstructShapeDensitySPE` reconstructs the islets for all images in the `spe` object. We use the estimated parameters from above. For computational reasons, we will subset 200 random images for the rest of the vignette
 
 ```{r, eval=TRUE}
-start <- Sys.time()
+# Sample 200 of 845 images
+sel <- sample(unique(colData(spe)$image_name), 200)
+# Select sampled images
+spe <- spe[, spe$image_name %in% sel]
 
+# Run on all images
 allIslets <- reconstructShapeDensitySPE(
     spe,
     marks = "cell_category",
@@ -143,13 +146,8 @@ allIslets <- reconstructShapeDensitySPE(
     markSelect = "islet",
     bndw = bndwSPE,
     thres = thresSPE,
-    ncores = 1
+    nCores = 1
 )
-
-end <- Sys.time()
-
-# computation time with one core
-(difftime(end, start))
 ```
 
 # Calculation of metrics
@@ -165,35 +163,15 @@ isletMetrics <- totalShapeMetrics(allIslets)
 The result is a simple feature collection with polygons. We will add some patient level information to the simple feature collection for plotting afterwards.
 
 ```{r}
-# [MR: alternative formatting]
-cols_keep <- c("patient_stage", "tissue_slide", "tissue_region",
+colsKeep <- c("patient_stage", "tissue_slide", "tissue_region",
                "patient_id", "patient_disease_duration",
                "patient_age", "patient_gender", "sample_id")
 
 patientData <- colData(spe) |>
     as_tibble() |>
     group_by(image_name) |>
-    select(all_of(cols_keep)) |>
+    select(all_of(colsKeep)) |>
     unique()
-
-
-# patientData <- colData(spe) |>
-#     as_tibble() |>
-#     group_by(image_name) |>
-#     select(all_of(
-#         c(
-#             "patient_stage",
-#             "tissue_slide",
-#             "tissue_region",
-#             "patient_id",
-#             "patient_disease_duration",
-#             "patient_age",
-#             "patient_gender",
-#             "sample_id"
-#         )
-#     )) |>
-#     unique()
-
 ```
 
 
@@ -205,15 +183,6 @@ allIslets <- allIslets |>
   dplyr::left_join(patientData, by = "image_name") |>
   cbind(t(isletMetrics)) |>
   mutate(patient_stage = factor(patient_stage, levels = lv))
-
-
-# allIslets$patient_stage <- factor(allIslets$patient_stage,
-#     levels = c(
-#         "Non-diabetic", "Onset",
-#         "Long-duration"
-#     )
-# )
-
 ```
 
 # Investigate metrics
@@ -278,7 +247,7 @@ mod <- lmer(Area ~ patient_stage + (1 | patient_id) +
 summary(mod)
 ```
 
-As we can see from `summary(mod)`, there is a signification difference in islet area of long-duration patients with respect to non-diabetic patients.
+As we can see from `summary(mod)`, there is a signification difference in islet area of long-duration patients with respect to non-diabetic patients. Please note that this was only run on a subset of the data.
 
 # Session Info
 

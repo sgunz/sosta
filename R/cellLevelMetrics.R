@@ -27,12 +27,14 @@
 #'     sostaSPE,
 #'     allStructs, "imageName"
 #' )
-#' if (require("ggspavis")) {
-#'     plotSpots(sostaSPE[, sostaSPE[["imageName"]] == "image1"],
-#'         annotate = "structAssign", sample_id = "sample_id",
-#'         in_tissue = NULL, y_reverse = FALSE
-#'     ) + facet_wrap(~imageName)
-#' }
+#' if (require("ggplot2")) {
+#'     cbind(colData(sostaSPE[, sostaSPE[["imageName"]] == "image1"]),
+#'           spatialCoords(sostaSPE[, sostaSPE[["imageName"]] == "image1"])) |>
+#'     as.data.frame() |>
+#'     ggplot(aes(x = x, y = y, color = structAssign)) +
+#'         geom_point(size = 0.25) +
+#'         coord_equal()
+#'}
 assingCellsToStructures <- function(spe, allStructs, imageCol, uniqueId = "structID", nCores = 1) {
     # Input checking
     stopifnot(
@@ -45,10 +47,12 @@ assingCellsToStructures <- function(spe, allStructs, imageCol, uniqueId = "struc
     )
     stopifnot(
         "'imageCol' must exist in colnames(allStructs)" =
+            length(imageCol) == 1 &&
             imageCol %in% colnames(allStructs)
     )
     stopifnot(
         "'uniqueId' must exist in colnames(allStructs)" =
+            length(uniqueId) == 1 &&
             uniqueId %in% colnames(allStructs)
     )
     # Extract unique image identifiers
@@ -121,6 +125,21 @@ assingCellsToStructures <- function(spe, allStructs, imageCol, uniqueId = "struc
 #' )
 #' cellTypeProportions(sostaSPE, "structAssign", "cellType")
 cellTypeProportions <- function(spe, structColumn, cellTypeColumn, nCores = 1) {
+    # Input checking
+    stopifnot(
+        "'spe' must be an object of class 'SpatialExperiment'" =
+            inherits(spe, "SpatialExperiment")
+    )
+    stopifnot(
+        "'structColumn' must exist in colData(allStructs)" =
+            length(structColumn) == 1 &&
+            structColumn %in% colnames(colData(spe))
+    )
+    stopifnot(
+        "'cellTypeColumn' must exist in colData(cellTypeColumn)" =
+            length(cellTypeColumn) == 1 &&
+            cellTypeColumn %in% colnames(colData(spe))
+    )
     # Extract structure assignments from column in SPE
     structs <- unique(spe[[structColumn]])
     # Remove NA values
@@ -172,14 +191,41 @@ cellTypeProportions <- function(spe, structColumn, cellTypeColumn, nCores = 1) {
 #'     sostaSPE,
 #'     "imageName", "structAssign", allStructs
 #' )
-#' if (require("ggspavis")) {
-#'     plotSpots(sostaSPE, annotate = "minDist", in_tissue = NULL, y_reverse = FALSE) +
+#' if (require("ggplot2")) {
+#'     cbind(colData(sostaSPE), spatialCoords(sostaSPE)) |>
+#'     as.data.frame() |>
+#'     ggplot(aes(x = x, y = y, color = minDist)) +
+#'         geom_point(size = 0.25) +
 #'         scale_colour_gradient2() +
 #'         geom_sf(data = allStructs, fill = NA, inherit.aes = FALSE) +
 #'         facet_wrap(~imageName)
 #' }
 minBoundaryDistances <- function(spe, imageColumn,
     structColumn, allStructs, nCores = 1) {
+    # Input checking
+    stopifnot(
+        "'spe' must be an object of class 'SpatialExperiment'" =
+            inherits(spe, "SpatialExperiment")
+    )
+    stopifnot(
+        "'allStructs' must be an object of class 'sf'" =
+            inherits(allStructs, "sf")
+    )
+    stopifnot(
+        "'imageColumn' must be a character string and exist in colData(spe) and colnames(allStructs)'" =
+            is.character(imageColumn) && length(imageColumn) == 1 &&
+            imageColumn %in% colnames(colData(spe)) && imageColumn %in% colnames(allStructs)
+    )
+    stopifnot(
+        "'structColumn' must be a character string and exist in colData(spe)'" =
+            is.character(structColumn) && length(structColumn) == 1 &&
+            structColumn %in% colnames(colData(spe))
+    )
+    stopifnot(
+        "'nCores' must be a positive integer'" =
+            is.numeric(nCores) && length(nCores) == 1 &&
+            nCores >= 1 && round(nCores) == nCores
+    )
     # Extract unique image names and remove NAs
     images <- unique(spe[[imageColumn]])
     images <- images[!is.na(images)]
