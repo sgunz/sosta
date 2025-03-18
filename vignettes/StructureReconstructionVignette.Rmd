@@ -68,14 +68,12 @@ sostaSPE
 ``` 
 
 ```{r}
-plotSpots(
-    sostaSPE,
-    annotate = "cellType",
-    sample_id = "sample_id",
-    in_tissue = NULL,
-    point_size = .75,
-    y_reverse = FALSE
-) + facet_wrap(~imageName)
+cbind(colData(sostaSPE), spatialCoords(sostaSPE)) |>
+    as.data.frame() |>
+    ggplot(aes(x = x, y = y, color = cellType)) +
+    geom_point(size = 0.25) +
+    facet_wrap(~imageName) +
+    coord_equal()
 ```
 
 The goal is to reconstruct, or segment, the *structures* given by cell type A.
@@ -134,14 +132,15 @@ We can now use the function `reconstructShapeDensity` to segment the cell-type-A
 We can then plot both the points and the segmented polygon.
 
 ```{r}
-plotSpots(
-    sostaSPE[, sostaSPE$imageName == "image1"],
-    annotate = "cellType",
-    sample_id = "sample_id",
-    point_size = 1,
-    in_tissue = NULL,
-    y_reverse = FALSE,
-) +
+cbind(
+    colData(sostaSPE[, sostaSPE$imageName == "image1"]),
+    spatialCoords(sostaSPE[, sostaSPE$imageName == "image1"])
+) |>
+    as.data.frame() |>
+    ggplot(aes(x = x, y = y, color = cellType)) +
+    geom_point(size = 0.25) +
+    facet_wrap(~imageName) +
+    coord_equal() +
     geom_sf(
         data = struct,
         fill = NA,
@@ -166,14 +165,15 @@ struct2 <- reconstructShapeDensityImage(
 
 
 ```{r}
-plotSpots(
-    sostaSPE[, sostaSPE$imageName == "image1"],
-    annotate = "cellType",
-    sample_id = "sample_id",
-    point_size = 1,
-    in_tissue = NULL,
-    y_reverse = FALSE,
-) +
+cbind(
+    colData(sostaSPE[, sostaSPE$imageName == "image1"]),
+    spatialCoords(sostaSPE[, sostaSPE$imageName == "image1"])
+) |>
+    as.data.frame() |>
+    ggplot(aes(x = x, y = y, color = cellType)) +
+    geom_point(size = 0.25) +
+    facet_wrap(~imageName) +
+    coord_equal() +
     geom_sf(
         data = struct2,
         fill = NA,
@@ -204,100 +204,20 @@ allStructs <- reconstructShapeDensitySPE(
 Next, we assign cells in the `SingleCellExperiment` object to their specific structure. 
 
 ```{r}
-assign <- assingCellsToStructures(sostaSPE, allStructs, 
-                                  imageCol = "imageName", nCores = 1)
+assign <- assingCellsToStructures(sostaSPE, allStructs,
+    imageCol = "imageName", nCores = 1
+)
 sostaSPE$structAssign <- assign
 ```
 
 
 ```{r}
-plotSpots(
-    sostaSPE,
-    annotate = "structAssign",
-    in_tissue = NULL,
-    y_reverse = FALSE
-) + facet_wrap(~imageName)
-```
-
-# Cell level metrics
-
-## Distance to structure border
-
-Using the function `minBoundaryDistances`, we can compute the distance to the border structure. Negative values indicate that the points lie inside the structure.
-
-```{r}
-sostaSPE$minDist <- minBoundaryDistances(sostaSPE, "imageName",
-                                         "structAssign", allStructs)
-
-plotSpots(
-    sostaSPE,
-    annotate = "minDist",
-    in_tissue = NULL,
-    point_size = .75,
-    y_reverse = FALSE
-) +
-    scale_colour_gradient2() +
-    geom_sf(
-        data = allStructs,
-        fill = NA,
-        inherit.aes = FALSE
-    ) +
-    facet_wrap(~imageName)
-```
-
-This information can be used to define border cells by thresholding to a range of positive and negative values.
-
-```{r}
-sostaSPE$border <- ifelse(abs(sostaSPE$minDist) < 3, TRUE, FALSE)
-
-
-plotSpots(
-    sostaSPE,
-    annotate = "border",
-    in_tissue = NULL,
-    point_size = .75,
-    y_reverse = FALSE
-) + geom_sf(
-    data = allStructs,
-    fill = NA,
-    inherit.aes = FALSE
-) +
-    facet_wrap(~imageName)
-```
-
-Alternatively, borders can be defined using `st_difference` and `st_buffer` on the structure object. In this case we will have an `sf` polygon that correspond to the border region.
-
-```{r}
-borders <- lapply(
-    st_geometry(allStructs),
-    \(x) st_difference(st_buffer(x, 3), st_buffer(x, -3))
-) |>
-    # both needed for proper conversion
-    st_as_sfc() |> st_as_sf()
-borders
-
-borders$imageName <- allStructs$imageName
-borders$borderID <- paste0("border_", allStructs$structID)
-borders
-
-sostaSPE$borderSf <- assingCellsToStructures(sostaSPE,
-    borders,
-    imageCol = "imageName",
-    uniqueId = "borderID",
-    nCores = 1
-)
-plotSpots(
-    sostaSPE,
-    annotate = "borderSf",
-    in_tissue = NULL,
-    point_size = .75,
-    y_reverse = FALSE
-) + geom_sf(
-    data = borders,
-    fill = NA,
-    inherit.aes = FALSE
-) +
-    facet_wrap(~imageName)
+cbind(colData(sostaSPE), spatialCoords(sostaSPE)) |>
+    as.data.frame() |>
+    ggplot(aes(x = x, y = y, color = structAssign)) +
+    geom_point(size = 0.25) +
+    facet_wrap(~imageName) +
+    coord_equal()
 ```
 
 # Structure level metrics
@@ -321,6 +241,90 @@ The function `totalShapeMetrics` calculates a set of metrics related to the shap
 cbind(allStructs, t(shapeMetrics)) |>
     ggplot() +
     geom_sf(aes(fill = Area)) +
+    facet_wrap(~imageName)
+```
+
+# Cell level metrics
+
+## Distance to structure border
+
+Using the function `minBoundaryDistances`, we can compute the distance to the border structure. Negative values indicate that the points lie inside the structure.
+
+```{r}
+sostaSPE$minDist <- minBoundaryDistances(
+    sostaSPE, "imageName",
+    "structAssign", allStructs
+)
+
+cbind(colData(sostaSPE), spatialCoords(sostaSPE)) |>
+    as.data.frame() |>
+    ggplot(aes(x = x, y = y, color = minDist)) +
+    geom_point(size = 0.25) +
+    facet_wrap(~imageName) +
+    coord_equal() +
+    scale_colour_gradient2() +
+    geom_sf(
+        data = allStructs,
+        fill = NA,
+        inherit.aes = FALSE
+    ) +
+    facet_wrap(~imageName)
+```
+
+This information can be used to define border cells by thresholding to a range of positive and negative values.
+
+```{r}
+sostaSPE$border <- ifelse(abs(sostaSPE$minDist) < 3, TRUE, FALSE)
+
+
+cbind(colData(sostaSPE), spatialCoords(sostaSPE)) |>
+    as.data.frame() |>
+    ggplot(aes(x = x, y = y, color = border)) +
+    geom_point(size = 0.25) +
+    facet_wrap(~imageName) +
+    coord_equal() +
+    geom_sf(
+        data = allStructs,
+        fill = NA,
+        inherit.aes = FALSE
+    ) +
+    facet_wrap(~imageName)
+```
+
+Alternatively, borders can be defined using `st_difference` and `st_buffer` on the structure object. In this case we will have an `sf` polygon that correspond to the border region.
+
+```{r}
+borders <- lapply(
+    st_geometry(allStructs),
+    \(x) st_difference(st_buffer(x, 3), st_buffer(x, -3))
+) |>
+    # both needed for proper conversion
+    st_as_sfc() |> st_as_sf()
+
+borders$imageName <- allStructs$imageName
+borders$borderID <- paste0("border_", allStructs$structID)
+
+sostaSPE$borderSf <- assingCellsToStructures(sostaSPE,
+    borders,
+    imageCol = "imageName",
+    uniqueId = "borderID",
+    nCores = 1
+)
+```
+
+
+```{r}
+cbind(colData(sostaSPE), spatialCoords(sostaSPE)) |>
+    as.data.frame() |>
+    ggplot(aes(x = x, y = y, color = borderSf)) +
+    geom_point(size = 0.25) +
+    facet_wrap(~imageName) +
+    coord_equal() +
+    geom_sf(
+        data = borders,
+        fill = NA,
+        inherit.aes = FALSE
+    ) +
     facet_wrap(~imageName)
 ```
 

@@ -25,9 +25,10 @@
 #' ), nrow = 9, byrow = TRUE)
 #' polyR <- binaryImageToSF(matrixR, xmin = 0, xmax = 1, ymin = 0, ymax = 1)
 #' plot(polyR)
-binaryImageToSF <- function(binaryMatrix,
-    xmin, xmax,
-    ymin, ymax) {
+binaryImageToSF <- function(
+        binaryMatrix,
+        xmin, xmax,
+        ymin, ymax) {
     # Input checking
     stopifnot("'binaryMatrix' must be a matrix" = is.matrix(binaryMatrix))
     stopifnot(
@@ -166,11 +167,10 @@ getDimXY <- function(ppp, ydim) {
 #'     marks = "cellType", imageCol = "imageName",
 #'     imageId = "image1"
 #' )
-SPE2ppp <- function(
-        spe,
-        marks,
-        imageCol = NULL,
-        imageId = NULL) {
+SPE2ppp <- function(spe,
+    marks,
+    imageCol = NULL,
+    imageId = NULL) {
     # Input checking
     stopifnot(
         "'spe' must be an object of class 'SpatialExperiment'" =
@@ -231,10 +231,9 @@ SPE2ppp <- function(
 #' data(sostaSPE)
 #' ppp <- SPE2ppp(sostaSPE, marks = "cellType", imageCol = "imageName", imageId = "image1")
 #' findIntensityThreshold(ppp, markSelect = "A", dim = 250)
-findIntensityThreshold <- function(
-        ppp, markSelect = NULL,
-        bndw = NULL, dim,
-        steps = 250) {
+findIntensityThreshold <- function(ppp, markSelect = NULL,
+    bndw = NULL, dim,
+    steps = 250) {
     stopifnot("'steps' must be a single numeric value" = is.numeric(dim) && length(dim) == 1)
     # get density image
     densityImage <- .intensityImage(ppp, markSelect, bndw, dim)$denIm
@@ -254,11 +253,10 @@ findIntensityThreshold <- function(
 #' @return list; list with the intensity image and the bandwidth and dimension parameters
 #' @importFrom spatstat.explore bw.diggle density.ppp
 #' @importFrom spatstat.geom subset.ppp
-.intensityImage <- function(
-        ppp,
-        markSelect = NULL,
-        bndw = NULL,
-        dim) {
+.intensityImage <- function(ppp,
+    markSelect = NULL,
+    bndw = NULL,
+    dim) {
     # Input checking
     stopifnot("'ppp' must be an object of class 'ppp'" = inherits(ppp, "ppp"))
     stopifnot("'dim' must be a single, positive, numeric value" = is.numeric(dim) &&

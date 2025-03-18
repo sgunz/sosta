@@ -1,8 +1,8 @@
 library("SpatialExperiment")
 data("sostaSPE")
 allStructs <- reconstructShapeDensitySPE(sostaSPE,
-                                         marks = "cellType", imageCol = "imageName",
-                                         markSelect = "A", bndw = 3.5, thres = 0.045
+    marks = "cellType", imageCol = "imageName",
+    markSelect = "A", bndw = 3.5, thres = 0.045
 )
 colData(sostaSPE)$structAssign <- assingCellsToStructures(
     sostaSPE,

@@ -78,10 +78,12 @@ spe <- toSpatialExperiment(spe,
 First, we plot the data for illustration. As we have multiple images per patient, we will subset to a few slides. As can be seen, the dimensions of the field of view are different per image.
 
 ```{r}
-df <- cbind(colData(spe[, spe$image_name %in% c("E04", "E03", "G01", "J02")]),
-            spatialCoords(spe[, spe$image_name %in% c("E04", "E03", "G01", "J02")]))
-df |> 
-    as.data.frame() |> 
+df <- cbind(
+    colData(spe[, spe$image_name %in% c("E04", "E03", "G01", "J02")]),
+    spatialCoords(spe[, spe$image_name %in% c("E04", "E03", "G01", "J02")])
+)
+df |>
+    as.data.frame() |>
     ggplot(aes(x = cell_x, y = cell_y, color = cell_category)) +
     geom_point(size = 0.25) +
     facet_wrap(~image_name, ncol = 2) +
@@ -163,9 +165,11 @@ isletMetrics <- totalShapeMetrics(allIslets)
 The result is a simple feature collection with polygons. We will add some patient level information to the simple feature collection for plotting afterwards.
 
 ```{r}
-colsKeep <- c("patient_stage", "tissue_slide", "tissue_region",
-               "patient_id", "patient_disease_duration",
-               "patient_age", "patient_gender", "sample_id")
+colsKeep <- c(
+    "patient_stage", "tissue_slide", "tissue_region",
+    "patient_id", "patient_disease_duration",
+    "patient_age", "patient_gender", "sample_id"
+)
 
 patientData <- colData(spe) |>
     as_tibble() |>
@@ -180,9 +184,9 @@ patientData <- colData(spe) |>
 lv <- c("Non-diabetic", "Onset", "Long-duration")
 
 allIslets <- allIslets |>
-  dplyr::left_join(patientData, by = "image_name") |>
-  cbind(t(isletMetrics)) |>
-  mutate(patient_stage = factor(patient_stage, levels = lv))
+    dplyr::left_join(patientData, by = "image_name") |>
+    cbind(t(isletMetrics)) |>
+    mutate(patient_stage = factor(patient_stage, levels = lv))
 ```
 
 # Investigate metrics
@@ -242,8 +246,8 @@ To see differences between the Area of the islets between conditions, we can tes
 ```{r}
 library(lme4)
 
-mod <- lmer(Area ~ patient_stage + (1 | patient_id) + 
-              (1 | image_name), data = allIslets)
+mod <- lmer(Area ~ patient_stage + (1 | patient_id) +
+    (1 | image_name), data = allIslets)
 summary(mod)
 ```
 

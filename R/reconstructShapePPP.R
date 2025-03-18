@@ -21,9 +21,8 @@
 #' thres <- findIntensityThreshold(ppp, markSelect = "A", dim = 500)
 #' struct <- reconstructShapeDensity(ppp, markSelect = "A", thres = thres, dim = 500)
 #' plot(struct)
-reconstructShapeDensity <- function(
-        ppp, markSelect = NULL,
-        bndw = NULL, thres = NULL, dim) {
+reconstructShapeDensity <- function(ppp, markSelect = NULL,
+    bndw = NULL, thres = NULL, dim) {
     # estimate density
     res <- .intensityImage(ppp, markSelect, bndw, dim)
 
@@ -98,13 +97,12 @@ reconstructShapeDensity <- function(
 #'     marks = "cellType", imageCol = "imageName",
 #'     imageId = "image1", markSelect = "A"
 #' )
-shapeIntensityImage <- function(
-        spe, marks,
-        imageCol,
-        imageId,
-        markSelect,
-        bndw = NULL,
-        dim = 500) {
+shapeIntensityImage <- function(spe, marks,
+    imageCol,
+    imageId,
+    markSelect,
+    bndw = NULL,
+    dim = 500) {
     # Convert the spe object to a point pattern object
     ppp <- SPE2ppp(spe, marks = marks, imageCol = imageCol, imageId = imageId)
 
@@ -181,8 +179,9 @@ shapeIntensityImage <- function(
 #'     markSelect = "A", dim = 500
 #' )
 #' plot(struct)
-reconstructShapeDensityImage <- function(spe, marks,
-    imageCol, imageId, markSelect, dim = 500, bndw = NULL, thres = NULL) {
+reconstructShapeDensityImage <- function(
+        spe, marks,
+        imageCol, imageId, markSelect, dim = 500, bndw = NULL, thres = NULL) {
     # Convert the spe object to a point pattern object
     ppp <- SPE2ppp(spe, marks, imageCol, imageId)
 
@@ -227,18 +226,21 @@ reconstructShapeDensityImage <- function(spe, marks,
 #'     markSelect = "A", bndw = 3.5, thres = 0.005
 #' )
 #' allStructs
-reconstructShapeDensitySPE <- function(spe, marks,
-    imageCol, markSelect,
-    dim = 500, bndw = NULL, thres = NULL,
-    nCores = 1) {
+reconstructShapeDensitySPE <- function(
+        spe, marks,
+        imageCol, markSelect,
+        dim = 500, bndw = NULL, thres = NULL,
+        nCores = 1) {
     # For computational reasonos delete all assays in SPE
     SummarizedExperiment::assays(spe) <- list()
     # Get all unique image ids
     allImages <- spe[[imageCol]] |> unique()
     # Calculate polygon for each id using multiple cores
     res_all <- mclapply(allImages, function(x) {
-        res <- reconstructShapeDensityImage(spe, marks, imageCol,
-            x, markSelect, dim , bndw, thres)
+        res <- reconstructShapeDensityImage(
+            spe, marks, imageCol,
+            x, markSelect, dim, bndw, thres
+        )
         # assign imageId
         res[["structID"]] <- paste0(x, "_", c(1:dim(res)[1]))
         res[[imageCol]] <- x
@@ -285,16 +287,15 @@ reconstructShapeDensitySPE <- function(spe, marks,
 #'     marks = "cellType", imageCol = "imageName",
 #'     markSelect = "A", plotHist = TRUE
 #' )
-estimateReconstructionParametersSPE <- function(
-        spe,
-        marks,
-        imageCol,
-        markSelect = NULL,
-        nImages = NULL,
-        fun = "bw.diggle",
-        dim = 500,
-        nCores = 1,
-        plotHist = TRUE) {
+estimateReconstructionParametersSPE <- function(spe,
+    marks,
+    imageCol,
+    markSelect = NULL,
+    nImages = NULL,
+    fun = "bw.diggle",
+    dim = 500,
+    nCores = 1,
+    plotHist = TRUE) {
     # Input checks
     if (!is.null(nImages)) {
         stopifnot("'nImages' must be numeric" = is.numeric(nImages))
