@@ -7,7 +7,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">sosta</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.99.4</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.99.5</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -18,7 +18,8 @@
       <ul class="navbar-nav me-auto"><li class="active nav-item"><a class="nav-link" href="../reference/index.html">Reference</a></li>
 <li class="nav-item dropdown">
   <button class="nav-link dropdown-toggle" type="button" id="dropdown-articles" data-bs-toggle="dropdown" aria-expanded="false" aria-haspopup="true">Articles</button>
-  <ul class="dropdown-menu" aria-labelledby="dropdown-articles"><li><a class="dropdown-item" href="../articles/IMC_DiabetesIslets_Vignette.html">Reconstruction and analysis of pancreatic islets from IMC data</a></li>
+  <ul class="dropdown-menu" aria-labelledby="dropdown-articles"><li><a class="dropdown-item" href="../articles/ImcDiabetesIsletsVignette.html">Reconstruction and analysis of pancreatic islets from IMC data</a></li>
+    <li><a class="dropdown-item" href="../articles/StructureReconstructionVignette.html">Reconstruction and quantification of anatomical structures</a></li>
   </ul></li>
 <li class="nav-item"><a class="nav-link" href="../news/index.html">Changelog</a></li>
       </ul><ul class="navbar-nav"><li class="nav-item"><form class="form-inline" role="search">
@@ -54,10 +55,28 @@
         <dd>Function to convert spatial coordinates of a <code>SpatialExperiment</code> object to a <code>ppp</code> object</dd>
       </dl><dl><dt>
 
+          <code><a href="assingCellsToStructures.html">assingCellsToStructures()</a></code>
+
+        </dt>
+        <dd>Function to assign spatial points to structures</dd>
+      </dl><dl><dt>
+
           <code><a href="binaryImageToSF.html">binaryImageToSF()</a></code>
 
         </dt>
         <dd>Converts a binary matrix to an sf polygon</dd>
+      </dl><dl><dt>
+
+          <code><a href="cellTypeProportions.html">cellTypeProportions()</a></code>
+
+        </dt>
+        <dd>Calculate the proportion of each cell type within spatial structures</dd>
+      </dl><dl><dt>
+
+          <code><a href="createPointPatternTissue.html">createPointPatternTissue()</a></code>
+
+        </dt>
+        <dd>Create a Point Pattern on a Simulated Tissue Image</dd>
       </dl><dl><dt>
 
           <code><a href="dot-intensityImage.html">.intensityImage()</a></code>
@@ -96,6 +115,12 @@
         <dd>Calculate mean shape metrics of a set of polygons</dd>
       </dl><dl><dt>
 
+          <code><a href="minBoundaryDistances.html">minBoundaryDistances()</a></code>
+
+        </dt>
+        <dd>Compute minimum boundary distances for each cell within its corresponding image structures</dd>
+      </dl><dl><dt>
+
           <code><a href="normalizeCoordinates.html">normalizeCoordinates()</a></code>
 
         </dt>
@@ -132,19 +157,37 @@
         <dd>Calculate a set of shape metrics of a polygon</dd>
       </dl><dl><dt>
 
-          <code><a href="st_calculateCurvature.html">st_calculateCurvature()</a></code>
+          <code><a href="simulateTissueBlobs.html">simulateTissueBlobs()</a></code>
 
         </dt>
-        <dd>Title</dd>
+        <dd>Simulate Tissue Blobs</dd>
       </dl><dl><dt>
 
-          <code><a href="st_calculateShapeCurl.html">st_calculateShapeCurl()</a></code>
+          <code><a href="sostaSPE.html">sostaSPE</a></code>
+
+        </dt>
+        <dd>Example SpatialExperiment Object with Simulated Tissue Images and Point Patterns</dd>
+      </dl><dl><dt>
+
+          <code><a href="spatialCoords2SF.html">spatialCoords2SF()</a></code>
+
+        </dt>
+        <dd>Function to convert spatialCoords to an sf object</dd>
+      </dl><dl><dt>
+
+          <code><a href="stCalculateCurvature.html">stCalculateCurvature()</a></code>
+
+        </dt>
+        <dd>Calculate curvature of sf object</dd>
+      </dl><dl><dt>
+
+          <code><a href="stCalculateShapeCurl.html">stCalculateShapeCurl()</a></code>
 
         </dt>
         <dd>Calculate curl of a polygon</dd>
       </dl><dl><dt>
 
-          <code><a href="st_feature_axes.html">st_feature_axes()</a></code>
+          <code><a href="stFeatureAxes.html">stFeatureAxes()</a></code>
 
         </dt>
         <dd>Calculate the length of feature axes of an sf polygon</dd>

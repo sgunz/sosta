@@ -7,7 +7,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">sosta</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.99.4</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.99.5</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -18,7 +18,8 @@
       <ul class="navbar-nav me-auto"><li class="active nav-item"><a class="nav-link" href="../reference/index.html">Reference</a></li>
 <li class="nav-item dropdown">
   <button class="nav-link dropdown-toggle" type="button" id="dropdown-articles" data-bs-toggle="dropdown" aria-expanded="false" aria-haspopup="true">Articles</button>
-  <ul class="dropdown-menu" aria-labelledby="dropdown-articles"><li><a class="dropdown-item" href="../articles/IMC_DiabetesIslets_Vignette.html">Reconstruction and analysis of pancreatic islets from IMC data</a></li>
+  <ul class="dropdown-menu" aria-labelledby="dropdown-articles"><li><a class="dropdown-item" href="../articles/ImcDiabetesIsletsVignette.html">Reconstruction and analysis of pancreatic islets from IMC data</a></li>
+    <li><a class="dropdown-item" href="../articles/StructureReconstructionVignette.html">Reconstruction and quantification of anatomical structures</a></li>
   </ul></li>
 <li class="nav-item"><a class="nav-link" href="../news/index.html">Changelog</a></li>
       </ul><ul class="navbar-nav"><li class="nav-item"><form class="form-inline" role="search">
@@ -46,13 +47,13 @@
     <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">estimateReconstructionParametersSPE</span><span class="op">(</span></span>
 <span>  <span class="va">spe</span>,</span>
 <span>  <span class="va">marks</span>,</span>
-<span>  <span class="va">image_col</span>,</span>
-<span>  mark_select <span class="op">=</span> <span class="cn">NULL</span>,</span>
-<span>  nimages <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  <span class="va">imageCol</span>,</span>
+<span>  markSelect <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  nImages <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  fun <span class="op">=</span> <span class="st">"bw.diggle"</span>,</span>
 <span>  dim <span class="op">=</span> <span class="fl">500</span>,</span>
-<span>  ncores <span class="op">=</span> <span class="fl">1</span>,</span>
-<span>  plot_hist <span class="op">=</span> <span class="cn">TRUE</span></span>
+<span>  nCores <span class="op">=</span> <span class="fl">1</span>,</span>
+<span>  plotHist <span class="op">=</span> <span class="cn">TRUE</span></span>
 <span><span class="op">)</span></span></code></pre></div>
     </div>
 
@@ -69,17 +70,17 @@
 the <code>ppp</code> marks</p></dd>
 
 
-<dt id="arg-image-col">image_col<a class="anchor" aria-label="anchor" href="#arg-image-col"></a></dt>
+<dt id="arg-imagecol">imageCol<a class="anchor" aria-label="anchor" href="#arg-imagecol"></a></dt>
 <dd><p>character; name of a column in <code>colData</code> that corresponds
 to the image</p></dd>
 
 
-<dt id="arg-mark-select">mark_select<a class="anchor" aria-label="anchor" href="#arg-mark-select"></a></dt>
+<dt id="arg-markselect">markSelect<a class="anchor" aria-label="anchor" href="#arg-markselect"></a></dt>
 <dd><p>character; name of mark that is to be selected for the
 reconstruction</p></dd>
 
 
-<dt id="arg-nimages">nimages<a class="anchor" aria-label="anchor" href="#arg-nimages"></a></dt>
+<dt id="arg-nimages">nImages<a class="anchor" aria-label="anchor" href="#arg-nimages"></a></dt>
 <dd><p>integer; number of images for the estimation. Will be randomly
 sampled</p></dd>
 
@@ -95,12 +96,12 @@ A lower resolution speed up computation but lead to less exact reconstruction.
 Default = 500</p></dd>
 
 
-<dt id="arg-ncores">ncores<a class="anchor" aria-label="anchor" href="#arg-ncores"></a></dt>
+<dt id="arg-ncores">nCores<a class="anchor" aria-label="anchor" href="#arg-ncores"></a></dt>
 <dd><p>numeric; number of cores for parallel processing using <code>mclapply</code>.
 Default = 1</p></dd>
 
 
-<dt id="arg-plot-hist">plot_hist<a class="anchor" aria-label="anchor" href="#arg-plot-hist"></a></dt>
+<dt id="arg-plothist">plotHist<a class="anchor" aria-label="anchor" href="#arg-plothist"></a></dt>
 <dd><p>logical; if histogram of estimated densities and thresholds
 should be plotted. Default = TRUE</p></dd>
 
@@ -112,19 +113,16 @@ should be plotted. Default = TRUE</p></dd>
 
     <div class="section level2">
     <h2 id="ref-examples">Examples<a class="anchor" aria-label="anchor" href="#ref-examples"></a></h2>
-    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="va">spe</span> <span class="op">&lt;-</span> <span class="fu">imcdatasets</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/imcdatasets/man/Damond_2019_Pancreas.html" class="external-link">Damond_2019_Pancreas</a></span><span class="op">(</span><span class="st">"spe"</span>, full_dataset <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> see ?imcdatasets and browseVignettes('imcdatasets') for documentation</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> loading from cache</span>
-<span class="r-in"><span><span class="va">spe_sel</span> <span class="op">&lt;-</span> <span class="va">spe</span><span class="op">[</span>, <span class="va">spe</span><span class="op">[[</span><span class="st">"image_name"</span><span class="op">]</span><span class="op">]</span> <span class="op"><a href="https://rdrr.io/r/base/match.html" class="external-link">%in%</a></span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"E02"</span>, <span class="st">"E03"</span>, <span class="st">"E04"</span><span class="op">)</span><span class="op">]</span></span></span>
-<span class="r-in"><span><span class="fu">estimateReconstructionParametersSPE</span><span class="op">(</span><span class="va">spe_sel</span>,</span></span>
-<span class="r-in"><span>    marks <span class="op">=</span> <span class="st">"cell_category"</span>,</span></span>
-<span class="r-in"><span>    image_col <span class="op">=</span> <span class="st">"image_name"</span>, mark_select <span class="op">=</span> <span class="st">"islet"</span>, plot_hist <span class="op">=</span> <span class="cn">TRUE</span></span></span>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/utils/data.html" class="external-link">data</a></span><span class="op">(</span><span class="st">"sostaSPE"</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="fu">estimateReconstructionParametersSPE</span><span class="op">(</span><span class="va">sostaSPE</span>,</span></span>
+<span class="r-in"><span>    marks <span class="op">=</span> <span class="st">"cellType"</span>, imageCol <span class="op">=</span> <span class="st">"imageName"</span>,</span></span>
+<span class="r-in"><span>    markSelect <span class="op">=</span> <span class="st">"A"</span>, plotHist <span class="op">=</span> <span class="cn">TRUE</span></span></span>
 <span class="r-in"><span><span class="op">)</span></span></span>
 <span class="r-plt img"><img src="estimateReconstructionParametersSPE-1.png" alt="" width="700" height="433"></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>   img     bndw       thres</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 1 E02 18.61921 0.004187900</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 2 E04 11.35910 0.003918334</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 3 E03 17.85633 0.003913723</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>      img     bndw      thres</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 1 image2 3.568156 0.05912054</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 2 image3 4.189788 0.03065195</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 3 image1 3.655770 0.04424890</span>
 </code></pre></div>
     </div>
   </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>

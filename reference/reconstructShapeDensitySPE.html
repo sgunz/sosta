@@ -7,7 +7,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">sosta</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.99.4</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.99.5</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -18,7 +18,8 @@
       <ul class="navbar-nav me-auto"><li class="active nav-item"><a class="nav-link" href="../reference/index.html">Reference</a></li>
 <li class="nav-item dropdown">
   <button class="nav-link dropdown-toggle" type="button" id="dropdown-articles" data-bs-toggle="dropdown" aria-expanded="false" aria-haspopup="true">Articles</button>
-  <ul class="dropdown-menu" aria-labelledby="dropdown-articles"><li><a class="dropdown-item" href="../articles/IMC_DiabetesIslets_Vignette.html">Reconstruction and analysis of pancreatic islets from IMC data</a></li>
+  <ul class="dropdown-menu" aria-labelledby="dropdown-articles"><li><a class="dropdown-item" href="../articles/ImcDiabetesIsletsVignette.html">Reconstruction and analysis of pancreatic islets from IMC data</a></li>
+    <li><a class="dropdown-item" href="../articles/StructureReconstructionVignette.html">Reconstruction and quantification of anatomical structures</a></li>
   </ul></li>
 <li class="nav-item"><a class="nav-link" href="../news/index.html">Changelog</a></li>
       </ul><ul class="navbar-nav"><li class="nav-item"><form class="form-inline" role="search">
@@ -46,12 +47,12 @@
     <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">reconstructShapeDensitySPE</span><span class="op">(</span></span>
 <span>  <span class="va">spe</span>,</span>
 <span>  <span class="va">marks</span>,</span>
-<span>  <span class="va">image_col</span>,</span>
-<span>  <span class="va">mark_select</span>,</span>
+<span>  <span class="va">imageCol</span>,</span>
+<span>  <span class="va">markSelect</span>,</span>
 <span>  dim <span class="op">=</span> <span class="fl">500</span>,</span>
 <span>  bndw <span class="op">=</span> <span class="cn">NULL</span>,</span>
-<span>  <span class="va">thres</span>,</span>
-<span>  ncores <span class="op">=</span> <span class="fl">1</span></span>
+<span>  thres <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  nCores <span class="op">=</span> <span class="fl">1</span></span>
 <span><span class="op">)</span></span></code></pre></div>
     </div>
 
@@ -68,12 +69,12 @@
 to the <code>ppp</code> marks</p></dd>
 
 
-<dt id="arg-image-col">image_col<a class="anchor" aria-label="anchor" href="#arg-image-col"></a></dt>
+<dt id="arg-imagecol">imageCol<a class="anchor" aria-label="anchor" href="#arg-imagecol"></a></dt>
 <dd><p>character; name of a column in <code>colData</code> that corresponds
 to the image</p></dd>
 
 
-<dt id="arg-mark-select">mark_select<a class="anchor" aria-label="anchor" href="#arg-mark-select"></a></dt>
+<dt id="arg-markselect">markSelect<a class="anchor" aria-label="anchor" href="#arg-markselect"></a></dt>
 <dd><p>character; name of mark that is to be selected for the
 reconstruction</p></dd>
 
@@ -85,16 +86,18 @@ Default = 500</p></dd>
 
 
 <dt id="arg-bndw">bndw<a class="anchor" aria-label="anchor" href="#arg-bndw"></a></dt>
-<dd><p>numeric; bandwith of the sigma parameter in the density estimation,
-if no value is given the bandwith is estimated using cross validation with
-the <code>bw.diggle</code> function.</p></dd>
+<dd><p>numeric; bandwidth of the sigma parameter in the density estimation,
+if no value is given the bandwidth is estimated using cross validation with
+the <code>bw.diggle</code> function for each image individually.</p></dd>
 
 
 <dt id="arg-thres">thres<a class="anchor" aria-label="anchor" href="#arg-thres"></a></dt>
-<dd><p>numeric; intensity threshold for the reconstruction</p></dd>
+<dd><p>numeric; intensity threshold for the reconstruction;
+if NULL the threshold is set as the mean between the mode of the pixel intensity
+distributions estimated for each image individual</p></dd>
 
 
-<dt id="arg-ncores">ncores<a class="anchor" aria-label="anchor" href="#arg-ncores"></a></dt>
+<dt id="arg-ncores">nCores<a class="anchor" aria-label="anchor" href="#arg-ncores"></a></dt>
 <dd><p>numeric; number of cores for parallel processing using
 <code>mclapply</code>. Default = 1</p></dd>
 
@@ -106,29 +109,23 @@ the <code>bw.diggle</code> function.</p></dd>
 
     <div class="section level2">
     <h2 id="ref-examples">Examples<a class="anchor" aria-label="anchor" href="#ref-examples"></a></h2>
-    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="va">spe</span> <span class="op">&lt;-</span> <span class="fu">imcdatasets</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/imcdatasets/man/Damond_2019_Pancreas.html" class="external-link">Damond_2019_Pancreas</a></span><span class="op">(</span><span class="st">"spe"</span>, full_dataset <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> see ?imcdatasets and browseVignettes('imcdatasets') for documentation</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> loading from cache</span>
-<span class="r-in"><span><span class="va">spe_sel</span> <span class="op">&lt;-</span> <span class="va">spe</span><span class="op">[</span>, <span class="va">spe</span><span class="op">[[</span><span class="st">"image_name"</span><span class="op">]</span><span class="op">]</span> <span class="op"><a href="https://rdrr.io/r/base/match.html" class="external-link">%in%</a></span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"E02"</span>, <span class="st">"E03"</span>, <span class="st">"E04"</span><span class="op">)</span><span class="op">]</span></span></span>
-<span class="r-in"><span><span class="va">all_islets</span> <span class="op">&lt;-</span> <span class="fu">reconstructShapeDensitySPE</span><span class="op">(</span><span class="va">spe_sel</span>,</span></span>
-<span class="r-in"><span>    marks <span class="op">=</span> <span class="st">"cell_category"</span>,</span></span>
-<span class="r-in"><span>    image_col <span class="op">=</span> <span class="st">"image_name"</span>, mark_select <span class="op">=</span> <span class="st">"islet"</span>, bndw <span class="op">=</span> <span class="va">sigma</span>, thres <span class="op">=</span> <span class="fl">0.0025</span></span></span>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/utils/data.html" class="external-link">data</a></span><span class="op">(</span><span class="st">"sostaSPE"</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="va">allStructs</span> <span class="op">&lt;-</span> <span class="fu">reconstructShapeDensitySPE</span><span class="op">(</span><span class="va">sostaSPE</span>,</span></span>
+<span class="r-in"><span>    marks <span class="op">=</span> <span class="st">"cellType"</span>, imageCol <span class="op">=</span> <span class="st">"imageName"</span>,</span></span>
+<span class="r-in"><span>    markSelect <span class="op">=</span> <span class="st">"A"</span>, bndw <span class="op">=</span> <span class="fl">3.5</span>, thres <span class="op">=</span> <span class="fl">0.005</span></span></span>
 <span class="r-in"><span><span class="op">)</span></span></span>
-<span class="r-in"><span><span class="va">all_islets</span></span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Simple feature collection with 8 features and 1 field</span>
+<span class="r-in"><span><span class="va">allStructs</span></span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Simple feature collection with 5 features and 2 fields</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> Geometry type: POLYGON</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> Dimension:     XY</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Bounding box:  xmin: 81.38922 ymin: 70.148 xmax: 562.7857 ymax: 519.656</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Bounding box:  xmin: 0.003206789 ymin: 0.01876509 xmax: 127.9648 ymax: 127.9749</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> CRS:           NA</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>   image_name     st_cast.stCast...POLYGON..</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 1        E02 POLYGON ((203.6163 516.42, ...</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 2        E03 POLYGON ((181.8026 207.1209...</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 3        E03 POLYGON ((394.6466 375.9907...</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 4        E03 POLYGON ((254.8497 518.3958...</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 5        E04 POLYGON ((149.8029 191.672,...</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 6        E04 POLYGON ((285.1585 239.096,...</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 7        E04 POLYGON ((491.6499 368.524,...</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 8        E04 POLYGON ((353.3303 295.412,...</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   structID imageName                   sostaPolygon</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 1 image1_1    image1 POLYGON ((52.22127 127.9601...</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 2 image2_1    image2 POLYGON ((0.5238102 13.0702...</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 3 image2_2    image2 POLYGON ((12.29547 127.719,...</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 4 image2_3    image2 POLYGON ((52.47265 127.4631...</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 5 image3_1    image3 POLYGON ((25.3302 127.8568,...</span>
 </code></pre></div>
     </div>
   </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>
