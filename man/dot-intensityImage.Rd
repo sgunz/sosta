@@ -4,12 +4,12 @@
 \alias{.intensityImage}
 \title{Function to estimate the intensity image of a point pattern}
 \usage{
-.intensityImage(ppp, mark_select = NULL, bndw = NULL, dim)
+.intensityImage(ppp, markSelect = NULL, bndw = NULL, dim)
 }
 \arguments{
 \item{ppp}{point pattern object of class \code{ppp}}
 
-\item{mark_select}{character; name of mark that is to be selected for the
+\item{markSelect}{character; name of mark that is to be selected for the
 reconstruction}
 
 \item{bndw}{bandwidth of kernel density estimator}

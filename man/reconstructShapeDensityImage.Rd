@@ -7,9 +7,9 @@
 reconstructShapeDensityImage(
   spe,
   marks,
-  image_col,
-  image_id,
-  mark_select,
+  imageCol,
+  imageId,
+  markSelect,
   dim = 500,
   bndw = NULL,
   thres = NULL
@@ -21,23 +21,26 @@ reconstructShapeDensityImage(
 \item{marks}{character; name of column in \code{colData} that will correspond
 to the \code{ppp} marks}
 
-\item{image_col}{character; name of a column in \code{colData} that corresponds
+\item{imageCol}{character; name of a column in \code{colData} that corresponds
 to the image}
 
-\item{image_id}{character; image id, must be present in image_col}
+\item{imageId}{character; image id, must be present in imageCol}
 
-\item{mark_select}{character; name of mark that is to be selected for the
+\item{markSelect}{character; name of mark that is to be selected for the
 reconstruction}
 
 \item{dim}{numeric; x dimension of the final reconstruction.
 A lower resolution speed up computation but lead to less exact reconstruction.
 Default = 500}
 
-\item{bndw}{numeric; bandwith of the sigma parameter in the density estimation,
-if no value is given the bandwith is estimated using cross validation with
+\item{bndw}{numeric; smoothing bandwidth in the density estimation,
+corresponds to the \code{sigma} parameter in the \code{density.ppp} function,
+if no value is given the bandwidth is estimated using cross validation with
 the \code{bw.diggle} function.}
 
-\item{thres}{numeric; intensity threshold for the reconstruction}
+\item{thres}{numeric; intensity threshold for the reconstruction;
+if NULL the threshold is set as the mean between the mode of the pixel intensity
+distributions}
 }
 \value{
 sf object of class \code{POLYGON}
@@ -46,10 +49,10 @@ sf object of class \code{POLYGON}
 Reconstruct structure from spe object with given image id
 }
 \examples{
-spe <- imcdatasets::Damond_2019_Pancreas("spe", full_dataset = FALSE)
-islet_poly <- reconstructShapeDensityImage(spe,
-    marks = "cell_category",
-    image_col = "image_name", image_id = "E04", mark_select = "islet", dim = 500
+data("sostaSPE")
+struct <- reconstructShapeDensityImage(sostaSPE,
+    marks = "cellType", imageCol = "imageName", imageId = "image1",
+    markSelect = "A", dim = 500
 )
-plot(islet_poly)
+plot(struct)
 }

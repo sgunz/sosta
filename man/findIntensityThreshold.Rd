@@ -4,12 +4,12 @@
 \alias{findIntensityThreshold}
 \title{Estimate the intensity threshold for the reconstruction of spatial structures}
 \usage{
-findIntensityThreshold(ppp, mark_select = NULL, bndw = NULL, dim, steps = 250)
+findIntensityThreshold(ppp, markSelect = NULL, bndw = NULL, dim, steps = 250)
 }
 \arguments{
 \item{ppp}{point pattern object of class \code{ppp}}
 
-\item{mark_select}{character; name of mark that is to be selected for the
+\item{markSelect}{character; name of mark that is to be selected for the
 reconstruction}
 
 \item{bndw}{numeric; bandwith of the sigma parameter in the density estimation,
@@ -29,7 +29,7 @@ numeric; estimated intensity threshold
 Estimate the intensity threshold for the reconstruction of spatial structures
 }
 \examples{
-spe <- imcdatasets::Damond_2019_Pancreas("spe", full_dataset = FALSE)
-ppp <- SPE2ppp(spe, marks = "cell_category", image_col = "image_name", image_id = "E04")
-findIntensityThreshold(ppp, mark_select = "islet", dim = 250)
+data(sostaSPE)
+ppp <- SPE2ppp(sostaSPE, marks = "cellType", imageCol = "imageName", imageId = "image1")
+findIntensityThreshold(ppp, markSelect = "A", dim = 250)
 }

@@ -16,7 +16,7 @@ matrix; coordinates scaled between 0 and 1
 Function to normalize coordinates between zero and one while keep scaling
 }
 \examples{
-matrix_R <- matrix(c(
+matrixR <- matrix(c(
     0, 0, 0, 0, 0, 0, 0, 0, 0,
     0, 1, 1, 1, 1, 1, 0, 0, 0,
     0, 1, 1, 0, 0, 1, 1, 0, 0,
@@ -27,6 +27,6 @@ matrix_R <- matrix(c(
     0, 1, 1, 0, 0, 1, 1, 0, 0,
     0, 0, 0, 0, 0, 0, 0, 0, 0
 ), nrow = 9, byrow = TRUE)
-coords <- xyCoordinates(matrix_R)
+coords <- xyCoordinates(matrixR)
 normalizeCoordinates(coords)
 }

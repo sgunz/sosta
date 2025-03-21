@@ -1,0 +1,337 @@
+---
+title: "Reconstruction and quantification of anatomical structures"
+author: 
+  - name: "Samuel Gunz"
+    affiliation:
+      - &DMLS Department of Molecular Life Sciences, University of Zurich, Switzerland
+      - &SIB SIB Swiss Institute of Bioinformatics, University of Zurich, Switzerland
+    email: "samuel.gunz@uzh.ch"
+  - name: Mark D. Robinson
+    affiliation:
+      - *DMLS
+      - *SIB
+package: "`r BiocStyle::Biocpkg('sosta')`"
+output:
+  BiocStyle::html_document
+abstract: >
+  In this vignette we show different functionalities of `sosta`. First we perform a density-based reconstruction of structures based on spatial coordinates. Next, we will calcuate different metrics on the structure and cell level.
+vignette: >
+  %\VignetteIndexEntry{ Reconstruction and analysis of anatomical structures}
+  %\VignetteEncoding{UTF-8}
+  %\VignetteEngine{knitr::rmarkdown}
+bibliography: sosta.bib
+editor_options: 
+  chunk_output_type: console
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+    collapse = TRUE,
+    comment = "#>"
+)
+```
+
+# Installation
+
+The `r BiocStyle::Biocpkg('sosta')` package can be installed from Bioconductor as follows:
+
+```{r installation, include = TRUE, eval=FALSE}
+if (!requireNamespace("BiocManager")) {
+    install.packages("BiocManager")
+}
+BiocManager::install("sosta")
+```
+
+# Setup
+
+For this vignette, we will need several additional packages:
+
+```{r setup, message=FALSE}
+library("sosta")
+library("dplyr")
+library("tidyr")
+library("ggplot2")
+library("sf")
+library("SpatialExperiment")
+
+theme_set(theme_bw())
+```
+
+# Introduction
+
+As an example, we will load an simulated dataset with three images and three cell types A, B and C, which are stored in a `r BiocStyle::Biocpkg('SpatialExperiment')` object:
+
+```{r loading, echo=TRUE, message=FALSE}
+# load the data
+data("sostaSPE")
+sostaSPE
+``` 
+
+```{r}
+cbind(colData(sostaSPE), spatialCoords(sostaSPE)) |>
+    as.data.frame() |>
+    ggplot(aes(x = x, y = y, color = cellType)) +
+    geom_point(size = 0.25) +
+    facet_wrap(~imageName) +
+    coord_equal()
+```
+
+The goal is to reconstruct, or segment, the *structures* given by cell type A.
+
+# Structure reconstruction
+
+## Reconstruction of structures for one image
+
+In this example, we will reconstruct cellular "structures" based on the point pattern density of the cells of type A. We will start with estimating parameters that are used for reconstruction afterwards. For one image, this can be illustrated as follows:
+
+```{r}
+shapeIntensityImage(
+    sostaSPE,
+    marks = "cellType",
+    imageCol = "imageName",
+    imageId = "image1",
+    markSelect = "A"
+)
+```
+
+We see the pixel-wise density image on the left and a histogram of the intensity values on the right. The estimated threshold is roughly the mean between the two modes of the (truncated) pixel intensity distribution. The dimensions of the pixel image are specified on the bottom left. The dimensions correspond to the density image, setting a higher value for the `dim` parameter will result in a higher resolution density image but will not change how many points are within a pixel. This can be changed by varying the smoothing parameter (`bndw`).
+
+This was done for one image. The function `estimateReconstructionParametersSPE` returns two plots with the estimated parameters for each image. The parameter `bndw` is the bandwidth parameter that is used for estimating the intensity profile of the point pattern. The parameter `thres` is the estimated parameter for the density threshold for reconstruction.
+
+```{r}
+n <- estimateReconstructionParametersSPE(
+    sostaSPE,
+    marks = "cellType",
+    imageCol = "imageName",
+    markSelect = "A",
+    plotHist = TRUE
+)
+```
+We will use the mean of the two estimated vectors as our parameters.
+
+```{r}
+(thresSPE <- mean(n$thres))
+(bndwSPE <- mean(n$bndw))
+```
+
+We can now use the function `reconstructShapeDensity` to segment the cell-type-A structure into regions, the result of which is `r BiocStyle::CRANpkg('sf')` polygon [@pebesmaSimpleFeaturesStandardized2018]. 
+
+```{r}
+(struct <- reconstructShapeDensityImage(
+    sostaSPE,
+    marks = "cellType",
+    imageCol = "imageName",
+    imageId = "image1",
+    markSelect = "A",
+    bndw = bndwSPE,
+    dim = 500,
+    thres = thresSPE
+))
+```
+
+We can then plot both the points and the segmented polygon.
+
+```{r}
+cbind(
+    colData(sostaSPE[, sostaSPE$imageName == "image1"]),
+    spatialCoords(sostaSPE[, sostaSPE$imageName == "image1"])
+) |>
+    as.data.frame() |>
+    ggplot(aes(x = x, y = y, color = cellType)) +
+    geom_point(size = 0.25) +
+    facet_wrap(~imageName) +
+    coord_equal() +
+    geom_sf(
+        data = struct,
+        fill = NA,
+        color = "darkblue",
+        inherit.aes = FALSE, # this is important
+        linewidth = 1
+    )
+```
+
+If no arguments are given, the function `reconstructShapeDensityImage` estimates the reconstruction parameters internally. The bandwidth is estimated using cross validation using the function `bw.diggle` of the `r BiocStyle::CRANpkg('spatstat.explore')` package. The threshold is estimated by taking the mean between the two modes of the pixel intensity distribution as illustrated above.
+
+```{r}
+struct2 <- reconstructShapeDensityImage(
+    sostaSPE,
+    marks = "cellType",
+    imageCol = "imageName",
+    imageId = "image1",
+    markSelect = "A",
+    dim = 500
+)
+```
+
+
+```{r}
+cbind(
+    colData(sostaSPE[, sostaSPE$imageName == "image1"]),
+    spatialCoords(sostaSPE[, sostaSPE$imageName == "image1"])
+) |>
+    as.data.frame() |>
+    ggplot(aes(x = x, y = y, color = cellType)) +
+    geom_point(size = 0.25) +
+    facet_wrap(~imageName) +
+    coord_equal() +
+    geom_sf(
+        data = struct2,
+        fill = NA,
+        color = "darkblue",
+        inherit.aes = FALSE, # this is important
+        linewidth = 1
+    )
+```
+
+## Reconstruction of structures for all images
+
+The function `reconstructShapeDensitySPE` reconstructs the cell-type-A structure for all images in the `spe` object. We use the estimated parameters from above.
+
+```{r, eval=TRUE}
+allStructs <- reconstructShapeDensitySPE(
+    sostaSPE,
+    marks = "cellType",
+    imageCol = "imageName",
+    markSelect = "A",
+    bndw = bndwSPE,
+    thres = thresSPE,
+    nCores = 1
+)
+```
+
+## Intersection with cells
+
+Next, we assign cells in the `SingleCellExperiment` object to their specific structure. 
+
+```{r}
+assign <- assingCellsToStructures(sostaSPE, allStructs,
+    imageCol = "imageName", nCores = 1
+)
+sostaSPE$structAssign <- assign
+```
+
+
+```{r}
+cbind(colData(sostaSPE), spatialCoords(sostaSPE)) |>
+    as.data.frame() |>
+    ggplot(aes(x = x, y = y, color = structAssign)) +
+    geom_point(size = 0.25) +
+    facet_wrap(~imageName) +
+    coord_equal()
+```
+
+# Structure level metrics
+
+## Proportion of cell types within structures
+
+Using the function `cellTypeProportions`, we can estimate the proportion of cell types witin each individual structure.
+
+```{r}
+cellTypeProportions(sostaSPE, "structAssign", "cellType")
+```
+
+## Shape Metrics
+
+
+The function `totalShapeMetrics` calculates a set of metrics related to the shape of the structures
+
+```{r}
+(shapeMetrics <- totalShapeMetrics(allStructs))
+
+cbind(allStructs, t(shapeMetrics)) |>
+    ggplot() +
+    geom_sf(aes(fill = Area)) +
+    facet_wrap(~imageName)
+```
+
+# Cell level metrics
+
+## Distance to structure border
+
+Using the function `minBoundaryDistances`, we can compute the distance to the border structure. Negative values indicate that the points lie inside the structure.
+
+```{r}
+sostaSPE$minDist <- minBoundaryDistances(
+    sostaSPE, "imageName",
+    "structAssign", allStructs
+)
+
+cbind(colData(sostaSPE), spatialCoords(sostaSPE)) |>
+    as.data.frame() |>
+    ggplot(aes(x = x, y = y, color = minDist)) +
+    geom_point(size = 0.25) +
+    facet_wrap(~imageName) +
+    coord_equal() +
+    scale_colour_gradient2() +
+    geom_sf(
+        data = allStructs,
+        fill = NA,
+        inherit.aes = FALSE
+    ) +
+    facet_wrap(~imageName)
+```
+
+This information can be used to define border cells by thresholding to a range of positive and negative values.
+
+```{r}
+sostaSPE$border <- ifelse(abs(sostaSPE$minDist) < 3, TRUE, FALSE)
+
+
+cbind(colData(sostaSPE), spatialCoords(sostaSPE)) |>
+    as.data.frame() |>
+    ggplot(aes(x = x, y = y, color = border)) +
+    geom_point(size = 0.25) +
+    facet_wrap(~imageName) +
+    coord_equal() +
+    geom_sf(
+        data = allStructs,
+        fill = NA,
+        inherit.aes = FALSE
+    ) +
+    facet_wrap(~imageName)
+```
+
+Alternatively, borders can be defined using `st_difference` and `st_buffer` on the structure object. In this case we will have an `sf` polygon that correspond to the border region.
+
+```{r}
+borders <- lapply(
+    st_geometry(allStructs),
+    \(x) st_difference(st_buffer(x, 3), st_buffer(x, -3))
+) |>
+    # both needed for proper conversion
+    st_as_sfc() |> st_as_sf()
+
+borders$imageName <- allStructs$imageName
+borders$borderID <- paste0("border_", allStructs$structID)
+
+sostaSPE$borderSf <- assingCellsToStructures(sostaSPE,
+    borders,
+    imageCol = "imageName",
+    uniqueId = "borderID",
+    nCores = 1
+)
+```
+
+
+```{r}
+cbind(colData(sostaSPE), spatialCoords(sostaSPE)) |>
+    as.data.frame() |>
+    ggplot(aes(x = x, y = y, color = borderSf)) +
+    geom_point(size = 0.25) +
+    facet_wrap(~imageName) +
+    coord_equal() +
+    geom_sf(
+        data = borders,
+        fill = NA,
+        inherit.aes = FALSE
+    ) +
+    facet_wrap(~imageName)
+```
+
+# Session Info
+
+```{r sessionInfo}
+sessionInfo()
+```
+
+# References

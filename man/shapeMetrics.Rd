@@ -27,6 +27,6 @@ matrix_R <- matrix(c(
     0, 1, 1, 0, 0, 1, 1, 0, 0,
     0, 0, 0, 0, 0, 0, 0, 0, 0
 ), nrow = 9, byrow = TRUE)
-poly_R <- binaryImageToSF(matrix_R, xmin = 0, xmax = 1, ymin = 0, ymax = 1)
-shapeMetrics(poly_R)
+polyR <- binaryImageToSF(matrix_R, xmin = 0, xmax = 1, ymin = 0, ymax = 1)
+shapeMetrics(polyR)
 }

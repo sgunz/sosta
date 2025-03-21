@@ -4,10 +4,10 @@
 \alias{.intensityThreshold}
 \title{Function to estimate the intensity threshold for the reconstruction of spatial structures}
 \usage{
-.intensityThreshold(density_image, steps = 250)
+.intensityThreshold(densityImage, steps = 250)
 }
 \arguments{
-\item{density_image}{real-valued pixel image; output from the function \code{.intensityImage}}
+\item{densityImage}{real-valued pixel image; output from the function \code{.intensityImage}}
 
 \item{steps}{numeric; value used to filter the density estimates, where only
 densities greater than the maximum value divided by \code{threshold} are considered.

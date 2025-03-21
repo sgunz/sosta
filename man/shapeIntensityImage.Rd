@@ -7,9 +7,9 @@
 shapeIntensityImage(
   spe,
   marks,
-  image_col,
-  image_id,
-  mark_select,
+  imageCol,
+  imageId,
+  markSelect,
   bndw = NULL,
   dim = 500
 )
@@ -20,16 +20,17 @@ shapeIntensityImage(
 \item{marks}{character; name of column in \code{colData} that will correspond to
 the \code{ppp} marks}
 
-\item{image_col}{character; name of a column in \code{colData} that corresponds to
+\item{imageCol}{character; name of a column in \code{colData} that corresponds to
 the image}
 
-\item{image_id}{character; image id, must be present in image_col}
+\item{imageId}{character; image id, must be present in imageCol}
 
-\item{mark_select}{character; name of mark that is to be selected for the
+\item{markSelect}{character; name of mark that is to be selected for the
 reconstruction}
 
-\item{bndw}{numeric; bandwith of the sigma parameter in the density estimation,
-if no value is given the bandwith is estimated using cross validation with
+\item{bndw}{numeric; smoothing bandwidth in the density estimation,
+corresponds to the \code{sigma} parameter in the \code{density.ppp} function,
+if no value is given the bandwidth is estimated using cross validation with
 the \code{bw.diggle} function.}
 
 \item{dim}{numeric; x dimension of the final reconstruction. A lower resolution
@@ -44,9 +45,9 @@ a histogram of the intensity values. Note that intensities less than
 largest intensity value divided by 250 are not displayed in the histogram.
 }
 \examples{
-spe <- imcdatasets::Damond_2019_Pancreas("spe", full_dataset = FALSE)
-shapeIntensityImage(spe,
-    marks = "cell_category", image_col = "image_name",
-    image_id = "E04", mark_select = "islet"
+data("sostaSPE")
+shapeIntensityImage(sostaSPE,
+    marks = "cellType", imageCol = "imageName",
+    imageId = "image1", markSelect = "A"
 )
 }

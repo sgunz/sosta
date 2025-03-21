@@ -19,8 +19,8 @@
 #'     0, 1, 1, 0, 0, 1, 1, 0, 0,
 #'     0, 0, 0, 0, 0, 0, 0, 0, 0
 #' ), nrow = 9, byrow = TRUE)
-#' poly_R <- binaryImageToSF(matrix_R, xmin = 0, xmax = 1, ymin = 0, ymax = 1)
-#' shapeMetrics(poly_R)
+#' polyR <- binaryImageToSF(matrix_R, xmin = 0, xmax = 1, ymin = 0, ymax = 1)
+#' shapeMetrics(polyR)
 shapeMetrics <- function(sfPoly) {
     # Input checks
     stopifnot("'sfPoly' must be a valid sfc object" = inherits(sfPoly, "sfc"))
@@ -34,15 +34,15 @@ shapeMetrics <- function(sfPoly) {
     # Perimeter of convex hull
     shapeConvexPerimeter <- st_length(st_boundary(shapeConvexHull))
     # Feature axes
-    FeatureAxes <- st_feature_axes(sfPoly)
+    FeatureAxes <- stFeatureAxes(sfPoly)
     # Compactness: 0 and 1 (circle)
-    shapeCompactness <- (shapePerimeter)^2 / (4 * pi * shapeArea)
+    shapeCompactness <- (4 * pi * shapeArea) / (shapePerimeter)^2
     # Eccentricity: between 0 and 1
     shapeEccentricity <- FeatureAxes$minorAxisLength / FeatureAxes$majorAxisLength
     # Circularity / roundness: 0 and 1 for round object
     shapeCircularity <- (4 * pi * shapeArea) / shapeConvexPerimeter^2
     #  Curl
-    shapeCurl <- st_calculateShapeCurl(sfPoly)
+    shapeCurl <- stCalculateShapeCurl(sfPoly)
     # Solidity: measures the density of an object
     shapeSolidity <- shapeArea / st_area(shapeConvexHull)
 
@@ -74,12 +74,12 @@ shapeMetrics <- function(sfPoly) {
 #' @export
 #'
 #' @examples
-#' spe <- imcdatasets::Damond_2019_Pancreas("spe", full_dataset = FALSE)
-#' islet_poly <- reconstructShapeDensityImage(spe,
-#'     marks = "cell_category",
-#'     image_col = "image_name", image_id = "E04", mark_select = "islet", dim = 500
+#' data(sostaSPE)
+#' struct <- reconstructShapeDensityImage(sostaSPE,
+#'     marks = "cellType", imageCol = "imageName",
+#'     imageId = "image1", markSelect = "A", dim = 500
 #' )
-#' totalShapeMetrics(islet_poly)
+#' totalShapeMetrics(struct)
 totalShapeMetrics <- function(sfInput) {
     # Input checks
     stopifnot("'sfInput' must be a valid sf object" = inherits(sfInput, "sf"))
@@ -100,10 +100,17 @@ totalShapeMetrics <- function(sfInput) {
     # matrix of metrics of all substructures
     shapeMat <- matrix(as.numeric(shapeStruct), nrow = dim(shapeStruct)[1])
     rownames(shapeMat) <- rownames(shapeStruct)
-    colnames(shapeMat) <- paste0(
-        deparse(substitute(sfInput)),
-        seq_len(dim(shapeMat)[2])
-    )
+
+    if (!is.null(sfInput[["structID"]])) {
+        colNames <- sfInput[["structID"]]
+    } else {
+        colNames <- paste0(
+            deparse(substitute(sfInput)),
+            seq_len(dim(shapeMat)[2])
+        )
+    }
+
+    colnames(shapeMat) <- colNames
     return(shapeMat)
 }
 
@@ -115,13 +122,13 @@ totalShapeMetrics <- function(sfInput) {
 #' @return matrix; matrix of mean shape metrics
 #' @export
 #' @examples
-#' spe <- imcdatasets::Damond_2019_Pancreas("spe", full_dataset = FALSE)
-#' islet_poly <- reconstructShapeDensityImage(spe,
-#'     marks = "cell_category",
-#'     image_col = "image_name", image_id = "E04", mark_select = "islet", dim = 500
+#' data(sostaSPE)
+#' struct <- reconstructShapeDensityImage(sostaSPE,
+#'     marks = "cellType", imageCol = "imageName",
+#'     imageId = "image1", markSelect = "A", dim = 500
 #' )
-#' shape_metrics <- totalShapeMetrics(islet_poly)
-#' meanShapeMetrics(shape_metrics)
+#' shapeMetrics <- totalShapeMetrics(struct)
+#' meanShapeMetrics(shapeMetrics)
 meanShapeMetrics <- function(totalShapeMetricMatrix) {
     # Check Input
     stopifnot("'totalShapeMetricMatrix' must be a matrix" = is.matrix(totalShapeMetricMatrix))

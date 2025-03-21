@@ -4,18 +4,12 @@
 \alias{reconstructShapeDensity}
 \title{Reconstruct polygon from point pattern density}
 \usage{
-reconstructShapeDensity(
-  ppp,
-  mark_select = NULL,
-  bndw = NULL,
-  thres = NULL,
-  dim
-)
+reconstructShapeDensity(ppp, markSelect = NULL, bndw = NULL, thres = NULL, dim)
 }
 \arguments{
 \item{ppp}{point pattern object of class \code{ppp}}
 
-\item{mark_select}{character; name of mark that is to be selected for the
+\item{markSelect}{character; name of mark that is to be selected for the
 reconstruction}
 
 \item{bndw}{bandwidth of kernel density estimator}
@@ -33,9 +27,9 @@ thresholds the density to create a binary image, and then converts it
 to a valid \code{sf} object (polygons).
 }
 \examples{
-spe <- imcdatasets::Damond_2019_Pancreas("spe", full_dataset = FALSE)
-ppp <- SPE2ppp(spe, marks = "cell_category", image_col = "image_name", image_id = "E04")
-thres <- findIntensityThreshold(ppp, mark_select = "islet", dim = 500)
-islet_poly <- reconstructShapeDensity(ppp, mark_select = "islet", thres = thres, dim = 500)
-plot(islet_poly)
+data("sostaSPE")
+ppp <- SPE2ppp(sostaSPE, marks = "cellType", imageCol = "imageName", imageId = "image1")
+thres <- findIntensityThreshold(ppp, markSelect = "A", dim = 500)
+struct <- reconstructShapeDensity(ppp, markSelect = "A", thres = thres, dim = 500)
+plot(struct)
 }

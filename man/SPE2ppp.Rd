@@ -4,7 +4,7 @@
 \alias{SPE2ppp}
 \title{Function to convert spatial coordinates of a \code{SpatialExperiment} object to a \code{ppp} object}
 \usage{
-SPE2ppp(spe, marks, image_col = NULL, image_id = NULL)
+SPE2ppp(spe, marks, imageCol = NULL, imageId = NULL)
 }
 \arguments{
 \item{spe}{SpatialExperiment; a object of class \code{SpatialExperiment}}
@@ -12,10 +12,10 @@ SPE2ppp(spe, marks, image_col = NULL, image_id = NULL)
 \item{marks}{character; name of column in \code{colData} that will correspond to
 the \code{ppp} marks}
 
-\item{image_col}{character; name of a column in \code{colData} that corresponds to
+\item{imageCol}{character; name of a column in \code{colData} that corresponds to
 the image}
 
-\item{image_id}{character; image id, must be present in image_col}
+\item{imageId}{character; image id, must be present in imageCol}
 }
 \value{
 ppp; object of type \code{ppp}
@@ -24,6 +24,9 @@ ppp; object of type \code{ppp}
 Function to convert spatial coordinates of a \code{SpatialExperiment} object to a \code{ppp} object
 }
 \examples{
-spe <- imcdatasets::Damond_2019_Pancreas("spe", full_dataset = FALSE)
-SPE2ppp(spe, marks = "cell_category", image_col = "image_name", image_id = "E04")
+data(sostaSPE)
+SPE2ppp(sostaSPE,
+    marks = "cellType", imageCol = "imageName",
+    imageId = "image1"
+)
 }

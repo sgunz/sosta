@@ -5,34 +5,33 @@ ppp <- spatstat.geom::ppp(
     window = spatstat.geom::owin(c(0, 1), c(0, 1))
 )
 
-# load SPE object
-spe <- imcdatasets::Damond_2019_Pancreas("spe", full_dataset = FALSE)
+# load sostaSPE object
+data("sostaSPE")
 
 # Test the reconstruction function
-islet_poly <- reconstructShapeDensityImage(
-    spe,
-    marks = "cell_category",
-    image_col = "image_name",
-    image_id = "E04",
-    mark_select = "islet",
+polyA <- reconstructShapeDensityImage(
+    sostaSPE,
+    marks = "cellType",
+    imageCol = "imageName",
+    imageId = "image1",
+    markSelect = "A",
     dim = 500
 )
 
-# Test the reconstruction on SPE object
-spe_sel <- spe[, spe[["image_name"]] %in% c("E02", "E03", "E04")]
-all_islets <- reconstructShapeDensitySPE(
-    spe_sel,
-    marks = "cell_category",
-    image_col = "image_name",
-    mark_select = "islet",
-    bndw = sigma,
-    thres = 0.0025
+# Test the reconstruction on sostaSPE object
+allA <- reconstructShapeDensitySPE(
+    sostaSPE,
+    marks = "cellType",
+    imageCol = "imageName",
+    markSelect = "A",
+    bndw = 3.5,
+    thres = 0.005
 )
 
 
 test_that("reconstructShapeDensity returns valid polygons", {
     # Reconstruct polygons with valid parameters
-    result <- reconstructShapeDensity(ppp, mark_select = NULL, dim = 100)
+    result <- reconstructShapeDensity(ppp, markSelect = NULL, bndw = 1, dim = 100)
 
     expect_s3_class(result, "sf")
     expect_true(any(st_geometry_type(result) == "POLYGON"))
@@ -41,53 +40,53 @@ test_that("reconstructShapeDensity returns valid polygons", {
 
 test_that("reconstructShapeDensity handles invalid thresholds", {
     # Test low threshold
-    expect_error(
-        reconstructShapeDensity(ppp, thres = 0, dim = 500),
-        "Threshold too low"
+    expect_warning(
+        reconstructShapeDensity(ppp, thres = 0, bndw = 1, dim = 500),
+        "Full image converted to polygon; threshold might be too low"
     )
 
     # Test high threshold
-    expect_error(
-        reconstructShapeDensity(ppp, thres = 1E5, dim = 500),
-        "Threshold too high"
+    expect_warning(
+        reconstructShapeDensity(ppp, thres = 1E5, bndw = 1, dim = 500),
+        "No structure found; threshold might be too high"
     )
 })
 
 test_that("shapeIntensityImage generates valid plots", {
     # Test the intensity image function
     p <- shapeIntensityImage(
-        spe,
-        marks = "cell_category",
-        image_col = "image_name",
-        image_id = "E04",
-        mark_select = "islet"
+        sostaSPE,
+        marks = "cellType",
+        imageCol = "imageName",
+        imageId = "image1",
+        markSelect = "A"
     )
 
     expect_s3_class(p, "ggplot")
 })
 
 test_that("reconstructShapeDensityImage returns polygons from SpatialExperiment", {
-    expect_s3_class(islet_poly, "sf")
-    expect_true(any(st_geometry_type(islet_poly) == "POLYGON"))
-    expect_false(any(st_is_empty(islet_poly)))
+    expect_s3_class(polyA, "sf")
+    expect_true(any(st_geometry_type(polyA) == "POLYGON"))
+    expect_false(any(st_is_empty(polyA)))
 })
 
-test_that("reconstructShapeDensitySPE handles multiple images", {
-    expect_s3_class(all_islets, "sf")
-    expect_true(any(st_geometry_type(all_islets) == "POLYGON"))
-    expect_false(any(st_is_empty(all_islets)))
+test_that("reconstructShapeDensitysostaSPE handles multiple images", {
+    expect_s3_class(allA, "sf")
+    expect_true(any(st_geometry_type(allA) == "POLYGON"))
+    expect_false(any(st_is_empty(allA)))
 })
 
-test_that("estimateReconstructionParametersSPE estimates valid parameters", {
+test_that("estimateReconstructionParameterssostaSPE estimates valid parameters", {
     # Test the estimation function
     res <- estimateReconstructionParametersSPE(
-        spe = spe,
-        marks = "cell_category",
-        image_col = "image_name",
-        mark_select = "islet",
-        nimages = 2,
+        sostaSPE,
+        marks = "cellType",
+        imageCol = "imageName",
+        markSelect = "A",
+        nImages = 2,
         dim = 500,
-        plot_hist = FALSE
+        plotHist = FALSE
     )
 
     expect_true(is.data.frame(res))
@@ -109,17 +108,17 @@ test_that("reconstructShapeDensity handles invalid input types", {
     )
 })
 
-test_that("estimateReconstructionParametersSPE handles edge cases", {
+test_that("estimateReconstructionParameterssostaSPE handles edge cases", {
     # Test with fewer images than requested
     expect_error(
         estimateReconstructionParametersSPE(
-            spe = spe_sel,
-            marks = "cell_category",
-            image_col = "image_name",
-            mark_select = "islet",
-            nimages = 10,
+            sostaSPE,
+            marks = "cellType",
+            imageCol = "imageName",
+            markSelect = "A",
+            nImages = 50,
             dim = 500,
-            plot_hist = FALSE
+            plotHist = FALSE
         ),
         "must be smaller or equal to the number of images"
     )

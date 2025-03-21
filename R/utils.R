@@ -12,7 +12,7 @@
 #' @export
 #'
 #' @examples
-#' matrix_R <- matrix(c(
+#' matrixR <- matrix(c(
 #'     0, 0, 0, 0, 0, 0, 0, 0, 0,
 #'     0, 1, 1, 1, 1, 1, 0, 0, 0,
 #'     0, 1, 1, 0, 0, 1, 1, 0, 0,
@@ -23,8 +23,8 @@
 #'     0, 1, 1, 0, 0, 1, 1, 0, 0,
 #'     0, 0, 0, 0, 0, 0, 0, 0, 0
 #' ), nrow = 9, byrow = TRUE)
-#' poly_R <- binaryImageToSF(matrix_R, xmin = 0, xmax = 1, ymin = 0, ymax = 1)
-#' plot(poly_R)
+#' polyR <- binaryImageToSF(matrixR, xmin = 0, xmax = 1, ymin = 0, ymax = 1)
+#' plot(polyR)
 binaryImageToSF <- function(
         binaryMatrix,
         xmin, xmax,
@@ -44,7 +44,7 @@ binaryImageToSF <- function(
     # rescale to correct windwow
     set.ext(r, c(xmin, xmax, ymin, ymax))
     # convert to polygons
-    poly <- as.polygons(r)
+    poly <- as.polygons(r) # Why does it print "hardcopy" here?
     # polygons is a SpatVector. Convert it to an sf object
     polygonsSF <- st_as_sf(poly)
     # Merge polygons to a single multipolygon
@@ -60,7 +60,7 @@ binaryImageToSF <- function(
 #' @export
 #'
 #' @examples
-#' matrix_R <- matrix(c(
+#' matrixR <- matrix(c(
 #'     0, 0, 0, 0, 0, 0, 0, 0, 0,
 #'     0, 1, 1, 1, 1, 1, 0, 0, 0,
 #'     0, 1, 1, 0, 0, 1, 1, 0, 0,
@@ -71,7 +71,7 @@ binaryImageToSF <- function(
 #'     0, 1, 1, 0, 0, 1, 1, 0, 0,
 #'     0, 0, 0, 0, 0, 0, 0, 0, 0
 #' ), nrow = 9, byrow = TRUE)
-#' xyCoordinates(matrix_R)
+#' xyCoordinates(matrixR)
 xyCoordinates <- function(inputMatrix) {
     # Input checking
     stopifnot("'inputMatrix' must be a matrix" = is.matrix(inputMatrix))
@@ -88,7 +88,7 @@ xyCoordinates <- function(inputMatrix) {
 #' @return matrix; coordinates scaled between 0 and 1
 #' @export
 #' @examples
-#' matrix_R <- matrix(c(
+#' matrixR <- matrix(c(
 #'     0, 0, 0, 0, 0, 0, 0, 0, 0,
 #'     0, 1, 1, 1, 1, 1, 0, 0, 0,
 #'     0, 1, 1, 0, 0, 1, 1, 0, 0,
@@ -99,7 +99,7 @@ xyCoordinates <- function(inputMatrix) {
 #'     0, 1, 1, 0, 0, 1, 1, 0, 0,
 #'     0, 0, 0, 0, 0, 0, 0, 0, 0
 #' ), nrow = 9, byrow = TRUE)
-#' coords <- xyCoordinates(matrix_R)
+#' coords <- xyCoordinates(matrixR)
 #' normalizeCoordinates(coords)
 normalizeCoordinates <- function(coords) {
     stopifnot("'coords' must be a matrix" = is.matrix(coords))
@@ -130,12 +130,12 @@ normalizeCoordinates <- function(coords) {
 #' @export
 #'
 #' @examples
-#' spe <- imcdatasets::Damond_2019_Pancreas("spe", full_dataset = FALSE)
-#' ppp <- SPE2ppp(spe,
-#'     marks = "cell_category", image_col = "image_name",
-#'     image_id = "E04"
+#' data(sostaSPE)
+#' pp <- SPE2ppp(sostaSPE,
+#'     marks = "cellType", imageCol = "imageName",
+#'     imageId = "image1"
 #' )
-#' getDimXY(ppp, 500)
+#' getDimXY(pp, 500)
 getDimXY <- function(ppp, ydim) {
     # Input checking
     stopifnot("'ppp' must be an object of class 'ppp'" = inherits(ppp, "ppp"))
@@ -151,9 +151,9 @@ getDimXY <- function(ppp, ydim) {
 #' @param spe SpatialExperiment; a object of class `SpatialExperiment`
 #' @param marks character; name of column in `colData` that will correspond to
 #' the `ppp` marks
-#' @param image_col character; name of a column in `colData` that corresponds to
+#' @param imageCol character; name of a column in `colData` that corresponds to
 #' the image
-#' @param image_id character; image id, must be present in image_col
+#' @param imageId character; image id, must be present in imageCol
 #'
 #' @return ppp; object of type `ppp`
 #' @export
@@ -162,12 +162,15 @@ getDimXY <- function(ppp, ydim) {
 #' @importFrom spatstat.geom as.ppp setmarks
 #'
 #' @examples
-#' spe <- imcdatasets::Damond_2019_Pancreas("spe", full_dataset = FALSE)
-#' SPE2ppp(spe, marks = "cell_category", image_col = "image_name", image_id = "E04")
+#' data(sostaSPE)
+#' SPE2ppp(sostaSPE,
+#'     marks = "cellType", imageCol = "imageName",
+#'     imageId = "image1"
+#' )
 SPE2ppp <- function(spe,
     marks,
-    image_col = NULL,
-    image_id = NULL) {
+    imageCol = NULL,
+    imageId = NULL) {
     # Input checking
     stopifnot(
         "'spe' must be an object of class 'SpatialExperiment'" =
@@ -179,16 +182,16 @@ SPE2ppp <- function(spe,
     )
 
     # Subset the SPE object
-    if (!is.null(image_col) & !is.null(image_id)) {
+    if (!is.null(imageCol) & !is.null(imageId)) {
         stopifnot(
-            "'image_col' must exist in colData(spe)" =
-                image_col %in% colnames(colData(spe))
+            "'imageCol' must exist in colData(spe)" =
+                imageCol %in% colnames(colData(spe))
         )
         stopifnot(
-            "'image_id' must exist in colData(spe)[['image_col']]" =
-                image_id %in% colData(spe)[[image_col]]
+            "'imageId' must exist in colData(spe)[['imageCol']]" =
+                imageId %in% colData(spe)[[imageCol]]
         )
-        spe <- spe[, colData(spe)[[image_col]] %in% image_id]
+        spe <- spe[, colData(spe)[[imageCol]] %in% imageId]
     }
 
     ppp <- as.ppp(
@@ -208,7 +211,7 @@ SPE2ppp <- function(spe,
 #' Estimate the intensity threshold for the reconstruction of spatial structures
 #'
 #' @param ppp point pattern object of class `ppp`
-#' @param mark_select character; name of mark that is to be selected for the
+#' @param markSelect character; name of mark that is to be selected for the
 #'  reconstruction
 #' @param bndw numeric; bandwith of the sigma parameter in the density estimation,
 #' if no value is given the bandwith is estimated using cross validation with
@@ -225,24 +228,24 @@ SPE2ppp <- function(spe,
 #' @export
 #'
 #' @examples
-#' spe <- imcdatasets::Damond_2019_Pancreas("spe", full_dataset = FALSE)
-#' ppp <- SPE2ppp(spe, marks = "cell_category", image_col = "image_name", image_id = "E04")
-#' findIntensityThreshold(ppp, mark_select = "islet", dim = 250)
-findIntensityThreshold <- function(ppp, mark_select = NULL,
+#' data(sostaSPE)
+#' ppp <- SPE2ppp(sostaSPE, marks = "cellType", imageCol = "imageName", imageId = "image1")
+#' findIntensityThreshold(ppp, markSelect = "A", dim = 250)
+findIntensityThreshold <- function(ppp, markSelect = NULL,
     bndw = NULL, dim,
     steps = 250) {
     stopifnot("'steps' must be a single numeric value" = is.numeric(dim) && length(dim) == 1)
     # get density image
-    density_image <- .intensityImage(ppp, mark_select, bndw, dim)$den_im
+    densityImage <- .intensityImage(ppp, markSelect, bndw, dim)$denIm
     # calculate threshold
-    thres <- .intensityThreshold(density_image, steps)
+    thres <- .intensityThreshold(densityImage, steps)
     return(thres)
 }
 
 
 #' Function to estimate the intensity image of a point pattern
 #' @param ppp point pattern object of class `ppp`
-#' @param mark_select character; name of mark that is to be selected for the
+#' @param markSelect character; name of mark that is to be selected for the
 #'  reconstruction
 #' @param bndw bandwidth of kernel density estimator
 #' @param dim numeric; x dimension of the final reconstruction.
@@ -251,7 +254,7 @@ findIntensityThreshold <- function(ppp, mark_select = NULL,
 #' @importFrom spatstat.explore bw.diggle density.ppp
 #' @importFrom spatstat.geom subset.ppp
 .intensityImage <- function(ppp,
-    mark_select = NULL,
+    markSelect = NULL,
     bndw = NULL,
     dim) {
     # Input checking
@@ -264,51 +267,51 @@ findIntensityThreshold <- function(ppp, mark_select = NULL,
     }
 
     # Extract the islet cells
-    if (!is.null(mark_select)) {
+    if (!is.null(markSelect)) {
         stopifnot(
-            "All values in 'mark_select' must exist in 'marks' of 'ppp'" =
-                all(mark_select %in% marks(ppp))
+            "All values in 'markSelect' must exist in 'marks' of 'ppp'" =
+                all(markSelect %in% marks(ppp))
         )
-        pp_sel <- subset.ppp(ppp, marks %in% mark_select)
+        ppSel <- subset.ppp(ppp, marks %in% markSelect)
     } else {
-        pp_sel <- ppp
+        ppSel <- ppp
     }
 
 
     # Set the dimensions of the resulting reconstruction
-    dimyx <- getDimXY(pp_sel, dim)
+    dimyx <- getDimXY(ppSel, dim)
 
     # Set default of sigma bandwith
-    if (is.null(bndw)) bndw <- bw.diggle(pp_sel)
+    if (is.null(bndw)) bndw <- bw.diggle(ppSel)
 
     # plot the density of the image
-    den <- density.ppp(pp_sel,
+    den <- density.ppp(ppSel,
         sigma = bndw,
         dimyx = dimyx,
         positive = TRUE
     )
 
-    return(list(den_im = den, bndw = bndw, dimyx = dimyx))
+    return(list(denIm = den, bndw = bndw, dimyx = dimyx))
 }
 
 #' Function to estimate the intensity threshold for the reconstruction of spatial structures
 #'
-#' @param density_image real-valued pixel image; output from the function `.intensityImage`
+#' @param densityImage real-valued pixel image; output from the function `.intensityImage`
 #' @param steps numeric; value used to filter the density estimates, where only
 #' densities greater than the maximum value divided by \code{threshold} are considered.
 #' Default is 250.
 #'
 #' @return numeric; estimated threshold
 #' @importFrom stats density
-.intensityThreshold <- function(density_image, steps = 250) {
+.intensityThreshold <- function(densityImage, steps = 250) {
     # take all densities greater than certain threshold due to numerical properties
     # of the density estimation
-    den_df <- density_image |> as.data.frame()
-    new_den <- density(den_df$value[den_df$value > max(den_df$value) / steps])
+    denDf <- densityImage |> as.data.frame()
+    newDen <- density(denDf$value[denDf$value > max(denDf$value) / steps])
     # define the peaks x values
-    peaks <- new_den$x[which(diff(sign(diff(new_den$y))) == -2)]
+    peaks <- newDen$x[which(diff(sign(diff(newDen$y))) == -2)]
     # define peak values
-    peak_vals <- new_den$y[which(diff(sign(diff(new_den$y))) == -2)]
+    peakVals <- newDen$y[which(diff(sign(diff(newDen$y))) == -2)]
     # the threshold is the mean between the two main modes of the distribution
     if (length(peaks) == 1) {
         thres <- peaks
@@ -318,4 +321,33 @@ findIntensityThreshold <- function(ppp, mark_select = NULL,
             peaks[order(peaks, decreasing = FALSE)[1]]
     }
     return(thres)
+}
+
+#' Function to convert spatialCoords to an sf object
+#'
+#' @param spe SpatialExperiment; a object of class `SpatialExperiment`
+#'
+#' @returns sf; Simple feature collection of geometry type POINT
+#' @importFrom sf  st_as_sf
+#' @importFrom SpatialExperiment  spatialCoords
+#'
+#' @examples
+#' data(sostaSPE)
+#' speSel <- sostaSPE[, sostaSPE[["imageName"]] == "image1"]
+#' spatialCoords2SF(speSel)
+#' @export
+spatialCoords2SF <- function(spe) {
+    # Input checking
+    stopifnot(
+        "'spe' must be an object of class 'SpatialExperiment'" =
+            inherits(spe, "SpatialExperiment")
+    )
+    # creates sf points object from SPE
+    spatial_coords_sf <- st_as_sf(data.frame(spatialCoords(spe)),
+        coords = c(
+            colnames(spatialCoords(spe))[1],
+            colnames(spatialCoords(spe))[2]
+        )
+    )
+    return(spatial_coords_sf)
 }

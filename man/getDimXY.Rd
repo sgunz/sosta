@@ -18,10 +18,10 @@ vector; vector with x and y dimension
 Function to get the dimension based on dim of y axis
 }
 \examples{
-spe <- imcdatasets::Damond_2019_Pancreas("spe", full_dataset = FALSE)
-ppp <- SPE2ppp(spe,
-    marks = "cell_category", image_col = "image_name",
-    image_id = "E04"
+data(sostaSPE)
+pp <- SPE2ppp(sostaSPE,
+    marks = "cellType", imageCol = "imageName",
+    imageId = "image1"
 )
-getDimXY(ppp, 500)
+getDimXY(pp, 500)
 }

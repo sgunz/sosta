@@ -24,7 +24,7 @@ sf object
 Converts a binary matrix to an sf polygon
 }
 \examples{
-matrix_R <- matrix(c(
+matrixR <- matrix(c(
     0, 0, 0, 0, 0, 0, 0, 0, 0,
     0, 1, 1, 1, 1, 1, 0, 0, 0,
     0, 1, 1, 0, 0, 1, 1, 0, 0,
@@ -35,6 +35,6 @@ matrix_R <- matrix(c(
     0, 1, 1, 0, 0, 1, 1, 0, 0,
     0, 0, 0, 0, 0, 0, 0, 0, 0
 ), nrow = 9, byrow = TRUE)
-poly_R <- binaryImageToSF(matrix_R, xmin = 0, xmax = 1, ymin = 0, ymax = 1)
-plot(poly_R)
+polyR <- binaryImageToSF(matrixR, xmin = 0, xmax = 1, ymin = 0, ymax = 1)
+plot(polyR)
 }

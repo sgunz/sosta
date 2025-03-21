@@ -7,13 +7,13 @@
 estimateReconstructionParametersSPE(
   spe,
   marks,
-  image_col,
-  mark_select = NULL,
-  nimages = NULL,
+  imageCol,
+  markSelect = NULL,
+  nImages = NULL,
   fun = "bw.diggle",
   dim = 500,
-  ncores = 1,
-  plot_hist = TRUE
+  nCores = 1,
+  plotHist = TRUE
 )
 }
 \arguments{
@@ -22,13 +22,13 @@ estimateReconstructionParametersSPE(
 \item{marks}{character; name of column in \code{colData} that will correspond to
 the \code{ppp} marks}
 
-\item{image_col}{character; name of a column in \code{colData} that corresponds
+\item{imageCol}{character; name of a column in \code{colData} that corresponds
 to the image}
 
-\item{mark_select}{character; name of mark that is to be selected for the
+\item{markSelect}{character; name of mark that is to be selected for the
 reconstruction}
 
-\item{nimages}{integer; number of images for the estimation. Will be randomly
+\item{nImages}{integer; number of images for the estimation. Will be randomly
 sampled}
 
 \item{fun}{character; function to estimate the kernel density. Default
@@ -38,10 +38,10 @@ bw.diggle.}
 A lower resolution speed up computation but lead to less exact reconstruction.
 Default = 500}
 
-\item{ncores}{numeric; number of cores for parallel processing using \code{mclapply}.
+\item{nCores}{numeric; number of cores for parallel processing using \code{mclapply}.
 Default = 1}
 
-\item{plot_hist}{logical; if histogram of estimated densities and thresholds
+\item{plotHist}{logical; if histogram of estimated densities and thresholds
 should be plotted. Default = TRUE}
 }
 \value{
@@ -51,10 +51,9 @@ tibble; tibble with estimated intensities and thresholds
 Estimate reconstruction parameters from a set of images
 }
 \examples{
-spe <- imcdatasets::Damond_2019_Pancreas("spe", full_dataset = FALSE)
-spe_sel <- spe[, spe[["image_name"]] \%in\% c("E02", "E03", "E04")]
-estimateReconstructionParametersSPE(spe_sel,
-    marks = "cell_category",
-    image_col = "image_name", mark_select = "islet", plot_hist = TRUE
+data("sostaSPE")
+estimateReconstructionParametersSPE(sostaSPE,
+    marks = "cellType", imageCol = "imageName",
+    markSelect = "A", plotHist = TRUE
 )
 }

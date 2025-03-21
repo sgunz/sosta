@@ -5,26 +5,27 @@
 #' to a valid `sf` object (polygons).
 #'
 #' @param ppp point pattern object of class `ppp`
-#' @param mark_select character; name of mark that is to be selected for the
+#' @param markSelect character; name of mark that is to be selected for the
 #'  reconstruction
 #' @param bndw bandwidth of kernel density estimator
 #' @param thres intensity threshold for the reconstruction
 #' @param dim numeric; x dimension of the final reconstruction.
 #'
 #' @return sf object of class `POLYGON`
-#' @importFrom sf st_cast st_make_valid st_sf st_is_empty
+#' @importFrom sf st_cast st_make_valid st_sf st_is_empty st_geometry
 #' @export
 #'
 #' @examples
-#' spe <- imcdatasets::Damond_2019_Pancreas("spe", full_dataset = FALSE)
-#' ppp <- SPE2ppp(spe, marks = "cell_category", image_col = "image_name", image_id = "E04")
-#' thres <- findIntensityThreshold(ppp, mark_select = "islet", dim = 500)
-#' islet_poly <- reconstructShapeDensity(ppp, mark_select = "islet", thres = thres, dim = 500)
-#' plot(islet_poly)
-reconstructShapeDensity <- function(ppp, mark_select = NULL,
-    bndw = NULL, thres = NULL, dim) {
+#' data("sostaSPE")
+#' ppp <- SPE2ppp(sostaSPE, marks = "cellType", imageCol = "imageName", imageId = "image1")
+#' thres <- findIntensityThreshold(ppp, markSelect = "A", dim = 500)
+#' struct <- reconstructShapeDensity(ppp, markSelect = "A", thres = thres, dim = 500)
+#' plot(struct)
+reconstructShapeDensity <- function(
+        ppp, markSelect = NULL,
+        bndw = NULL, thres = NULL, dim) {
     # estimate density
-    res <- .intensityImage(ppp, mark_select, bndw, dim)
+    res <- .intensityImage(ppp, markSelect, bndw, dim)
 
     if (!is.null(thres)) {
         stopifnot("'thres' must be a single numeric value" = is.numeric(thres) &&
@@ -33,15 +34,20 @@ reconstructShapeDensity <- function(ppp, mark_select = NULL,
 
     # Check if intensity threshold exists
     if (is.null(thres)) {
-        thres <- .intensityThreshold(res$den_im)
+        thres <- .intensityThreshold(res$denIm)
     }
 
     # construct spatstat window from matrix with true false entries
-    mat <- ifelse(t(as.matrix(res$den_im)) > thres, TRUE, FALSE)
+    mat <- ifelse(t(as.matrix(res$denIm)) > thres, TRUE, FALSE)
 
     # Check if we get empty or full polygon
-    stopifnot("Threshold too low" = (!all(mat == 1)))
-    stopifnot("Threshold too high" = (!all(mat == 0)))
+    if (all(mat == 1)) {
+        warning("Full image converted to polygon; threshold might be too low")
+    }
+
+    if (all(mat == 0)) {
+        warning("No structure found; threshold might be too high")
+    }
 
     # using custom function
     stCast <- st_cast(
@@ -56,8 +62,9 @@ reconstructShapeDensity <- function(ppp, mark_select = NULL,
     ) # make valid is important
     stCast <- stCast[!st_is_empty(stCast), drop = FALSE]
 
-    # return sf object
-    return(st_sf(st_cast(stCast, "POLYGON")))
+    obj <- st_sf(st_cast(stCast, "POLYGON"))
+    sf::st_geometry(obj) <- "sostaPolygon"
+    return(obj)
 }
 
 
@@ -70,19 +77,20 @@ reconstructShapeDensity <- function(ppp, mark_select = NULL,
 #' @param spe SpatialExperiment; a object of class `SpatialExperiment`
 #' @param marks character; name of column in `colData` that will correspond to
 #' the `ppp` marks
-#' @param image_col character; name of a column in `colData` that corresponds to
+#' @param imageCol character; name of a column in `colData` that corresponds to
 #' the image
-#' @param image_id character; image id, must be present in image_col
-#' @param mark_select character; name of mark that is to be selected for the
+#' @param imageId character; image id, must be present in imageCol
+#' @param markSelect character; name of mark that is to be selected for the
 #' reconstruction
-#' @param bndw numeric; bandwith of the sigma parameter in the density estimation,
-#' if no value is given the bandwith is estimated using cross validation with
+#' @param bndw numeric; smoothing bandwidth in the density estimation,
+#' corresponds to the `sigma` parameter in the `density.ppp` function,
+#' if no value is given the bandwidth is estimated using cross validation with
 #' the `bw.diggle` function.
 #' @param dim numeric; x dimension of the final reconstruction. A lower resolution
 #' speeds up computation but lead to less exact reconstruction. Default = 500
 #' @return ggplot object with intensity image and histogram
 #' @importFrom ggplot2 ggplot aes_string geom_histogram theme_light geom_tile
-#' labs coord_equal theme_classic scale_color_viridis_c geom_vline
+#' labs coord_equal theme_classic scale_color_viridis_c geom_vline theme element_text
 #' @importFrom patchwork wrap_plots plot_annotation
 #' @importFrom dplyr filter
 #' @importFrom rlang .data
@@ -90,27 +98,27 @@ reconstructShapeDensity <- function(ppp, mark_select = NULL,
 #' @export
 #'
 #' @examples
-#' spe <- imcdatasets::Damond_2019_Pancreas("spe", full_dataset = FALSE)
-#' shapeIntensityImage(spe,
-#'     marks = "cell_category", image_col = "image_name",
-#'     image_id = "E04", mark_select = "islet"
+#' data("sostaSPE")
+#' shapeIntensityImage(sostaSPE,
+#'     marks = "cellType", imageCol = "imageName",
+#'     imageId = "image1", markSelect = "A"
 #' )
 shapeIntensityImage <- function(spe, marks,
-    image_col,
-    image_id,
-    mark_select,
+    imageCol,
+    imageId,
+    markSelect,
     bndw = NULL,
     dim = 500) {
     # Convert the spe object to a point pattern object
-    ppp <- SPE2ppp(spe, marks = marks, image_col = image_col, image_id = image_id)
+    ppp <- SPE2ppp(spe, marks = marks, imageCol = imageCol, imageId = imageId)
 
     # plot the density of the image
-    res <- .intensityImage(ppp, mark_select, bndw, dim)
-    im_df <- res$den_im |> as.data.frame()
-    thres <- findIntensityThreshold(ppp, mark_select, res$bndw, dim)
+    res <- .intensityImage(ppp, markSelect, bndw, dim)
+    im_df <- res$denIm |> as.data.frame()
+    thres <- findIntensityThreshold(ppp, markSelect, res$bndw, dim)
 
     # plot density image
-    den_im <- im_df |>
+    denIm <- im_df |>
         ggplot(aes(x = .data$x, y = .data$y, color = .data$value)) +
         geom_tile() +
         coord_equal() +
@@ -128,17 +136,18 @@ shapeIntensityImage <- function(spe, marks,
         geom_vline(xintercept = thres, color = "seagreen")
 
 
-    p <- wrap_plots(den_im, den_hist, ncol = 2) +
+    p <- wrap_plots(denIm, den_hist, ncol = 2) +
         plot_annotation(
-            title = paste0(image_col, ": ", image_id),
+            title = paste0(imageCol, ": ", imageId),
             subtitle = paste0(
                 "bndw: ", round(res$bndw, 4), "; estimated thres: ",
                 round(thres, 4)
             ),
             caption = paste0(
-                "Pixel image dimensions: ", res$dimyx[1],
+                "Dimension of the density image (pixels): ", res$dimyx[1],
                 "x", res$dimyx[2]
-            )
+            ),
+            theme = theme(plot.caption = element_text(hjust = 0))
         )
 
     return(p)
@@ -150,37 +159,40 @@ shapeIntensityImage <- function(spe, marks,
 #' @param spe SpatialExperiment; a object of class `SpatialExperiment`
 #' @param marks character; name of column in `colData` that will correspond
 #' to the `ppp` marks
-#' @param image_col character; name of a column in `colData` that corresponds
+#' @param imageCol character; name of a column in `colData` that corresponds
 #' to the image
-#' @param image_id character; image id, must be present in image_col
-#' @param mark_select character; name of mark that is to be selected for the
+#' @param imageId character; image id, must be present in imageCol
+#' @param markSelect character; name of mark that is to be selected for the
 #'  reconstruction
 #' @param dim numeric; x dimension of the final reconstruction.
 #' A lower resolution speed up computation but lead to less exact reconstruction.
 #'  Default = 500
-#' @param bndw numeric; bandwith of the sigma parameter in the density estimation,
-#' if no value is given the bandwith is estimated using cross validation with
+#' @param bndw numeric; smoothing bandwidth in the density estimation,
+#' corresponds to the `sigma` parameter in the `density.ppp` function,
+#' if no value is given the bandwidth is estimated using cross validation with
 #' the `bw.diggle` function.
-#' @param thres numeric; intensity threshold for the reconstruction
+#' @param thres numeric; intensity threshold for the reconstruction;
+#' if NULL the threshold is set as the mean between the mode of the pixel intensity
+#' distributions
 #' @return sf object of class `POLYGON`
 #' @importFrom spatstat.geom subset.ppp
 #' @export
 #'
 #' @examples
-#' spe <- imcdatasets::Damond_2019_Pancreas("spe", full_dataset = FALSE)
-#' islet_poly <- reconstructShapeDensityImage(spe,
-#'     marks = "cell_category",
-#'     image_col = "image_name", image_id = "E04", mark_select = "islet", dim = 500
+#' data("sostaSPE")
+#' struct <- reconstructShapeDensityImage(sostaSPE,
+#'     marks = "cellType", imageCol = "imageName", imageId = "image1",
+#'     markSelect = "A", dim = 500
 #' )
-#' plot(islet_poly)
+#' plot(struct)
 reconstructShapeDensityImage <- function(
         spe, marks,
-        image_col, image_id, mark_select, dim = 500, bndw = NULL, thres = NULL) {
+        imageCol, imageId, markSelect, dim = 500, bndw = NULL, thres = NULL) {
     # Convert the spe object to a point pattern object
-    ppp <- SPE2ppp(spe, marks, image_col, image_id)
+    ppp <- SPE2ppp(spe, marks, imageCol, imageId)
 
     # Get the structure
-    struct <- reconstructShapeDensity(ppp, mark_select, bndw, thres, dim)
+    struct <- reconstructShapeDensity(ppp, markSelect, bndw, thres, dim)
 
     return(struct)
 }
@@ -191,51 +203,55 @@ reconstructShapeDensityImage <- function(
 #' @param spe SpatialExperiment; a object of class `SpatialExperiment`
 #' @param marks character; name of column in `colData` that will correspond
 #' to the `ppp` marks
-#' @param image_col character; name of a column in `colData` that corresponds
+#' @param imageCol character; name of a column in `colData` that corresponds
 #' to the image
-#' @param mark_select character; name of mark that is to be selected for the
+#' @param markSelect character; name of mark that is to be selected for the
 #' reconstruction
 #' @param dim numeric; x dimension of the final reconstruction.
 #' A lower resolution speed up computation but lead to less exact reconstruction.
 #' Default = 500
-#' @param bndw numeric; bandwith of the sigma parameter in the density estimation,
-#' if no value is given the bandwith is estimated using cross validation with
-#' the `bw.diggle` function.
-#' @param thres numeric; intensity threshold for the reconstruction
-#' @param ncores numeric; number of cores for parallel processing using
+#' @param bndw numeric; bandwidth of the sigma parameter in the density estimation,
+#' if no value is given the bandwidth is estimated using cross validation with
+#' the `bw.diggle` function for each image individually.
+#' @param thres numeric; intensity threshold for the reconstruction;
+#' if NULL the threshold is set as the mean between the mode of the pixel intensity
+#' distributions estimated for each image individual
+#' @param nCores numeric; number of cores for parallel processing using
 #' `mclapply`. Default = 1
 #'
 #' @importFrom parallel mclapply
+#' @importFrom SummarizedExperiment assays
 #'
 #' @return simple feature collection
 #' @export
 #'
 #' @examples
-#' spe <- imcdatasets::Damond_2019_Pancreas("spe", full_dataset = FALSE)
-#' spe_sel <- spe[, spe[["image_name"]] %in% c("E02", "E03", "E04")]
-#' all_islets <- reconstructShapeDensitySPE(spe_sel,
-#'     marks = "cell_category",
-#'     image_col = "image_name", mark_select = "islet", bndw = sigma, thres = 0.0025
+#' data("sostaSPE")
+#' allStructs <- reconstructShapeDensitySPE(sostaSPE,
+#'     marks = "cellType", imageCol = "imageName",
+#'     markSelect = "A", bndw = 3.5, thres = 0.005
 #' )
-#' all_islets
+#' allStructs
 reconstructShapeDensitySPE <- function(
         spe, marks,
-        image_col, mark_select,
-        dim = 500, bndw = NULL, thres,
-        ncores = 1) {
+        imageCol, markSelect,
+        dim = 500, bndw = NULL, thres = NULL,
+        nCores = 1) {
+    # For computational reasonos delete all assays in SPE
+    SummarizedExperiment::assays(spe) <- list()
     # Get all unique image ids
-    all_images <- spe[[image_col]] |> unique()
+    allImages <- spe[[imageCol]] |> unique()
     # Calculate polygon for each id using multiple cores
-    res_all <- mclapply(all_images, function(x) {
-        res <- reconstructShapeDensityImage(spe, marks, image_col,
-            x, mark_select,
-            dim = 500, bndw = NULL,
-            thres
+    res_all <- mclapply(allImages, function(x) {
+        res <- reconstructShapeDensityImage(
+            spe, marks, imageCol,
+            x, markSelect, dim, bndw, thres
         )
-        # assign image_id
-        res[[image_col]] <- x
+        # assign imageId
+        res[["structID"]] <- paste0(x, "_", c(1:dim(res)[1]))
+        res[[imageCol]] <- x
         return(res)
-    }, mc.cores = ncores)
+    }, mc.cores = nCores)
     # return data frame with all structures
     return(do.call(rbind, res_all))
 }
@@ -245,20 +261,20 @@ reconstructShapeDensitySPE <- function(
 #' @param spe SpatialExperiment; a object of class `SpatialExperiment`
 #' @param marks character; name of column in `colData` that will correspond to
 #' the `ppp` marks
-#' @param image_col character; name of a column in `colData` that corresponds
+#' @param imageCol character; name of a column in `colData` that corresponds
 #' to the image
-#' @param mark_select character; name of mark that is to be selected for the
+#' @param markSelect character; name of mark that is to be selected for the
 #' reconstruction
-#' @param nimages integer; number of images for the estimation. Will be randomly
+#' @param nImages integer; number of images for the estimation. Will be randomly
 #' sampled
 #' @param fun character; function to estimate the kernel density. Default
 #' bw.diggle.
 #' @param dim numeric; x dimension of the final reconstruction.
 #' A lower resolution speed up computation but lead to less exact reconstruction.
 #' Default = 500
-#' @param ncores numeric; number of cores for parallel processing using `mclapply`.
+#' @param nCores numeric; number of cores for parallel processing using `mclapply`.
 #' Default = 1
-#' @param plot_hist logical; if histogram of estimated densities and thresholds
+#' @param plotHist logical; if histogram of estimated densities and thresholds
 #' should be plotted. Default = TRUE
 #'
 #' @importFrom spatstat.geom subset.ppp
@@ -272,58 +288,57 @@ reconstructShapeDensitySPE <- function(
 #' @export
 #'
 #' @examples
-#' spe <- imcdatasets::Damond_2019_Pancreas("spe", full_dataset = FALSE)
-#' spe_sel <- spe[, spe[["image_name"]] %in% c("E02", "E03", "E04")]
-#' estimateReconstructionParametersSPE(spe_sel,
-#'     marks = "cell_category",
-#'     image_col = "image_name", mark_select = "islet", plot_hist = TRUE
+#' data("sostaSPE")
+#' estimateReconstructionParametersSPE(sostaSPE,
+#'     marks = "cellType", imageCol = "imageName",
+#'     markSelect = "A", plotHist = TRUE
 #' )
 estimateReconstructionParametersSPE <- function(spe,
     marks,
-    image_col,
-    mark_select = NULL,
-    nimages = NULL,
+    imageCol,
+    markSelect = NULL,
+    nImages = NULL,
     fun = "bw.diggle",
     dim = 500,
-    ncores = 1,
-    plot_hist = TRUE) {
+    nCores = 1,
+    plotHist = TRUE) {
     # Input checks
-    if (!is.null(nimages)) {
-        stopifnot("'nimages' must be numeric" = is.numeric(nimages))
+    if (!is.null(nImages)) {
+        stopifnot("'nImages' must be numeric" = is.numeric(nImages))
         stopifnot(
-            "'nimages' must be smaller or equal to the number of images in the `SpatialExperiment`" =
-                (nimages < length(unique(colData(spe)[[image_col]])))
+            "'nImages' must be smaller or equal to the number of images in the `SpatialExperiment`" =
+                (nImages < length(unique(colData(spe)[[imageCol]])))
         )
     }
 
     # get the id's of all images
-    all_images <- colData(spe)[[image_col]] |> unique()
+    allImages <- colData(spe)[[imageCol]] |> unique()
     # default is to take all values
-    if (is.null(nimages)) nimages <- length(all_images)
+    if (is.null(nImages)) nImages <- length(allImages)
     # alternatively we sample some images
-    sample_images <- sample(all_images, nimages)
+    sampleImages <- sample(allImages, nImages)
     # we calculate the bandwidths and thresholds
-    res <- mclapply(sample_images, function(x) {
-        ppp <- SPE2ppp(spe, marks = marks, image_col = image_col, image_id = x)
-        res_x <- .intensityImage(ppp, mark_select, dim = dim)
-        thres <- .intensityThreshold(res_x$den_im)
+    res <- mclapply(sampleImages, function(x) {
+        ppp <- SPE2ppp(spe, marks = marks, imageCol = imageCol, imageId = x)
+        res_x <- .intensityImage(ppp, markSelect, dim = dim)
+        thres <- .intensityThreshold(res_x$denIm)
         return(list(img = x, bndw = as.numeric(res_x$bndw), thres = as.numeric(thres)))
-    }, mc.cores = ncores)
+    }, mc.cores = nCores)
 
     # collect in one data frame
     res <- as.data.frame(do.call(rbind, res))
     res$bndw <- as.numeric(res$bndw)
     res$thres <- as.numeric(res$thres)
 
-    if (plot_hist == TRUE & nimages > 1) {
+    if (plotHist == TRUE & nImages > 1) {
         p1 <- res |>
             ggplot(aes(x = .data$bndw)) +
-            geom_histogram(bins = round(nimages / 2)) +
+            geom_histogram(bins = round(nImages / 2)) +
             theme_light()
 
         p2 <- res |>
             ggplot(aes(x = .data$thres)) +
-            geom_histogram(bins = round(nimages / 2)) +
+            geom_histogram(bins = round(nImages / 2)) +
             theme_light()
 
         plot(wrap_plots(p1, p2, ncol = 2))

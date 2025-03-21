@@ -16,11 +16,11 @@ matrix; matrix of mean shape metrics
 Calculate mean shape metrics of a set of polygons
 }
 \examples{
-spe <- imcdatasets::Damond_2019_Pancreas("spe", full_dataset = FALSE)
-islet_poly <- reconstructShapeDensityImage(spe,
-    marks = "cell_category",
-    image_col = "image_name", image_id = "E04", mark_select = "islet", dim = 500
+data(sostaSPE)
+struct <- reconstructShapeDensityImage(sostaSPE,
+    marks = "cellType", imageCol = "imageName",
+    imageId = "image1", markSelect = "A", dim = 500
 )
-shape_metrics <- totalShapeMetrics(islet_poly)
-meanShapeMetrics(shape_metrics)
+shapeMetrics <- totalShapeMetrics(struct)
+meanShapeMetrics(shapeMetrics)
 }
