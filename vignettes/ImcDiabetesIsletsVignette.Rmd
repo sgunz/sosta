@@ -14,7 +14,7 @@ package: "`r BiocStyle::Biocpkg('sosta')`"
 output:
   BiocStyle::html_document
 abstract: >
-  Reconstruction and analysis of pancreatic islets from IMC data using the `sosta` package
+  In this vignette we use `sosta` to reconstruct pancreatic islets of different diabetic stages from IMC data [@damondMapHumanType2019]. Based on the reconstruction we calculate structure metrics. Finally, we show how to do staticstical comparison of the metrics accounting for the correlation structure of this dataset.
 vignette: >
   %\VignetteIndexEntry{Reconstruction and analysis of pancreatic islets from IMC data}
   %\VignetteEncoding{UTF-8}
@@ -29,7 +29,7 @@ knitr::opts_chunk$set(
     collapse = TRUE,
     comment = "#>"
 )
-set.seed(42)
+set.seed(8048)
 ```
 
 # Installation
@@ -48,12 +48,16 @@ BiocManager::install("sosta")
 For this vignette, we will need several additional packages:
 
 ```{r setup, message=FALSE}
-library("sosta")
 library("dplyr")
-library("tidyr")
-library("ggplot2")
 library("ExperimentHub")
+library("ggplot2")
+library("lme4")
+library("lmerTest")
+library("sf")
 library("SpatialExperiment")
+library("sosta")
+library("tidyr")
+theme_set(theme_bw())
 ```
 
 # Introduction
@@ -75,7 +79,7 @@ spe <- toSpatialExperiment(spe,
 ```
 
 
-First, we plot the data for illustration. As we have multiple images per patient, we will subset to a few slides. As can be seen, the dimensions of the field of view are different per image.
+First, we plot the data for illustration. As we have multiple images per patient, we will subset to a few slides. As can be seen, the dimensions of the field of view are different for each image.
 
 ```{r}
 df <- cbind(
@@ -123,7 +127,16 @@ n <- estimateReconstructionParametersSPE(
 )
 ```
 
-We will use the mean of the two estimated vectors as our parameters.
+We can inspect the relationship of the estimated bandwidth and threshold. 
+
+```{r}
+n |>
+    ggplot(aes(x = bndw, y = thres)) +
+    geom_point()
+```
+
+
+We note that the estimated bandwidth varies more than the estimated threshold. We will use the mean of the two estimated vectors as our parameters.
 
 ```{r}
 (thresSPE <- mean(n$thres))
@@ -132,11 +145,17 @@ We will use the mean of the two estimated vectors as our parameters.
 
 ## Reconstruction of pancreatic islets for all images
 
-The function `reconstructShapeDensitySPE` reconstructs the islets for all images in the `spe` object. We use the estimated parameters from above. For computational reasons, we will subset 200 random images for the rest of the vignette
+The function `reconstructShapeDensitySPE` reconstructs the islets for all images in the `spe` object. We use the estimated parameters from above. For computational reasons, we will subset to 10 images per patient for the rest of the vignette.
 
 ```{r, eval=TRUE}
-# Sample 200 of 845 images
-sel <- sample(unique(colData(spe)$image_name), 200)
+# Sample 15 images per patient
+sel <- colData(spe) |>
+    as.data.frame() |>
+    group_by(patient_id) |>
+    select(image_name) |>
+    sample_n(size = 10, replace = FALSE) |>
+    pull(image_name)
+
 # Select sampled images
 spe <- spe[, spe$image_name %in% sel]
 
@@ -152,17 +171,7 @@ allIslets <- reconstructShapeDensitySPE(
 )
 ```
 
-# Calculation of metrics
-
-## Structure metrics
-
-Now that we have islet structures for all images, we can now use the function `totalShapeMetrics` to calculate a set of metrics related to the shape of the islets.
-
-```{r}
-isletMetrics <- totalShapeMetrics(allIslets)
-```
-
-The result is a simple feature collection with polygons. We will add some patient level information to the simple feature collection for plotting afterwards.
+The result is a (simple feature collection)[https://r-spatial.github.io/sf/articles/sf1.html]. This contains the polygons (`<GEOMETRY>` column), a structure identifier (`structID`) and the image identifier (`image_name`). Let's add some patient metadata to the object.
 
 ```{r}
 colsKeep <- c(
@@ -176,7 +185,32 @@ patientData <- colData(spe) |>
     group_by(image_name) |>
     select(all_of(colsKeep)) |>
     unique()
+
+allIslets <- allIslets |>
+    dplyr::left_join(patientData, by = "image_name")
 ```
+
+We can now inspect the number of structures found per patient or image.
+
+```{r}
+allIslets |>
+    st_drop_geometry() |>
+    group_by(patient_id) |>
+    summarise(n = n()) |>
+    ungroup()
+```
+
+# Calculation of metrics
+
+## Structure metrics
+
+Now that we have islet structures for all images, we can now use the function `totalShapeMetrics` to calculate a set of metrics related to the shape of the islets.
+
+```{r}
+isletMetrics <- totalShapeMetrics(allIslets)
+```
+
+The result is a simple feature collection with polygons. We will add some patient level information to the simple feature collection for plotting afterwards.
 
 
 ```{r}
@@ -184,7 +218,6 @@ patientData <- colData(spe) |>
 lv <- c("Non-diabetic", "Onset", "Long-duration")
 
 allIslets <- allIslets |>
-    dplyr::left_join(patientData, by = "image_name") |>
     cbind(t(isletMetrics)) |>
     mutate(patient_stage = factor(patient_stage, levels = lv))
 ```
@@ -218,7 +251,7 @@ autoplot(
     coord_fixed()
 ```
 
-We can use boxplots to investigate differences of shape metrics between patient stages. We will subset to a few metrics that are not colinear in the PCA plot.
+We can use boxplots to investigate differences of shape metrics between patient stages. We will subset to a few metrics that are not colinear in the PCA plot. Note that the boxplots don't reveal patient specific effects.
 
 ```{r, fig.width=8, fig.height=6}
 allIslets |>
@@ -231,27 +264,27 @@ allIslets |>
     facet_wrap(~name, scales = "free") +
     scale_fill_brewer(palette = "Dark2") +
     scale_x_discrete(guide = guide_axis(n.dodge = 2)) +
-    guides(fill = "none") +
-    theme_bw()
+    guides(fill = "none")
 ```
 
 ## Testing using mixed effects models
 
-As the individual structure level metrics are not indepentent we have to account for dependence between measurements. This dependence can lie on the level of the patient and the slide as we have repeated measurements for each level.
+As the individual structure level metrics are not independent we have to account for dependence between measurements. This dependence can lie on the level of the patient and the slide as we have repeated measurements for each level.
 
-To account for this, we will use mixed linear models with random effects for the patient and the individual slides (image name). We will use the `r BiocStyle::CRANpkg('lme4')` package for fitting linear mixed effects models [@batesFittingLinearMixedEffects2015]. 
+To account for this, we will use mixed linear models with random effects for the patient and the individual slides (image name). We will use the `r BiocStyle::CRANpkg('lme4')` package for fitting linear mixed effects models [@batesFittingLinearMixedEffects2015] and `r BiocStyle::CRANpkg('lmerTest')` for p-value calculation [@kuznetsovaLmerTestPackageTests2017]. 
 
 To see differences between the Area of the islets between conditions, we can test as follows.
 
 ```{r}
-library(lme4)
+mod <- lmer(Area ~ patient_stage + (1 | patient_id) + (1 | image_name), data = allIslets)
+```
 
-mod <- lmer(Area ~ patient_stage + (1 | patient_id) +
-    (1 | image_name), data = allIslets)
+
+```{r}
 summary(mod)
 ```
 
-As we can see from `summary(mod)`, there is a signification difference in islet area of long-duration patients with respect to non-diabetic patients. Please note that this was only run on a subset of the data.
+As we can see from `summary(mod)` there is a signification difference in islet area of long-duration patients with respect to non-diabetic patients, accounting for correlation on the patient and image level. Please note that this was only run on a subset of the data.
 
 # Session Info
 
@@ -260,3 +293,6 @@ sessionInfo()
 ```
 
 # References
+
+
+

@@ -41,10 +41,12 @@ colData(sostaSPE)$structAssign <- assingCellsToStructures(
     allStructs, "imageName"
 )
 if (require("ggplot2")) {
-    cbind(colData(sostaSPE[, sostaSPE[["imageName"]] == "image1"]),
-          spatialCoords(sostaSPE[, sostaSPE[["imageName"]] == "image1"])) |>
-    as.data.frame() |>
-    ggplot(aes(x = x, y = y, color = structAssign)) +
+    cbind(
+        colData(sostaSPE[, sostaSPE[["imageName"]] == "image1"]),
+        spatialCoords(sostaSPE[, sostaSPE[["imageName"]] == "image1"])
+    ) |>
+        as.data.frame() |>
+        ggplot(aes(x = x, y = y, color = structAssign)) +
         geom_point(size = 0.25) +
         coord_equal()
 }

@@ -43,6 +43,7 @@ Suggests:
     BiocStyle,
     ExperimentHub,
     lme4,
+    lmerTest,
     ggfortify,
     tidyr,
     testthat (>= 3.0.0)

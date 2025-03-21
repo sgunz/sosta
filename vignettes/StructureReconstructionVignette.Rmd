@@ -14,7 +14,7 @@ package: "`r BiocStyle::Biocpkg('sosta')`"
 output:
   BiocStyle::html_document
 abstract: >
-  Reconstruction and analysis of anatomical structures using the `sosta` package
+  In this vignette we show different functionalities of `sosta`. First we perform a density-based reconstruction of structures based on spatial coordinates. Next, we will calcuate different metrics on the structure and cell level.
 vignette: >
   %\VignetteIndexEntry{ Reconstruction and analysis of anatomical structures}
   %\VignetteEncoding{UTF-8}

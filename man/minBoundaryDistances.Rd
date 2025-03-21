@@ -41,8 +41,8 @@ colData(sostaSPE)$minDist <- minBoundaryDistances(
 )
 if (require("ggplot2")) {
     cbind(colData(sostaSPE), spatialCoords(sostaSPE)) |>
-    as.data.frame() |>
-    ggplot(aes(x = x, y = y, color = minDist)) +
+        as.data.frame() |>
+        ggplot(aes(x = x, y = y, color = minDist)) +
         geom_point(size = 0.25) +
         scale_colour_gradient2() +
         geom_sf(data = allStructs, fill = NA, inherit.aes = FALSE) +

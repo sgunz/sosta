@@ -21,8 +21,9 @@
 #' thres <- findIntensityThreshold(ppp, markSelect = "A", dim = 500)
 #' struct <- reconstructShapeDensity(ppp, markSelect = "A", thres = thres, dim = 500)
 #' plot(struct)
-reconstructShapeDensity <- function(ppp, markSelect = NULL,
-    bndw = NULL, thres = NULL, dim) {
+reconstructShapeDensity <- function(
+        ppp, markSelect = NULL,
+        bndw = NULL, thres = NULL, dim) {
     # estimate density
     res <- .intensityImage(ppp, markSelect, bndw, dim)
 
@@ -40,8 +41,13 @@ reconstructShapeDensity <- function(ppp, markSelect = NULL,
     mat <- ifelse(t(as.matrix(res$denIm)) > thres, TRUE, FALSE)
 
     # Check if we get empty or full polygon
-    stopifnot("Threshold too low" = (!all(mat == 1)))
-    stopifnot("Threshold too high" = (!all(mat == 0)))
+    if (all(mat == 1)) {
+        warning("Full image converted to polygon; threshold might be too low")
+    }
+
+    if (all(mat == 0)) {
+        warning("No structure found; threshold might be too high")
+    }
 
     # using custom function
     stCast <- st_cast(

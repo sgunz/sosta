@@ -40,15 +40,15 @@ test_that("reconstructShapeDensity returns valid polygons", {
 
 test_that("reconstructShapeDensity handles invalid thresholds", {
     # Test low threshold
-    expect_error(
+    expect_warning(
         reconstructShapeDensity(ppp, thres = 0, bndw = 1, dim = 500),
-        "Threshold too low"
+        "Full image converted to polygon; threshold might be too low"
     )
 
     # Test high threshold
-    expect_error(
+    expect_warning(
         reconstructShapeDensity(ppp, thres = 1E5, bndw = 1, dim = 500),
-        "Threshold too high"
+        "No structure found; threshold might be too high"
     )
 })
 
