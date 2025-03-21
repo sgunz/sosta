@@ -1,5 +1,5 @@
 ---
-title: "Reconstruction and analysis of pancreatic islets from IMC data"
+title: "2. Reconstruction and analysis of pancreatic islets from IMC data"
 author: 
   - name: "Samuel Gunz"
     affiliation:

@@ -1,5 +1,5 @@
 ---
-title: "Reconstruction and quantification of anatomical structures"
+title: "1. Overview of sosta"
 author: 
   - name: "Samuel Gunz"
     affiliation:
@@ -16,7 +16,7 @@ output:
 abstract: >
   In this vignette we show different functionalities of `sosta`. First we perform a density-based reconstruction of structures based on spatial coordinates. Next, we will calcuate different metrics on the structure and cell level.
 vignette: >
-  %\VignetteIndexEntry{ Reconstruction and analysis of anatomical structures}
+  %\VignetteIndexEntry{Overview of sosta}
   %\VignetteEncoding{UTF-8}
   %\VignetteEngine{knitr::rmarkdown}
 bibliography: sosta.bib
