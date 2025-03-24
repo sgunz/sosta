@@ -1,5 +1,5 @@
 ---
-title: "1. Overview of sosta"
+title: "01 -- Overview of sosta"
 author: 
   - name: "Samuel Gunz"
     affiliation:
@@ -96,7 +96,7 @@ shapeIntensityImage(
 
 We see the pixel-wise density image on the left and a histogram of the intensity values on the right. The estimated threshold is roughly the mean between the two modes of the (truncated) pixel intensity distribution. The dimensions of the pixel image are specified on the bottom left. The dimensions correspond to the density image, setting a higher value for the `dim` parameter will result in a higher resolution density image but will not change how many points are within a pixel. This can be changed by varying the smoothing parameter (`bndw`).
 
-This was done for one image. The function `estimateReconstructionParametersSPE` returns two plots with the estimated parameters for each image. The parameter `bndw` is the bandwidth parameter that is used for estimating the intensity profile of the point pattern. The parameter `thres` is the estimated parameter for the density threshold for reconstruction.
+This was done for one image. The function `estimateReconstructionParametersSPE` returns two plots with the estimated parameters for each image in the dataset. The parameter `bndw` is the bandwidth parameter that is used for estimating the intensity profile of the point pattern. The parameter `thres` is the estimated parameter for the density threshold for reconstruction.
 
 ```{r}
 n <- estimateReconstructionParametersSPE(
@@ -297,9 +297,7 @@ Alternatively, borders can be defined using `st_difference` and `st_buffer` on t
 borders <- lapply(
     st_geometry(allStructs),
     \(x) st_difference(st_buffer(x, 3), st_buffer(x, -3))
-) |>
-    # both needed for proper conversion
-    st_as_sfc() |> st_as_sf()
+) |> st_as_sfc() |> st_as_sf() # both functions needed for proper conversion
 
 borders$imageName <- allStructs$imageName
 borders$borderID <- paste0("border_", allStructs$structID)

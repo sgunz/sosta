@@ -1,5 +1,5 @@
 ---
-title: "2. Reconstruction and analysis of pancreatic islets from IMC data"
+title: "02 -- Reconstruction and analysis of pancreatic islets from IMC data"
 author: 
   - name: "Samuel Gunz"
     affiliation:
@@ -171,7 +171,7 @@ allIslets <- reconstructShapeDensitySPE(
 )
 ```
 
-The result is a (simple feature collection)[https://r-spatial.github.io/sf/articles/sf1.html]. This contains the polygons (`<GEOMETRY>` column), a structure identifier (`structID`) and the image identifier (`image_name`). Let's add some patient metadata to the object.
+The result is a [simple feature collection](https://r-spatial.github.io/sf/articles/sf1.html). This contains the polygons (`<GEOMETRY>` column), a structure identifier (`structID`) and the image identifier (`image_name`). Let's add some patient metadata to the object.
 
 ```{r}
 colsKeep <- c(
@@ -284,7 +284,7 @@ mod <- lmer(Area ~ patient_stage + (1 | patient_id) + (1 | image_name), data = a
 summary(mod)
 ```
 
-As we can see from `summary(mod)` there is a signification difference in islet area of long-duration patients with respect to non-diabetic patients, accounting for correlation on the patient and image level. Please note that this was only run on a subset of the data.
+As we can see from `summary(mod)` there is a significant difference in islet area of long-duration patients with respect to non-diabetic patients, accounting for correlation on the patient and image level. Please note that this was only run on a subset of the data.
 
 # Session Info
 
