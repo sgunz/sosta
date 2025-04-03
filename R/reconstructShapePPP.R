@@ -220,7 +220,9 @@ reconstructShapeDensityImage <- function(
 #' `mclapply`. Default = 1
 #'
 #' @importFrom parallel mclapply
-#' @importFrom SummarizedExperiment assays
+#' @importFrom SummarizedExperiment colData
+#' @importFrom SpatialExperiment spatialCoords
+#' @importFrom spatstat.geom as.ppp setmarks
 #'
 #' @return simple feature collection
 #' @export
@@ -237,22 +239,37 @@ reconstructShapeDensitySPE <- function(
         imageCol, markSelect,
         dim = 500, bndw = NULL, thres = NULL,
         nCores = 1) {
-    # For computational reasonos delete all assays in SPE
-    SummarizedExperiment::assays(spe) <- list()
-    # Get all unique image ids
-    allImages <- spe[[imageCol]] |> unique()
+    # Create a data frame with all necessary variables. We don't use the SPE object
+    # For computational (memory) reasons
+    df <- cbind(spatialCoords(spe),
+                colData(spe)[, c(imageCol, marks)]) |> as.data.frame()
+    # Remove SPE to free up memory
+    rm(spe); gc()
+    # Split up by image name
+    ls <- split(df, as.factor(df[,3]))
     # Calculate polygon for each id using multiple cores
-    res_all <- mclapply(allImages, function(x) {
-        res <- reconstructShapeDensityImage(
-            spe, marks, imageCol,
-            x, markSelect, dim, bndw, thres
+    res_all <- mclapply(ls, function(x) {
+        # create a matrix and the corresponding ppp
+        m <-  data.matrix(x[,c(1,2)])
+        ppp <- as.ppp(
+            m[,c(1,2)],
+            c(
+                as.numeric(min(m[, 1])),
+                as.numeric(max(m[, 1])),
+                as.numeric(min(m[, 2])),
+                as.numeric(max(m[, 2]))
+            )
         )
-        # assign imageId
-        res[["structID"]] <- paste0(x, "_", c(1:dim(res)[1]))
-        res[[imageCol]] <- x
+        # Set the marks
+        ppp <- setmarks(ppp, as.factor(x[,4]))
+        # Reconstruct the structure
+        res <- reconstructShapeDensity(ppp, markSelect, bndw, thres, dim)
+        # Assign imageId
+        res[["structID"]] <- paste0(unique(x[,3]), "_", c(1:dim(res)[1]))
+        res[[imageCol]] <- unique(x[,3])
         return(res)
     }, mc.cores = nCores)
-    # return data frame with all structures
+    # Return data frame with all structures
     return(do.call(rbind, res_all))
 }
 
@@ -278,7 +295,7 @@ reconstructShapeDensitySPE <- function(
 #' should be plotted. Default = TRUE
 #'
 #' @importFrom spatstat.geom subset.ppp
-#' @importFrom SummarizedExperiment colData
+#' @importFrom SummarizedExperiment colData assays
 #' @importFrom parallel mclapply
 #' @importFrom patchwork wrap_plots
 #' @importFrom ggplot2 ggplot aes_string geom_histogram theme_light
@@ -317,6 +334,10 @@ estimateReconstructionParametersSPE <- function(spe,
     if (is.null(nImages)) nImages <- length(allImages)
     # alternatively we sample some images
     sampleImages <- sample(allImages, nImages)
+    # Remove all observation we don't need to save memory
+    SummarizedExperiment::assays(spe) <- list()
+    SummarizedExperiment::colData(spe) <-
+        SummarizedExperiment::colData(spe)[, c(marks, imageCol)]
     # we calculate the bandwidths and thresholds
     res <- mclapply(sampleImages, function(x) {
         ppp <- SPE2ppp(spe, marks = marks, imageCol = imageCol, imageId = x)
