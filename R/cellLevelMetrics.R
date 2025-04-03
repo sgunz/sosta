@@ -1,6 +1,6 @@
-#' Function to assign spatial points to structures
+#' Function to assign points / coordinates to structures
 #'
-#' This function assigns each spatial point in a `SpatialExperiment` object (`spe`) to the first intersecting structure from a given set of spatial structures.
+#' This function assigns each spatial coordinate in a `SpatialExperiment` object (`spe`) to the first intersecting structure from a given set of spatial structures.
 #'
 #' @param spe SpatialExperiment; An object of class `SpatialExperiment` containing spatial point data.
 #' @param allStructs sf; A simple feature collection (sf object) representing spatial structures. Must contain a column which contains a unique identifier for each structure. Default = `structID`.

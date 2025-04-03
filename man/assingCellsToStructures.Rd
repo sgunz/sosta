@@ -2,7 +2,7 @@
 % Please edit documentation in R/cellLevelMetrics.R
 \name{assingCellsToStructures}
 \alias{assingCellsToStructures}
-\title{Function to assign spatial points to structures}
+\title{Function to assign points / coordinates to structures}
 \usage{
 assingCellsToStructures(
   spe,
@@ -27,7 +27,7 @@ assingCellsToStructures(
 A vector with structure assignments for each spatial point in \code{spe}. Points that do not overlap with any structure are assigned \code{NA}.
 }
 \description{
-This function assigns each spatial point in a \code{SpatialExperiment} object (\code{spe}) to the first intersecting structure from a given set of spatial structures.
+This function assigns each spatial coordinate in a \code{SpatialExperiment} object (\code{spe}) to the first intersecting structure from a given set of spatial structures.
 }
 \examples{
 library("SpatialExperiment")
