@@ -7,7 +7,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">sosta</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.99.5</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.99.6</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -18,8 +18,8 @@
       <ul class="navbar-nav me-auto"><li class="active nav-item"><a class="nav-link" href="../reference/index.html">Reference</a></li>
 <li class="nav-item dropdown">
   <button class="nav-link dropdown-toggle" type="button" id="dropdown-articles" data-bs-toggle="dropdown" aria-expanded="false" aria-haspopup="true">Articles</button>
-  <ul class="dropdown-menu" aria-labelledby="dropdown-articles"><li><a class="dropdown-item" href="../articles/ImcDiabetesIsletsVignette.html">2. Reconstruction and analysis of pancreatic islets from IMC data</a></li>
-    <li><a class="dropdown-item" href="../articles/StructureReconstructionVignette.html">1. Overview of sosta</a></li>
+  <ul class="dropdown-menu" aria-labelledby="dropdown-articles"><li><a class="dropdown-item" href="../articles/ImcDiabetesIsletsVignette.html">02 -- Reconstruction and analysis of pancreatic islets from IMC data</a></li>
+    <li><a class="dropdown-item" href="../articles/StructureReconstructionVignette.html">01 -- Overview of sosta</a></li>
   </ul></li>
 <li class="nav-item"><a class="nav-link" href="../news/index.html">Changelog</a></li>
       </ul><ul class="navbar-nav"><li class="nav-item"><form class="form-inline" role="search">
@@ -82,25 +82,24 @@ containing the proportion of each cell type within each structure.</p>
 <span class="r-in"><span>    markSelect <span class="op">=</span> <span class="st">"A"</span>, bndw <span class="op">=</span> <span class="fl">3.5</span>, thres <span class="op">=</span> <span class="fl">0.045</span></span></span>
 <span class="r-in"><span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="fu">colData</span><span class="op">(</span><span class="va">sostaSPE</span><span class="op">)</span><span class="op">$</span><span class="va">structAssign</span> <span class="op">&lt;-</span> <span class="fu"><a href="assingCellsToStructures.html">assingCellsToStructures</a></span><span class="op">(</span></span></span>
-<span class="r-in"><span>    <span class="va">sostaSPE</span>,</span></span>
-<span class="r-in"><span>    <span class="va">allStructs</span>, <span class="st">"imageName"</span></span></span>
+<span class="r-in"><span>    spe <span class="op">=</span> <span class="va">sostaSPE</span>, allStructs <span class="op">=</span> <span class="va">allStructs</span>, imageCol <span class="op">=</span> <span class="st">"imageName"</span></span></span>
 <span class="r-in"><span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="fu">cellTypeProportions</span><span class="op">(</span><span class="va">sostaSPE</span>, <span class="st">"structAssign"</span>, <span class="st">"cellType"</span><span class="op">)</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>                  A          B          C</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> image1_1 0.8166667 0.08333333 0.10000000</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> image1_2 0.8416076 0.07801418 0.08037825</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> image1_3 0.8076923 0.13286713 0.05944056</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> image1_4 0.8695652 0.08695652 0.04347826</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> image1_1 0.8166667 0.08333333 0.10000000</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> image2_3 0.8812709 0.07023411 0.04849498</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> image2_2 0.8689408 0.08617594 0.04488330</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> image2_1 1.0000000 0.00000000 0.00000000</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> image3_7 0.8156124 0.09555855 0.08882907</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> image3_2 0.6595745 0.23404255 0.10638298</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> image2_2 0.8689408 0.08617594 0.04488330</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> image2_3 0.8812709 0.07023411 0.04849498</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> image3_1 0.8333333 0.16666667 0.00000000</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> image3_2 0.6739130 0.21739130 0.10869565</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> image3_3 1.0000000 0.00000000 0.00000000</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> image3_4 0.7894737 0.21052632 0.00000000</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> image3_5 0.8333333 0.11111111 0.05555556</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> image3_6 0.7407407 0.18518519 0.07407407</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> image3_4 0.7894737 0.21052632 0.00000000</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> image3_1 0.8333333 0.16666667 0.00000000</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> image3_3 1.0000000 0.00000000 0.00000000</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> image3_7 0.8156124 0.09555855 0.08882907</span>
 </code></pre></div>
     </div>
   </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>
