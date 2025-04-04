@@ -201,7 +201,7 @@ allStructs <- reconstructShapeDensitySPE(
 
 ## Intersection with cells
 
-Next, we assign cells in the `SingleCellExperiment` object to their specific structure. 
+Next, we assign cells in the `SingleCellExperiment` object to their specific structure. This is useful for later calculations.
 
 ```{r}
 assign <- assingCellsToStructures(sostaSPE, allStructs,
@@ -224,7 +224,7 @@ cbind(colData(sostaSPE), spatialCoords(sostaSPE)) |>
 
 ## Proportion of cell types within structures
 
-Using the function `cellTypeProportions`, we can estimate the proportion of cell types witin each individual structure.
+Using the function `cellTypeProportions`, we can estimate the proportion of cell types within each individual structure.
 
 ```{r}
 cellTypeProportions(sostaSPE, "structAssign", "cellType")
@@ -233,11 +233,15 @@ cellTypeProportions(sostaSPE, "structAssign", "cellType")
 ## Shape Metrics
 
 
-The function `totalShapeMetrics` calculates a set of metrics related to the shape of the structures
+The function `totalShapeMetrics` calculates a set of geometric metrics related to the shape of the structures.
 
 ```{r}
-(shapeMetrics <- totalShapeMetrics(allStructs))
+shapeMetrics <- totalShapeMetrics(allStructs)
+head(shapeMetrics())
+```
 
+
+```{r}
 cbind(allStructs, t(shapeMetrics)) |>
     ggplot() +
     geom_sf(aes(fill = Area)) +

@@ -57,24 +57,31 @@ assingCellsToStructures <- function(spe, allStructs, imageCol, uniqueId = "struc
             length(uniqueId) == 1 &&
                 uniqueId %in% colnames(allStructs)
     )
-    # Extract unique image identifiers
-    allImages <- unique(allStructs[[imageCol]])
-    # In order no to create memory problems we remove non relevant SPE entries
-    SummarizedExperiment::assays(spe) <- list()
+    # Convert spe to df
+    df <- .SPE2df(spe, imageCol)
+    # Split data frame
+    ls <- split(df, as.factor(df[,imageCol]))
+    # Result length
+    resLen <-  ncol(spe)
 
     # Using lapply to process each image separately
-    res <- mclapply(allImages, function(sel) {
+    res <- mclapply(ls, function(dfSel) {
         # Create results vector with NA values
-        resVect <- rep(NA, ncol(spe))
+        resVect <- rep(NA, resLen)
 
-        # Subset SPE object for the current image
-        speSel <- spe[, spe[[imageCol]] == sel]
+        # Select image name
+        sel <- unique(dfSel[,imageCol])
 
         # Subset structure object for the current image
         structsSel <- allStructs[allStructs[[imageCol]] == sel, ]
 
         # Convert spatial coordinates to sf points object
-        spatialCoordsSf <- spatialCoords2SF(speSel)
+        spatialCoordsSf <- st_as_sf(dfSel[,c(1,2)],
+                                    coords = c(
+                                        colnames(dfSel)[1],
+                                        colnames(dfSel)[2]
+                                    )
+        )
 
         # Compute intersections between spatial points and structures
         n <- st_intersects(spatialCoordsSf, structsSel, sparse = FALSE)
@@ -252,6 +259,8 @@ minBoundaryDistances <- function(
         # Store the minimum distance for each cell
         res <- apply(dist, 1, min)
         resVect[spe[[imageColumn]] %in% sel] <- res
+        # Free memory
+        gc()
         return(resVect)
     }, mc.cores = nCores)
 

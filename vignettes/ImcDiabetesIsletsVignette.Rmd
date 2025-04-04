@@ -322,5 +322,21 @@ sessionInfo()
 
 # References
 
+```{r}
+colData(spe)$structAssign <- assingCellsToStructures(spe, allIslets, "image_name")
 
+
+colData(sostaSPE)$minDist <- minBoundaryDistances(
+    sostaSPE,
+    "imageName", "structAssign", allStructs
+)
+```
+
+
+
+```{r}
+start <- Sys.time()
+colData(spe)$structAssign <- assingCellsToStructures(spe, allIslets, "image_name")
+print(Sys.time() - start)
+```
 

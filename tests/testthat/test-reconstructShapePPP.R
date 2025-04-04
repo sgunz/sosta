@@ -71,13 +71,13 @@ test_that("reconstructShapeDensityImage returns polygons from SpatialExperiment"
     expect_false(any(st_is_empty(polyA)))
 })
 
-test_that("reconstructShapeDensitysostaSPE handles multiple images", {
+test_that("reconstructShapeDensitySPE handles multiple images", {
     expect_s3_class(allA, "sf")
     expect_true(any(st_geometry_type(allA) == "POLYGON"))
     expect_false(any(st_is_empty(allA)))
 })
 
-test_that("estimateReconstructionParameterssostaSPE estimates valid parameters", {
+test_that("estimateReconstructionParametersSPE estimates valid parameters", {
     # Test the estimation function
     res <- estimateReconstructionParametersSPE(
         sostaSPE,
@@ -108,7 +108,7 @@ test_that("reconstructShapeDensity handles invalid input types", {
     )
 })
 
-test_that("estimateReconstructionParameterssostaSPE handles edge cases", {
+test_that("estimateReconstructionParametersSPE handles edge cases", {
     # Test with fewer images than requested
     expect_error(
         estimateReconstructionParametersSPE(

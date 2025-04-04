@@ -222,7 +222,7 @@ SPE2ppp <- function(spe,
 #' @examples
 #' data(sostaSPE)
 #' .SPE2df(sostaSPE, marks = "cellType", imageCol = "imageName") |> head()
-.SPE2df <- function(spe, imageCol, marks){
+.SPE2df <- function(spe, imageCol, marks = NULL){
     df <- cbind(spatialCoords(spe),
           colData(spe)[, c(imageCol, marks)]) |> as.data.frame()
     colnames(df) <- c(colnames(spatialCoords(spe)), imageCol, marks)
@@ -232,7 +232,7 @@ SPE2ppp <- function(spe,
 
 #' Function to convert `data.frame` to `ppp` object
 #'
-#' Assumes that the `data.frame` is the output of `.SPE2df()`
+#' Assumes that the `data.frame` is the output of `.SPE2df()`. Column order is important!
 #'
 #' @param df data.frame; with x, y coordinates, image, and categorical mark information.
 #' Order of columns is important.
@@ -301,6 +301,7 @@ findIntensityThreshold <- function(ppp, markSelect = NULL,
 
 
 #' Function to estimate the intensity image of a point pattern
+#'
 #' @param ppp point pattern object of class `ppp`
 #' @param markSelect character; name of mark that is to be selected for the
 #'  reconstruction
