@@ -30,8 +30,7 @@ allStructs <- reconstructShapeDensitySPE(sostaSPE,
     markSelect = "A", bndw = 3.5, thres = 0.045
 )
 colData(sostaSPE)$structAssign <- assingCellsToStructures(
-    sostaSPE,
-    allStructs, "imageName"
+    spe = sostaSPE, allStructs = allStructs, imageCol = "imageName"
 )
 cellTypeProportions(sostaSPE, "structAssign", "cellType")
 }

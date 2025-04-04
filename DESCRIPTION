@@ -36,7 +36,8 @@ Imports:
     rlang,
     parallel,
     EBImage,
-    spatstat.random
+    spatstat.random,
+    S4Vectors
 Suggests:
     knitr,
     rmarkdown,

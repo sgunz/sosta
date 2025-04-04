@@ -14,7 +14,7 @@ Order of columns is important.}
 ppp; object of type \code{ppp}
 }
 \description{
-Assumes that the \code{data.frame} is the output of \code{.SPE2df()}
+Assumes that the \code{data.frame} is the output of \code{.SPE2df()}. Column order is important!
 }
 \examples{
 data(sostaSPE)

@@ -232,12 +232,11 @@ cellTypeProportions(sostaSPE, "structAssign", "cellType")
 
 ## Shape Metrics
 
-
 The function `totalShapeMetrics` calculates a set of geometric metrics related to the shape of the structures.
 
 ```{r}
 shapeMetrics <- totalShapeMetrics(allStructs)
-head(shapeMetrics())
+head(shapeMetrics)
 ```
 
 
@@ -256,8 +255,8 @@ Using the function `minBoundaryDistances`, we can compute the distance to the bo
 
 ```{r}
 sostaSPE$minDist <- minBoundaryDistances(
-    sostaSPE, "imageName",
-    "structAssign", allStructs
+    spe = sostaSPE, imageCol = "imageName",
+    structColumn = "structAssign", allStructs = allStructs
 )
 
 cbind(colData(sostaSPE), spatialCoords(sostaSPE)) |>
@@ -301,7 +300,9 @@ Alternatively, borders can be defined using `st_difference` and `st_buffer` on t
 borders <- lapply(
     st_geometry(allStructs),
     \(x) st_difference(st_buffer(x, 3), st_buffer(x, -3))
-) |> st_as_sfc() |> st_as_sf() # both functions needed for proper conversion
+) |>
+    st_as_sfc() |>
+    st_as_sf() # both functions needed for proper conversion
 
 borders$imageName <- allStructs$imageName
 borders$borderID <- paste0("border_", allStructs$structID)

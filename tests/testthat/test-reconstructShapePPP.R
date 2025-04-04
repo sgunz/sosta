@@ -28,6 +28,17 @@ allA <- reconstructShapeDensitySPE(
     thres = 0.005
 )
 
+# TODO: Dataset with few cells
+# sostaSPE2 <- sostaSPE[, sostaSPE[["imageName"]] == "image1"]
+# colData(sostaSPE2)[["cellType"]][colData(sostaSPE2)[["cellType"]] == "A"] <- "B"
+#
+# colData(sostaSPE2)$sample_id <- "sample2"
+# colData(sostaSPE2)$imageName <- "image4"
+#
+# colData(sostaSPE2)[c(2:50), "cellType"] <- "A"
+#
+# sostaSPE <- cbind(sostaSPE, sostaSPE2)
+
 
 test_that("reconstructShapeDensity returns valid polygons", {
     # Reconstruct polygons with valid parameters

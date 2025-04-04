@@ -21,9 +21,8 @@
 #' thres <- findIntensityThreshold(ppp, markSelect = "A", dim = 500)
 #' struct <- reconstructShapeDensity(ppp, markSelect = "A", thres = thres, dim = 500)
 #' plot(struct)
-reconstructShapeDensity <- function(
-        ppp, markSelect = NULL,
-        bndw = NULL, thres = NULL, dim) {
+reconstructShapeDensity <- function(ppp, markSelect = NULL,
+    bndw = NULL, thres = NULL, dim) {
     # estimate density
     res <- .intensityImage(ppp, markSelect, bndw, dim)
 
@@ -47,6 +46,7 @@ reconstructShapeDensity <- function(
 
     if (all(mat == 0)) {
         warning("No structure found; threshold might be too high")
+        return()
     }
 
     # using custom function
@@ -103,12 +103,13 @@ reconstructShapeDensity <- function(
 #'     marks = "cellType", imageCol = "imageName",
 #'     imageId = "image1", markSelect = "A"
 #' )
-shapeIntensityImage <- function(spe, marks,
-    imageCol,
-    imageId,
-    markSelect,
-    bndw = NULL,
-    dim = 500) {
+shapeIntensityImage <- function(
+        spe, marks,
+        imageCol,
+        imageId,
+        markSelect,
+        bndw = NULL,
+        dim = 500) {
     # Convert the spe object to a point pattern object
     ppp <- SPE2ppp(spe, marks = marks, imageCol = imageCol, imageId = imageId)
 
@@ -185,15 +186,13 @@ shapeIntensityImage <- function(spe, marks,
 #'     markSelect = "A", dim = 500
 #' )
 #' plot(struct)
-reconstructShapeDensityImage <- function(
-        spe, marks,
-        imageCol, imageId, markSelect, dim = 500, bndw = NULL, thres = NULL) {
+reconstructShapeDensityImage <- function(spe, marks,
+    imageCol, imageId, markSelect, dim = 500, bndw = NULL, thres = NULL) {
     # Convert the spe object to a point pattern object
     ppp <- SPE2ppp(spe, marks, imageCol, imageId)
 
     # Get the structure
     struct <- reconstructShapeDensity(ppp, markSelect, bndw, thres, dim)
-
     return(struct)
 }
 
@@ -234,25 +233,32 @@ reconstructShapeDensityImage <- function(
 #'     markSelect = "A", bndw = 3.5, thres = 0.005
 #' )
 #' allStructs
-reconstructShapeDensitySPE <- function(
-        spe, marks,
-        imageCol, markSelect,
-        dim = 500, bndw = NULL, thres = NULL,
-        nCores = 1) {
+reconstructShapeDensitySPE <- function(spe, marks,
+    imageCol, markSelect,
+    dim = 500, bndw = NULL, thres = NULL,
+    nCores = 1) {
     # Create a data frame with all necessary variables for computational (memory) reasons
     df <- .SPE2df(spe, imageCol, marks)
     # Remove SPE to free up memory
-    rm(spe); gc()
+    rm(spe)
+    gc()
     # Split up by image name
-    ls <- split(df, as.factor(df[,3]))
+    ls <- split(df, as.factor(df[, 3]))
     # Calculate polygon for each id using multiple cores
     res_all <- mclapply(ls, function(x) {
         ppp <- .df2ppp(x)
         # Reconstruct the structure
         res <- reconstructShapeDensity(ppp, markSelect, bndw, thres, dim)
+        if (is.null(res)) {
+            message(paste0(
+                "No structure found in: ",
+                unique(x[, 3])
+            ), " (see Warning below)")
+            return()
+        }
         # Assign imageId
-        res[["structID"]] <- paste0(unique(x[,3]), "_", c(1:dim(res)[1]))
-        res[[imageCol]] <- unique(x[,3])
+        res[["structID"]] <- paste0(unique(x[, 3]), "_", c(1:dim(res)[1]))
+        res[[imageCol]] <- unique(x[, 3])
         return(res)
     }, mc.cores = nCores)
     # Return data frame with all structures
@@ -296,15 +302,16 @@ reconstructShapeDensitySPE <- function(
 #'     marks = "cellType", imageCol = "imageName",
 #'     markSelect = "A", plotHist = TRUE
 #' )
-estimateReconstructionParametersSPE <- function(spe,
-    marks,
-    imageCol,
-    markSelect = NULL,
-    nImages = NULL,
-    fun = "bw.diggle",
-    dim = 500,
-    nCores = 1,
-    plotHist = TRUE) {
+estimateReconstructionParametersSPE <- function(
+        spe,
+        marks,
+        imageCol,
+        markSelect = NULL,
+        nImages = NULL,
+        fun = "bw.diggle",
+        dim = 500,
+        nCores = 1,
+        plotHist = TRUE) {
     # Input checks
     if (!is.null(nImages)) {
         stopifnot("'nImages' must be numeric" = is.numeric(nImages))
@@ -326,9 +333,10 @@ estimateReconstructionParametersSPE <- function(spe,
     # Create a data frame with all necessary variables for computational (memory) reasons
     df <- .SPE2df(spe, imageCol, marks)
     # Remove SPE to free up memory
-    rm(spe); gc()
+    rm(spe)
+    gc()
     # Split up by image name
-    ls <- split(df, as.factor(df[,3]))
+    ls <- split(df, as.factor(df[, 3]))
 
     # we calculate the bandwidths and thresholds
     res <- mclapply(ls, function(x) {

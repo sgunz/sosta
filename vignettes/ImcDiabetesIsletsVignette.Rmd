@@ -164,7 +164,9 @@ sel <- colData(spe) |>
 
 # Select sampled images
 speSel <- spe[, spe$image_name %in% sel]
-speSel$image_name |> unique() |> length()
+speSel$image_name |>
+    unique() |>
+    length()
 ```
 
 ```{r, eval=TRUE}
@@ -289,7 +291,7 @@ allIslets |>
         fill = patient_stage
     )) +
     geom_boxplot() +
-    facet_wrap( ~ patient_stage, scales = "free") +
+    facet_wrap(~patient_stage, scales = "free") +
     scale_fill_brewer(palette = "Set2") +
     scale_x_discrete(guide = guide_axis(n.dodge = 2)) +
     guides(fill = "none")
@@ -302,9 +304,11 @@ To account for this, we will use mixed linear models with random effects for the
 We can model differences between the patient stages as follows.
 
 ```{r}
-mod <- lmer(log(Area) ~ patient_stage +
-                (1 | patient_id) + (1 | image_name),
-            data = allIslets)
+mod <- lmer(
+    log(Area) ~ patient_stage +
+        (1 | patient_id) + (1 | image_name),
+    data = allIslets
+)
 ```
 
 
@@ -321,22 +325,3 @@ sessionInfo()
 ```
 
 # References
-
-```{r}
-colData(spe)$structAssign <- assingCellsToStructures(spe, allIslets, "image_name")
-
-
-colData(sostaSPE)$minDist <- minBoundaryDistances(
-    sostaSPE,
-    "imageName", "structAssign", allStructs
-)
-```
-
-
-
-```{r}
-start <- Sys.time()
-colData(spe)$structAssign <- assingCellsToStructures(spe, allIslets, "image_name")
-print(Sys.time() - start)
-```
-
