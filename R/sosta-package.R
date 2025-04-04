@@ -21,6 +21,7 @@
 #' @importFrom patchwork plot_annotation
 #' @importFrom patchwork wrap_plots
 #' @importFrom rlang .data
+#' @importFrom S4Vectors split
 #' @importFrom sf st_area
 #' @importFrom sf st_as_sf
 #' @importFrom sf st_boundary

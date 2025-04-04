@@ -33,6 +33,12 @@ test_that("cellTypeProportions handles incorrect input", {
     expect_error(cellTypeProportions(sostaSPE, "wrongColumn", "cellType"), "must exist in colData")
 })
 
+test_that("cellTypeProportions sum to one", {
+    expect_true(all(round(rowSums(
+        cellTypeProportions(sostaSPE, "structAssign", "cellType")
+    ), 0.01) == 1))
+})
+
 # Test minBoundaryDistances
 test_that("minBoundaryDistances returns correct numeric vector", {
     result <- minBoundaryDistances(sostaSPE, "imageName", "structAssign", allStructs)

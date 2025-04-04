@@ -4,12 +4,12 @@
 \alias{minBoundaryDistances}
 \title{Compute minimum boundary distances for each cell within its corresponding image structures}
 \usage{
-minBoundaryDistances(spe, imageColumn, structColumn, allStructs, nCores = 1)
+minBoundaryDistances(spe, imageCol, structColumn, allStructs, nCores = 1)
 }
 \arguments{
 \item{spe}{SpatialExperiment object}
 
-\item{imageColumn}{character; name of the \code{colData} column specifying the image name}
+\item{imageCol}{character; name of the \code{colData} column specifying the image name}
 
 \item{structColumn}{character; name of the \code{colData} column specifying structure assignments}
 
@@ -32,12 +32,11 @@ allStructs <- reconstructShapeDensitySPE(sostaSPE,
     markSelect = "A", bndw = 3.5, thres = 0.045
 )
 colData(sostaSPE)$structAssign <- assingCellsToStructures(
-    sostaSPE,
-    allStructs, "imageName"
+    spe = sostaSPE, allStructs = allStructs, imageCol = "imageName"
 )
 colData(sostaSPE)$minDist <- minBoundaryDistances(
-    sostaSPE,
-    "imageName", "structAssign", allStructs
+    spe = sostaSPE, imageCol = "imageName", structColumn = "structAssign",
+    allStructs = allStructs
 )
 if (require("ggplot2")) {
     cbind(colData(sostaSPE), spatialCoords(sostaSPE)) |>

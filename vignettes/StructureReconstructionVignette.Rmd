@@ -1,5 +1,5 @@
 ---
-title: "1. Overview of sosta"
+title: "01 -- Overview of sosta"
 author: 
   - name: "Samuel Gunz"
     affiliation:
@@ -46,7 +46,7 @@ BiocManager::install("sosta")
 
 For this vignette, we will need several additional packages:
 
-```{r setup, message=FALSE}
+```{r setup, message=FALSE, warning=FALSE}
 library("sosta")
 library("dplyr")
 library("tidyr")
@@ -59,7 +59,7 @@ theme_set(theme_bw())
 
 # Introduction
 
-As an example, we will load an simulated dataset with three images and three cell types A, B and C, which are stored in a `r BiocStyle::Biocpkg('SpatialExperiment')` object:
+As an example, we will load an simulated dataset with three images and three cell types A, B and C, stored as a `r BiocStyle::Biocpkg('SpatialExperiment')` object:
 
 ```{r loading, echo=TRUE, message=FALSE}
 # load the data
@@ -76,13 +76,13 @@ cbind(colData(sostaSPE), spatialCoords(sostaSPE)) |>
     coord_equal()
 ```
 
-The goal is to reconstruct, or segment, the *structures* given by cell type A.
+The goal is to reconstruct, or segment, the cellular "structures" given by cell type A.
 
 # Structure reconstruction
 
 ## Reconstruction of structures for one image
 
-In this example, we will reconstruct cellular "structures" based on the point pattern density of the cells of type A. We will start with estimating parameters that are used for reconstruction afterwards. For one image, this can be illustrated as follows:
+In this example, we will reconstruct cellular *structures* based on the point pattern density of the cells of type A. We will start with estimating parameters that are used for reconstruction afterwards. For one image, this can be illustrated as follows:
 
 ```{r}
 shapeIntensityImage(
@@ -96,7 +96,7 @@ shapeIntensityImage(
 
 We see the pixel-wise density image on the left and a histogram of the intensity values on the right. The estimated threshold is roughly the mean between the two modes of the (truncated) pixel intensity distribution. The dimensions of the pixel image are specified on the bottom left. The dimensions correspond to the density image, setting a higher value for the `dim` parameter will result in a higher resolution density image but will not change how many points are within a pixel. This can be changed by varying the smoothing parameter (`bndw`).
 
-This was done for one image. The function `estimateReconstructionParametersSPE` returns two plots with the estimated parameters for each image. The parameter `bndw` is the bandwidth parameter that is used for estimating the intensity profile of the point pattern. The parameter `thres` is the estimated parameter for the density threshold for reconstruction.
+This was done for one image. The function `estimateReconstructionParametersSPE` returns two plots with the estimated parameters for each image in the dataset. The parameter `bndw` is the bandwidth parameter that is used for estimating the intensity profile of the point pattern. The parameter `thres` is the estimated parameter for the density threshold for reconstruction.
 
 ```{r}
 n <- estimateReconstructionParametersSPE(
@@ -114,7 +114,7 @@ We will use the mean of the two estimated vectors as our parameters.
 (bndwSPE <- mean(n$bndw))
 ```
 
-We can now use the function `reconstructShapeDensity` to segment the cell-type-A structure into regions, the result of which is `r BiocStyle::CRANpkg('sf')` polygon [@pebesmaSimpleFeaturesStandardized2018]. 
+We now use the function `reconstructShapeDensity` to segment the cell-type-A structure into regions. The result is a collection of `r BiocStyle::CRANpkg('sf')` polygons [@pebesmaSimpleFeaturesStandardized2018]. 
 
 ```{r}
 (struct <- reconstructShapeDensityImage(
@@ -129,7 +129,7 @@ We can now use the function `reconstructShapeDensity` to segment the cell-type-A
 ))
 ```
 
-We can then plot both the points and the segmented polygon.
+Let's plot both the points and the segmented polygons.
 
 ```{r}
 cbind(
@@ -138,7 +138,7 @@ cbind(
 ) |>
     as.data.frame() |>
     ggplot(aes(x = x, y = y, color = cellType)) +
-    geom_point(size = 0.25) +
+    geom_point(size = 0.5) +
     facet_wrap(~imageName) +
     coord_equal() +
     geom_sf(
@@ -146,7 +146,7 @@ cbind(
         fill = NA,
         color = "darkblue",
         inherit.aes = FALSE, # this is important
-        linewidth = 1
+        linewidth = 0.75
     )
 ```
 
@@ -171,7 +171,7 @@ cbind(
 ) |>
     as.data.frame() |>
     ggplot(aes(x = x, y = y, color = cellType)) +
-    geom_point(size = 0.25) +
+    geom_point(size = 0.5) +
     facet_wrap(~imageName) +
     coord_equal() +
     geom_sf(
@@ -179,7 +179,7 @@ cbind(
         fill = NA,
         color = "darkblue",
         inherit.aes = FALSE, # this is important
-        linewidth = 1
+        linewidth = 0.75
     )
 ```
 
@@ -201,7 +201,7 @@ allStructs <- reconstructShapeDensitySPE(
 
 ## Intersection with cells
 
-Next, we assign cells in the `SingleCellExperiment` object to their specific structure. 
+Next, we assign cells in the `SingleCellExperiment` object to their specific structure. This is useful for later calculations.
 
 ```{r}
 assign <- assingCellsToStructures(sostaSPE, allStructs,
@@ -224,7 +224,7 @@ cbind(colData(sostaSPE), spatialCoords(sostaSPE)) |>
 
 ## Proportion of cell types within structures
 
-Using the function `cellTypeProportions`, we can estimate the proportion of cell types witin each individual structure.
+Using the function `cellTypeProportions`, we can estimate the proportion of cell types within each individual structure.
 
 ```{r}
 cellTypeProportions(sostaSPE, "structAssign", "cellType")
@@ -232,12 +232,15 @@ cellTypeProportions(sostaSPE, "structAssign", "cellType")
 
 ## Shape Metrics
 
-
-The function `totalShapeMetrics` calculates a set of metrics related to the shape of the structures
+The function `totalShapeMetrics` calculates a set of geometric metrics related to the shape of the structures.
 
 ```{r}
-(shapeMetrics <- totalShapeMetrics(allStructs))
+shapeMetrics <- totalShapeMetrics(allStructs)
+head(shapeMetrics)
+```
 
+
+```{r}
 cbind(allStructs, t(shapeMetrics)) |>
     ggplot() +
     geom_sf(aes(fill = Area)) +
@@ -252,8 +255,8 @@ Using the function `minBoundaryDistances`, we can compute the distance to the bo
 
 ```{r}
 sostaSPE$minDist <- minBoundaryDistances(
-    sostaSPE, "imageName",
-    "structAssign", allStructs
+    spe = sostaSPE, imageCol = "imageName",
+    structColumn = "structAssign", allStructs = allStructs
 )
 
 cbind(colData(sostaSPE), spatialCoords(sostaSPE)) |>
@@ -298,8 +301,8 @@ borders <- lapply(
     st_geometry(allStructs),
     \(x) st_difference(st_buffer(x, 3), st_buffer(x, -3))
 ) |>
-    # both needed for proper conversion
-    st_as_sfc() |> st_as_sf()
+    st_as_sfc() |>
+    st_as_sf() # both functions needed for proper conversion
 
 borders$imageName <- allStructs$imageName
 borders$borderID <- paste0("border_", allStructs$structID)

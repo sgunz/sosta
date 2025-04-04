@@ -25,10 +25,9 @@
 #' ), nrow = 9, byrow = TRUE)
 #' polyR <- binaryImageToSF(matrixR, xmin = 0, xmax = 1, ymin = 0, ymax = 1)
 #' plot(polyR)
-binaryImageToSF <- function(
-        binaryMatrix,
-        xmin, xmax,
-        ymin, ymax) {
+binaryImageToSF <- function(binaryMatrix,
+    xmin, xmax,
+    ymin, ymax) {
     # Input checking
     stopifnot("'binaryMatrix' must be a matrix" = is.matrix(binaryMatrix))
     stopifnot(
@@ -167,10 +166,11 @@ getDimXY <- function(ppp, ydim) {
 #'     marks = "cellType", imageCol = "imageName",
 #'     imageId = "image1"
 #' )
-SPE2ppp <- function(spe,
-    marks,
-    imageCol = NULL,
-    imageId = NULL) {
+SPE2ppp <- function(
+        spe,
+        marks,
+        imageCol = NULL,
+        imageId = NULL) {
     # Input checking
     stopifnot(
         "'spe' must be an object of class 'SpatialExperiment'" =
@@ -208,6 +208,65 @@ SPE2ppp <- function(spe,
 }
 
 
+#' Function to convert `SpatialExperiment` object to a data frame
+#'
+#' @param spe SpatialExperiment; a object of class `SpatialExperiment`
+#' @param marks character; name of column in `colData` with categorical marks
+#' @param imageCol character; name of a column in `colData` that corresponds to
+#' the image
+#' @returns data.frame with x, y coordinates, image, and categorical mark information
+#' @export
+#' @importFrom SpatialExperiment spatialCoords
+#' @importFrom SummarizedExperiment colData
+#'
+#' @examples
+#' data(sostaSPE)
+#' .SPE2df(sostaSPE, marks = "cellType", imageCol = "imageName") |> head()
+.SPE2df <- function(spe, imageCol, marks = NULL) {
+    df <- cbind(
+        spatialCoords(spe),
+        colData(spe)[, c(imageCol, marks)]
+    ) |> as.data.frame()
+    colnames(df) <- c(colnames(spatialCoords(spe)), imageCol, marks)
+    return(df)
+}
+
+
+#' Function to convert `data.frame` to `ppp` object
+#'
+#' Assumes that the `data.frame` is the output of `.SPE2df()`. Column order is important!
+#'
+#' @param df data.frame; with x, y coordinates, image, and categorical mark information.
+#' Order of columns is important.
+#'
+#' @return ppp; object of type `ppp`
+#' @export
+#'
+#' @importFrom spatstat.geom as.ppp setmarks
+#'
+#' @seealso \code{\link{.SPE2df}}, \code{\link{as.ppp}}
+#'
+#' @examples
+#' data(sostaSPE)
+#' df <- .SPE2df(sostaSPE, marks = "cellType", imageCol = "imageName")
+#' ppp <- .df2ppp(df)
+.df2ppp <- function(df) {
+    # create a matrix and the corresponding ppp
+    m <- data.matrix(df[, c(1, 2)])
+    ppp <- as.ppp(
+        m[, c(1, 2)],
+        c(
+            as.numeric(min(m[, 1])),
+            as.numeric(max(m[, 1])),
+            as.numeric(min(m[, 2])),
+            as.numeric(max(m[, 2]))
+        )
+    )
+    # Set the marks
+    ppp <- setmarks(ppp, as.factor(df[, 4]))
+}
+
+
 #' Estimate the intensity threshold for the reconstruction of spatial structures
 #'
 #' @param ppp point pattern object of class `ppp`
@@ -231,9 +290,10 @@ SPE2ppp <- function(spe,
 #' data(sostaSPE)
 #' ppp <- SPE2ppp(sostaSPE, marks = "cellType", imageCol = "imageName", imageId = "image1")
 #' findIntensityThreshold(ppp, markSelect = "A", dim = 250)
-findIntensityThreshold <- function(ppp, markSelect = NULL,
-    bndw = NULL, dim,
-    steps = 250) {
+findIntensityThreshold <- function(
+        ppp, markSelect = NULL,
+        bndw = NULL, dim,
+        steps = 250) {
     stopifnot("'steps' must be a single numeric value" = is.numeric(dim) && length(dim) == 1)
     # get density image
     densityImage <- .intensityImage(ppp, markSelect, bndw, dim)$denIm
@@ -244,6 +304,7 @@ findIntensityThreshold <- function(ppp, markSelect = NULL,
 
 
 #' Function to estimate the intensity image of a point pattern
+#'
 #' @param ppp point pattern object of class `ppp`
 #' @param markSelect character; name of mark that is to be selected for the
 #'  reconstruction
@@ -253,10 +314,11 @@ findIntensityThreshold <- function(ppp, markSelect = NULL,
 #' @return list; list with the intensity image and the bandwidth and dimension parameters
 #' @importFrom spatstat.explore bw.diggle density.ppp
 #' @importFrom spatstat.geom subset.ppp
-.intensityImage <- function(ppp,
-    markSelect = NULL,
-    bndw = NULL,
-    dim) {
+.intensityImage <- function(
+        ppp,
+        markSelect = NULL,
+        bndw = NULL,
+        dim) {
     # Input checking
     stopifnot("'ppp' must be an object of class 'ppp'" = inherits(ppp, "ppp"))
     stopifnot("'dim' must be a single, positive, numeric value" = is.numeric(dim) &&
@@ -269,7 +331,9 @@ findIntensityThreshold <- function(ppp, markSelect = NULL,
     # Extract the islet cells
     if (!is.null(markSelect)) {
         stopifnot(
-            "All values in 'markSelect' must exist in 'marks' of 'ppp'" =
+            "All values in 'markSelect' must exist in 'marks' of 'ppp'; i.e.,
+            there have to be at least two cells of each cell type in
+            each image of your dataset" =
                 all(markSelect %in% marks(ppp))
         )
         ppSel <- subset.ppp(ppp, marks %in% markSelect)

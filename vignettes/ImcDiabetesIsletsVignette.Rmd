@@ -1,5 +1,5 @@
 ---
-title: "2. Reconstruction and analysis of pancreatic islets from IMC data"
+title: "02 -- Reconstruction and analysis of pancreatic islets from IMC data"
 author: 
   - name: "Samuel Gunz"
     affiliation:
@@ -14,7 +14,7 @@ package: "`r BiocStyle::Biocpkg('sosta')`"
 output:
   BiocStyle::html_document
 abstract: >
-  In this vignette we use `sosta` to reconstruct pancreatic islets of different diabetic stages from IMC data [@damondMapHumanType2019]. Based on the reconstruction we calculate structure metrics. Finally, we show how to do staticstical comparison of the metrics accounting for the correlation structure of this dataset.
+  In this vignette we use `sosta` to reconstruct pancreatic islets of different diabetic stages from IMC data [@damondMapHumanType2019]. Based on the reconstruction we calculate structure metrics. Finally, we show how to do staticstical comparison of the metrics accounting for the correlation structure of the dataset.
 vignette: >
   %\VignetteIndexEntry{Reconstruction and analysis of pancreatic islets from IMC data}
   %\VignetteEncoding{UTF-8}
@@ -47,7 +47,7 @@ BiocManager::install("sosta")
 
 For this vignette, we will need several additional packages:
 
-```{r setup, message=FALSE}
+```{r setup, message=FALSE, warning=FALSE}
 library("dplyr")
 library("ExperimentHub")
 library("ggplot2")
@@ -57,14 +57,16 @@ library("sf")
 library("SpatialExperiment")
 library("sosta")
 library("tidyr")
+library("ggfortify")
+
 theme_set(theme_bw())
 ```
 
 # Introduction
 
-In this vignette, we will use an imaging mass cytometry (IMC) dataset of pancreatic islets from human donors at different stages of type 1 diabetes (T1D) and healthy controls [@damondMapHumanType2019]. Note that we will only use a subset of the patients.
+In this vignette, we will use an imaging mass cytometry (IMC) dataset of pancreatic islets from human donors at different stages of type 1 diabetes (T1D) and healthy controls [@damondMapHumanType2019].
 
-```{r loading, echo=TRUE, message=FALSE}
+```{r loading, echo=FALSE, message=FALSE}
 # load experiment hub
 eh <- ExperimentHub()
 oid <- names(eh[eh$title == "Damond_2019_Pancreas - sce - v1 - full"])
@@ -76,12 +78,15 @@ spe <- toSpatialExperiment(spe,
     sample_id = "image_name",
     spatialCoordsNames = c("cell_x", "cell_y")
 )
+# We don't need expression, so we remove it to free up memory
+assays(spe) <- list()
+gc()
 ```
 
 
-First, we plot the data for illustration. As we have multiple images per patient, we will subset to a few slides. As can be seen, the dimensions of the field of view are different for each image.
+First, we plot the data for illustration. As we have multiple images per patient, we will subset to a few slides. As can be seen, the dimensions of the field of view are differing.
 
-```{r}
+```{r plot-data}
 df <- cbind(
     colData(spe[, spe$image_name %in% c("E04", "E03", "G01", "J02")]),
     spatialCoords(spe[, spe$image_name %in% c("E04", "E03", "G01", "J02")])
@@ -91,10 +96,11 @@ df |>
     ggplot(aes(x = cell_x, y = cell_y, color = cell_category)) +
     geom_point(size = 0.25) +
     facet_wrap(~image_name, ncol = 2) +
-    coord_equal()
+    coord_equal() +
+    scale_color_brewer(palette = "Dark2")
 ```
 
-The goal is to reconstruct / segment and quantify the pancreatic islets.
+Our goal is to reconstruct / segment and quantify the pancreatic islets.
 
 # Reconstruction of pancreatic islets
 
@@ -114,7 +120,7 @@ shapeIntensityImage(
 
 We see the density (pixel-level) image on the left and a histogram of the intensity values on the right. The estimated threshold is roughly the mean between the two modes of the (truncated) pixel intensity distribution.
 
-Note that the above calculation was done for one image. The function `estimateReconstructionParametersSPE` returns two plots with the estimated parameters for each image. The parameter `bndw` is the bandwidth parameter that is used for estimating the intensity profile of the point pattern. The parameter `thres` is the estimated parameter for the density threshold for reconstruction. We subset 20 images to speed up computation.
+Note that the above calculation was done for one image. The function `estimateReconstructionParametersSPE` returns two plots with the estimated parameters for each image. The parameter `bndw` is the bandwidth parameter that is used for estimating the intensity profile of the point pattern. The parameter `thres` is the estimated parameter for the density threshold for reconstruction. We subset 25 random images to speed up computation.
 
 ```{r}
 n <- estimateReconstructionParametersSPE(
@@ -122,7 +128,7 @@ n <- estimateReconstructionParametersSPE(
     marks = "cell_category",
     imageCol = "image_name",
     markSelect = "islet",
-    nImages = 20,
+    nImages = 25,
     plotHist = TRUE
 )
 ```
@@ -136,7 +142,7 @@ n |>
 ```
 
 
-We note that the estimated bandwidth varies more than the estimated threshold. We will use the mean of the two estimated vectors as our parameters.
+We note that the estimated bandwidth seems to vary a bit more than the estimated threshold. We will use the mean of the two estimated vectors as our parameters.
 
 ```{r}
 (thresSPE <- mean(n$thres))
@@ -145,23 +151,28 @@ We note that the estimated bandwidth varies more than the estimated threshold. W
 
 ## Reconstruction of pancreatic islets for all images
 
-The function `reconstructShapeDensitySPE` reconstructs the islets for all images in the `spe` object. We use the estimated parameters from above. For computational reasons, we will subset to 10 images per patient for the rest of the vignette.
+The function `reconstructShapeDensitySPE` reconstructs the islets for all images in the `spe` object. We use the estimated parameters from above. For computational reasons, we will subset to 20 images per patient for the rest of the vignette.
 
-```{r, eval=TRUE}
+```{r, eval=TRUE, include=TRUE}
 # Sample 15 images per patient
 sel <- colData(spe) |>
     as.data.frame() |>
     group_by(patient_id) |>
     select(image_name) |>
-    sample_n(size = 10, replace = FALSE) |>
+    sample_n(size = 20, replace = FALSE) |>
     pull(image_name)
 
 # Select sampled images
-spe <- spe[, spe$image_name %in% sel]
+speSel <- spe[, spe$image_name %in% sel]
+speSel$image_name |>
+    unique() |>
+    length()
+```
 
+```{r, eval=TRUE}
 # Run on all images
 allIslets <- reconstructShapeDensitySPE(
-    spe,
+    speSel,
     marks = "cell_category",
     imageCol = "image_name",
     markSelect = "islet",
@@ -171,7 +182,7 @@ allIslets <- reconstructShapeDensitySPE(
 )
 ```
 
-The result is a (simple feature collection)[https://r-spatial.github.io/sf/articles/sf1.html]. This contains the polygons (`<GEOMETRY>` column), a structure identifier (`structID`) and the image identifier (`image_name`). Let's add some patient metadata to the object.
+The result is a [simple feature collection](https://r-spatial.github.io/sf/articles/sf1.html). It contains the polygons (`<GEOMETRY>` column), a structure identifier (`structID`) and the image identifier (`image_name`). Let's add some patient metadata to the object.
 
 ```{r}
 colsKeep <- c(
@@ -180,7 +191,7 @@ colsKeep <- c(
     "patient_age", "patient_gender", "sample_id"
 )
 
-patientData <- colData(spe) |>
+patientData <- colData(speSel) |>
     as_tibble() |>
     group_by(image_name) |>
     select(all_of(colsKeep)) |>
@@ -190,11 +201,11 @@ allIslets <- allIslets |>
     dplyr::left_join(patientData, by = "image_name")
 ```
 
-We can now inspect the number of structures found per patient or image.
+Using standard operations on data frames we can inspect the number of structures found per patient.
 
 ```{r}
 allIslets |>
-    st_drop_geometry() |>
+    st_drop_geometry() |> # we are only interested in metadata
     group_by(patient_id) |>
     summarise(n = n()) |>
     ungroup()
@@ -210,8 +221,7 @@ Now that we have islet structures for all images, we can now use the function `t
 isletMetrics <- totalShapeMetrics(allIslets)
 ```
 
-The result is a simple feature collection with polygons. We will add some patient level information to the simple feature collection for plotting afterwards.
-
+The result is a matrix. We will it to our simple feature collection. 
 
 ```{r}
 # specify factor levels
@@ -229,8 +239,6 @@ allIslets <- allIslets |>
 We use PCA to get an overview of the different features. Each dot represents one structure.
 
 ```{r}
-library(ggfortify)
-
 autoplot(
     prcomp(t(isletMetrics), scale. = TRUE),
     x = 1,
@@ -246,7 +254,7 @@ autoplot(
     loadings.label.repel = TRUE,
     loadings.label.colour = "black"
 ) +
-    scale_color_brewer(palette = "Dark2") +
+    scale_color_brewer(palette = "Set2") +
     theme_bw() +
     coord_fixed()
 ```
@@ -262,21 +270,45 @@ allIslets |>
     ggplot(aes(x = patient_stage, y = value, fill = patient_stage)) +
     geom_boxplot() +
     facet_wrap(~name, scales = "free") +
-    scale_fill_brewer(palette = "Dark2") +
+    scale_fill_brewer(palette = "Set2") +
     scale_x_discrete(guide = guide_axis(n.dodge = 2)) +
     guides(fill = "none")
 ```
 
 ## Testing using mixed effects models
 
-As the individual structure level metrics are not independent we have to account for dependence between measurements. This dependence can lie on the level of the patient and the slide as we have repeated measurements for each level.
+As the distribution of the area seems to be skewed we use a log transformation. Let's have a look at the log-transformed area of the islets, faceted by patient.
+
+```{r, fig.width=8, fig.height=6}
+allIslets |>
+    sf::st_drop_geometry() |>
+    select(patient_stage, patient_id, rownames(isletMetrics)) |>
+    pivot_longer(-c(patient_stage, patient_id)) |>
+    filter(name %in% c("Area")) |>
+    ggplot(aes(
+        x = as.factor(patient_id),
+        y = log(value),
+        fill = patient_stage
+    )) +
+    geom_boxplot() +
+    facet_wrap(~patient_stage, scales = "free") +
+    scale_fill_brewer(palette = "Set2") +
+    scale_x_discrete(guide = guide_axis(n.dodge = 2)) +
+    guides(fill = "none")
+```
+
+We can see quite some variability within the patients and the different stages. As the individual structure level metrics are not independent we have to account for dependence between measurements. This dependence can lie on the level of the patient and the slide as we have repeated measurements for each level.
 
 To account for this, we will use mixed linear models with random effects for the patient and the individual slides (image name). We will use the `r BiocStyle::CRANpkg('lme4')` package for fitting linear mixed effects models [@batesFittingLinearMixedEffects2015] and `r BiocStyle::CRANpkg('lmerTest')` for p-value calculation [@kuznetsovaLmerTestPackageTests2017]. 
 
-To see differences between the Area of the islets between conditions, we can test as follows.
+We can model differences between the patient stages as follows.
 
 ```{r}
-mod <- lmer(Area ~ patient_stage + (1 | patient_id) + (1 | image_name), data = allIslets)
+mod <- lmer(
+    log(Area) ~ patient_stage +
+        (1 | patient_id) + (1 | image_name),
+    data = allIslets
+)
 ```
 
 
@@ -284,7 +316,7 @@ mod <- lmer(Area ~ patient_stage + (1 | patient_id) + (1 | image_name), data = a
 summary(mod)
 ```
 
-As we can see from `summary(mod)` there is a signification difference in islet area of long-duration patients with respect to non-diabetic patients, accounting for correlation on the patient and image level. Please note that this was only run on a subset of the data.
+As we can see in the fixed effects section in `summary(mod)` there is a significant difference in log-transformed islet area of long-duration patients with respect to non-diabetic patients, *accounting for correlation on the patient and image level*. Note that this calculation was done on a random subset of the patient slides only.
 
 # Session Info
 
@@ -293,6 +325,3 @@ sessionInfo()
 ```
 
 # References
-
-
-
