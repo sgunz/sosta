@@ -239,29 +239,15 @@ reconstructShapeDensitySPE <- function(
         imageCol, markSelect,
         dim = 500, bndw = NULL, thres = NULL,
         nCores = 1) {
-    # Create a data frame with all necessary variables. We don't use the SPE object
-    # For computational (memory) reasons
-    df <- cbind(spatialCoords(spe),
-                colData(spe)[, c(imageCol, marks)]) |> as.data.frame()
+    # Create a data frame with all necessary variables for computational (memory) reasons
+    df <- .SPE2df(spe, imageCol, marks)
     # Remove SPE to free up memory
     rm(spe); gc()
     # Split up by image name
     ls <- split(df, as.factor(df[,3]))
     # Calculate polygon for each id using multiple cores
     res_all <- mclapply(ls, function(x) {
-        # create a matrix and the corresponding ppp
-        m <-  data.matrix(x[,c(1,2)])
-        ppp <- as.ppp(
-            m[,c(1,2)],
-            c(
-                as.numeric(min(m[, 1])),
-                as.numeric(max(m[, 1])),
-                as.numeric(min(m[, 2])),
-                as.numeric(max(m[, 2]))
-            )
-        )
-        # Set the marks
-        ppp <- setmarks(ppp, as.factor(x[,4]))
+        ppp <- .df2ppp(x)
         # Reconstruct the structure
         res <- reconstructShapeDensity(ppp, markSelect, bndw, thres, dim)
         # Assign imageId
@@ -334,13 +320,19 @@ estimateReconstructionParametersSPE <- function(spe,
     if (is.null(nImages)) nImages <- length(allImages)
     # alternatively we sample some images
     sampleImages <- sample(allImages, nImages)
-    # Remove all observation we don't need to save memory
-    SummarizedExperiment::assays(spe) <- list()
-    SummarizedExperiment::colData(spe) <-
-        SummarizedExperiment::colData(spe)[, c(marks, imageCol)]
+    # Select sampled images
+    spe <- spe[, colData(spe)[[imageCol]] %in% sampleImages]
+
+    # Create a data frame with all necessary variables for computational (memory) reasons
+    df <- .SPE2df(spe, imageCol, marks)
+    # Remove SPE to free up memory
+    rm(spe); gc()
+    # Split up by image name
+    ls <- split(df, as.factor(df[,3]))
+
     # we calculate the bandwidths and thresholds
-    res <- mclapply(sampleImages, function(x) {
-        ppp <- SPE2ppp(spe, marks = marks, imageCol = imageCol, imageId = x)
+    res <- mclapply(ls, function(x) {
+        ppp <- .df2ppp(x)
         res_x <- .intensityImage(ppp, markSelect, dim = dim)
         thres <- .intensityThreshold(res_x$denIm)
         return(list(img = x, bndw = as.numeric(res_x$bndw), thres = as.numeric(thres)))

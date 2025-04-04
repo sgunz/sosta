@@ -46,7 +46,7 @@ BiocManager::install("sosta")
 
 For this vignette, we will need several additional packages:
 
-```{r setup, message=FALSE}
+```{r setup, message=FALSE, warning=FALSE}
 library("sosta")
 library("dplyr")
 library("tidyr")
@@ -59,7 +59,7 @@ theme_set(theme_bw())
 
 # Introduction
 
-As an example, we will load an simulated dataset with three images and three cell types A, B and C, which are stored in a `r BiocStyle::Biocpkg('SpatialExperiment')` object:
+As an example, we will load an simulated dataset with three images and three cell types A, B and C, stored as a `r BiocStyle::Biocpkg('SpatialExperiment')` object:
 
 ```{r loading, echo=TRUE, message=FALSE}
 # load the data
@@ -76,13 +76,13 @@ cbind(colData(sostaSPE), spatialCoords(sostaSPE)) |>
     coord_equal()
 ```
 
-The goal is to reconstruct, or segment, the *structures* given by cell type A.
+The goal is to reconstruct, or segment, the cellular "structures" given by cell type A.
 
 # Structure reconstruction
 
 ## Reconstruction of structures for one image
 
-In this example, we will reconstruct cellular "structures" based on the point pattern density of the cells of type A. We will start with estimating parameters that are used for reconstruction afterwards. For one image, this can be illustrated as follows:
+In this example, we will reconstruct cellular *structures* based on the point pattern density of the cells of type A. We will start with estimating parameters that are used for reconstruction afterwards. For one image, this can be illustrated as follows:
 
 ```{r}
 shapeIntensityImage(
@@ -114,7 +114,7 @@ We will use the mean of the two estimated vectors as our parameters.
 (bndwSPE <- mean(n$bndw))
 ```
 
-We can now use the function `reconstructShapeDensity` to segment the cell-type-A structure into regions, the result of which is `r BiocStyle::CRANpkg('sf')` polygon [@pebesmaSimpleFeaturesStandardized2018]. 
+We now use the function `reconstructShapeDensity` to segment the cell-type-A structure into regions. The result is a collection of `r BiocStyle::CRANpkg('sf')` polygons [@pebesmaSimpleFeaturesStandardized2018]. 
 
 ```{r}
 (struct <- reconstructShapeDensityImage(
@@ -129,7 +129,7 @@ We can now use the function `reconstructShapeDensity` to segment the cell-type-A
 ))
 ```
 
-We can then plot both the points and the segmented polygon.
+Let's plot both the points and the segmented polygons.
 
 ```{r}
 cbind(
@@ -138,7 +138,7 @@ cbind(
 ) |>
     as.data.frame() |>
     ggplot(aes(x = x, y = y, color = cellType)) +
-    geom_point(size = 0.25) +
+    geom_point(size = 0.5) +
     facet_wrap(~imageName) +
     coord_equal() +
     geom_sf(
@@ -146,7 +146,7 @@ cbind(
         fill = NA,
         color = "darkblue",
         inherit.aes = FALSE, # this is important
-        linewidth = 1
+        linewidth = 0.75
     )
 ```
 
@@ -171,7 +171,7 @@ cbind(
 ) |>
     as.data.frame() |>
     ggplot(aes(x = x, y = y, color = cellType)) +
-    geom_point(size = 0.25) +
+    geom_point(size = 0.5) +
     facet_wrap(~imageName) +
     coord_equal() +
     geom_sf(
@@ -179,7 +179,7 @@ cbind(
         fill = NA,
         color = "darkblue",
         inherit.aes = FALSE, # this is important
-        linewidth = 1
+        linewidth = 0.75
     )
 ```
 

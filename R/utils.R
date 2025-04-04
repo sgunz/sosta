@@ -208,6 +208,63 @@ SPE2ppp <- function(spe,
 }
 
 
+#' Function to convert `SpatialExperiment` object to a data frame
+#'
+#' @param spe SpatialExperiment; a object of class `SpatialExperiment`
+#' @param marks character; name of column in `colData` with categorical marks
+#' @param imageCol character; name of a column in `colData` that corresponds to
+#' the image
+#' @returns data.frame with x, y coordinates, image, and categorical mark information
+#' @export
+#' @importFrom SpatialExperiment spatialCoords
+#' @importFrom SummarizedExperiment colData
+#'
+#' @examples
+#' data(sostaSPE)
+#' .SPE2df(sostaSPE, marks = "cellType", imageCol = "imageName") |> head()
+.SPE2df <- function(spe, imageCol, marks){
+    df <- cbind(spatialCoords(spe),
+          colData(spe)[, c(imageCol, marks)]) |> as.data.frame()
+    colnames(df) <- c(colnames(spatialCoords(spe)), imageCol, marks)
+    return(df)
+}
+
+
+#' Function to convert `data.frame` to `ppp` object
+#'
+#' Assumes that the `data.frame` is the output of `.SPE2df()`
+#'
+#' @param df data.frame; with x, y coordinates, image, and categorical mark information.
+#' Order of columns is important.
+#'
+#' @return ppp; object of type `ppp`
+#' @export
+#'
+#' @importFrom spatstat.geom as.ppp setmarks
+#'
+#' @seealso \code{\link{.SPE2df}}, \code{\link{as.ppp}}
+#'
+#' @examples
+#' data(sostaSPE)
+#' df <- .SPE2df(sostaSPE, marks = "cellType", imageCol = "imageName")
+#' ppp <- .df2ppp(df)
+.df2ppp <- function(df){
+    # create a matrix and the corresponding ppp
+    m <-  data.matrix(df[,c(1,2)])
+    ppp <- as.ppp(
+        m[,c(1,2)],
+        c(
+            as.numeric(min(m[, 1])),
+            as.numeric(max(m[, 1])),
+            as.numeric(min(m[, 2])),
+            as.numeric(max(m[, 2]))
+        )
+    )
+    # Set the marks
+    ppp <- setmarks(ppp, as.factor(df[,4]))
+}
+
+
 #' Estimate the intensity threshold for the reconstruction of spatial structures
 #'
 #' @param ppp point pattern object of class `ppp`
