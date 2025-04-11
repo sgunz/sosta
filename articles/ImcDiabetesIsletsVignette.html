@@ -20,7 +20,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">sosta</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.99.6</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.99.7</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -121,13 +121,10 @@ package can be installed from Bioconductor as follows:</p>
 of pancreatic islets from human donors at different stages of type 1
 diabetes (T1D) and healthy controls <span class="citation">(Damond et
 al. 2019)</span>.</p>
-<pre><code><span><span class="co">#&gt;            used  (Mb) gc trigger   (Mb)  max used   (Mb)</span></span>
-<span><span class="co">#&gt; Ncells 11154294 595.8   21779491 1163.2  13635120  728.2</span></span>
-<span><span class="co">#&gt; Vcells 72371839 552.2  267315396 2039.5 310648082 2370.1</span></span></code></pre>
 <p>First, we plot the data for illustration. As we have multiple images
 per patient, we will subset to a few slides. As can be seen, the
 dimensions of the field of view are differing.</p>
-<div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">df</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/BiocGenerics/man/cbind.html" class="external-link">cbind</a></span><span class="op">(</span></span>
 <span>    <span class="fu">colData</span><span class="op">(</span><span class="va">spe</span><span class="op">[</span>, <span class="va">spe</span><span class="op">$</span><span class="va">image_name</span> <span class="op"><a href="https://rdrr.io/pkg/BiocGenerics/man/match.html" class="external-link">%in%</a></span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"E04"</span>, <span class="st">"E03"</span>, <span class="st">"G01"</span>, <span class="st">"J02"</span><span class="op">)</span><span class="op">]</span><span class="op">)</span>,</span>
 <span>    <span class="fu"><a href="https://rdrr.io/pkg/SpatialExperiment/man/SpatialExperiment-methods.html" class="external-link">spatialCoords</a></span><span class="op">(</span><span class="va">spe</span><span class="op">[</span>, <span class="va">spe</span><span class="op">$</span><span class="va">image_name</span> <span class="op"><a href="https://rdrr.io/pkg/BiocGenerics/man/match.html" class="external-link">%in%</a></span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"E04"</span>, <span class="st">"E03"</span>, <span class="st">"G01"</span>, <span class="st">"J02"</span><span class="op">)</span><span class="op">]</span><span class="op">)</span></span>
@@ -153,7 +150,7 @@ islets.</p>
 pattern <em>density</em> of the islet cells. We will start with
 estimating the parameters that we use for reconstruction afterwards. For
 one image this can be illustrated as follows.</p>
-<div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="../reference/shapeIntensityImage.html">shapeIntensityImage</a></span><span class="op">(</span></span>
 <span>    <span class="va">spe</span>,</span>
 <span>    marks <span class="op">=</span> <span class="st">"cell_category"</span>,</span>
@@ -173,7 +170,7 @@ is the bandwidth parameter that is used for estimating the intensity
 profile of the point pattern. The parameter <code>thres</code> is the
 estimated parameter for the density threshold for reconstruction. We
 subset 25 random images to speed up computation.</p>
-<div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">n</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/estimateReconstructionParametersSPE.html">estimateReconstructionParametersSPE</a></span><span class="op">(</span></span>
 <span>    <span class="va">spe</span>,</span>
 <span>    marks <span class="op">=</span> <span class="st">"cell_category"</span>,</span>
@@ -185,7 +182,7 @@ subset 25 random images to speed up computation.</p>
 <p><img src="ImcDiabetesIsletsVignette_files/figure-html/unnamed-chunk-3-1.png" width="700"></p>
 <p>We can inspect the relationship of the estimated bandwidth and
 threshold.</p>
-<div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">n</span> <span class="op">|&gt;</span></span>
 <span>    <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html" class="external-link">ggplot</a></span><span class="op">(</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html" class="external-link">aes</a></span><span class="op">(</span>x <span class="op">=</span> <span class="va">bndw</span>, y <span class="op">=</span> <span class="va">thres</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span></span>
 <span>    <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_point.html" class="external-link">geom_point</a></span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
@@ -193,7 +190,7 @@ threshold.</p>
 <p>We note that the estimated bandwidth seems to vary a bit more than
 the estimated threshold. We will use the mean of the two estimated
 vectors as our parameters.</p>
-<div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="op">(</span><span class="va">thresSPE</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/BiocGenerics/man/mean.html" class="external-link">mean</a></span><span class="op">(</span><span class="va">n</span><span class="op">$</span><span class="va">thres</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="co">#&gt; [1] 0.003578595</span></span>
 <span><span class="op">(</span><span class="va">bndwSPE</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/BiocGenerics/man/mean.html" class="external-link">mean</a></span><span class="op">(</span><span class="va">n</span><span class="op">$</span><span class="va">bndw</span><span class="op">)</span><span class="op">)</span></span>
@@ -206,7 +203,7 @@ vectors as our parameters.</p>
 islets for all images in the <code>spe</code> object. We use the
 estimated parameters from above. For computational reasons, we will
 subset to 20 images per patient for the rest of the vignette.</p>
-<div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Sample 15 images per patient</span></span>
 <span><span class="va">sel</span> <span class="op">&lt;-</span> <span class="fu">colData</span><span class="op">(</span><span class="va">spe</span><span class="op">)</span> <span class="op">|&gt;</span></span>
 <span>    <span class="fu"><a href="https://rdrr.io/pkg/BiocGenerics/man/as.data.frame.html" class="external-link">as.data.frame</a></span><span class="op">(</span><span class="op">)</span> <span class="op">|&gt;</span></span>
@@ -222,7 +219,7 @@ subset to 20 images per patient for the rest of the vignette.</p>
 <span>    <span class="fu"><a href="https://rdrr.io/pkg/BiocGenerics/man/unique.html" class="external-link">unique</a></span><span class="op">(</span><span class="op">)</span> <span class="op">|&gt;</span></span>
 <span>    <span class="fu"><a href="https://rdrr.io/r/base/length.html" class="external-link">length</a></span><span class="op">(</span><span class="op">)</span></span>
 <span><span class="co">#&gt; [1] 205</span></span></code></pre></div>
-<div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Run on all images</span></span>
 <span><span class="va">allIslets</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/reconstructShapeDensitySPE.html">reconstructShapeDensitySPE</a></span><span class="op">(</span></span>
 <span>    <span class="va">speSel</span>,</span>
@@ -238,7 +235,7 @@ collection</a>. It contains the polygons (<code>&lt;GEOMETRY&gt;</code>
 column), a structure identifier (<code>structID</code>) and the image
 identifier (<code>image_name</code>). Let’s add some patient metadata to
 the object.</p>
-<div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">colsKeep</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span></span>
 <span>    <span class="st">"patient_stage"</span>, <span class="st">"tissue_slide"</span>, <span class="st">"tissue_region"</span>,</span>
 <span>    <span class="st">"patient_id"</span>, <span class="st">"patient_disease_duration"</span>,</span>
@@ -256,7 +253,7 @@ the object.</p>
 <span>    <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate-joins.html" class="external-link">left_join</a></span><span class="op">(</span><span class="va">patientData</span>, by <span class="op">=</span> <span class="st">"image_name"</span><span class="op">)</span></span></code></pre></div>
 <p>Using standard operations on data frames we can inspect the number of
 structures found per patient.</p>
-<div class="sourceCode" id="cb12"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">allIslets</span> <span class="op">|&gt;</span></span>
 <span>    <span class="fu"><a href="https://r-spatial.github.io/sf/reference/st_geometry.html" class="external-link">st_drop_geometry</a></span><span class="op">(</span><span class="op">)</span> <span class="op">|&gt;</span> <span class="co"># we are only interested in metadata</span></span>
 <span>    <span class="fu"><a href="https://dplyr.tidyverse.org/reference/group_by.html" class="external-link">group_by</a></span><span class="op">(</span><span class="va">patient_id</span><span class="op">)</span> <span class="op">|&gt;</span></span>
@@ -288,11 +285,11 @@ structures found per patient.</p>
 <p>Now that we have islet structures for all images, we can now use the
 function <code>totalShapeMetrics</code> to calculate a set of metrics
 related to the shape of the islets.</p>
-<div class="sourceCode" id="cb13"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb12"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">isletMetrics</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/totalShapeMetrics.html">totalShapeMetrics</a></span><span class="op">(</span><span class="va">allIslets</span><span class="op">)</span></span></code></pre></div>
 <p>The result is a matrix. We will it to our simple feature
 collection.</p>
-<div class="sourceCode" id="cb14"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb13"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># specify factor levels</span></span>
 <span><span class="va">lv</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"Non-diabetic"</span>, <span class="st">"Onset"</span>, <span class="st">"Long-duration"</span><span class="op">)</span></span>
 <span></span>
@@ -309,7 +306,7 @@ collection.</p>
 </h3>
 <p>We use PCA to get an overview of the different features. Each dot
 represents one structure.</p>
-<div class="sourceCode" id="cb15"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb14"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/autoplot.html" class="external-link">autoplot</a></span><span class="op">(</span></span>
 <span>    <span class="fu"><a href="https://rdrr.io/r/stats/prcomp.html" class="external-link">prcomp</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/pkg/BiocGenerics/man/t.html" class="external-link">t</a></span><span class="op">(</span><span class="va">isletMetrics</span><span class="op">)</span>, scale. <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span>,</span>
 <span>    x <span class="op">=</span> <span class="fl">1</span>,</span>
@@ -333,14 +330,15 @@ represents one structure.</p>
 between patient stages. We will subset to a few metrics that are not
 colinear in the PCA plot. Note that the boxplots don’t reveal patient
 specific effects.</p>
-<div class="sourceCode" id="cb16"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb15"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">allIslets</span> <span class="op">|&gt;</span></span>
 <span>    <span class="fu">sf</span><span class="fu">::</span><span class="fu"><a href="https://r-spatial.github.io/sf/reference/st_geometry.html" class="external-link">st_drop_geometry</a></span><span class="op">(</span><span class="op">)</span> <span class="op">|&gt;</span></span>
 <span>    <span class="fu"><a href="https://dplyr.tidyverse.org/reference/select.html" class="external-link">select</a></span><span class="op">(</span><span class="va">patient_stage</span>, <span class="fu"><a href="https://rdrr.io/pkg/BiocGenerics/man/row_colnames.html" class="external-link">rownames</a></span><span class="op">(</span><span class="va">isletMetrics</span><span class="op">)</span><span class="op">)</span> <span class="op">|&gt;</span></span>
 <span>    <span class="fu"><a href="https://tidyr.tidyverse.org/reference/pivot_longer.html" class="external-link">pivot_longer</a></span><span class="op">(</span><span class="op">-</span><span class="va">patient_stage</span><span class="op">)</span> <span class="op">|&gt;</span></span>
 <span>    <span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="va">name</span> <span class="op"><a href="https://rdrr.io/pkg/BiocGenerics/man/match.html" class="external-link">%in%</a></span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"Area"</span>, <span class="st">"Compactness"</span>, <span class="st">"Curl"</span><span class="op">)</span><span class="op">)</span> <span class="op">|&gt;</span></span>
 <span>    <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html" class="external-link">ggplot</a></span><span class="op">(</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html" class="external-link">aes</a></span><span class="op">(</span>x <span class="op">=</span> <span class="va">patient_stage</span>, y <span class="op">=</span> <span class="va">value</span>, fill <span class="op">=</span> <span class="va">patient_stage</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span></span>
-<span>    <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_boxplot.html" class="external-link">geom_boxplot</a></span><span class="op">(</span><span class="op">)</span> <span class="op">+</span></span>
+<span>    <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_violin.html" class="external-link">geom_violin</a></span><span class="op">(</span><span class="op">)</span> <span class="op">+</span></span>
+<span>    <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_boxplot.html" class="external-link">geom_boxplot</a></span><span class="op">(</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html" class="external-link">aes</a></span><span class="op">(</span>fill <span class="op">=</span> <span class="cn">NULL</span><span class="op">)</span>, width <span class="op">=</span> <span class="fl">0.3</span><span class="op">)</span> <span class="op">+</span></span>
 <span>    <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/facet_wrap.html" class="external-link">facet_wrap</a></span><span class="op">(</span><span class="op">~</span><span class="va">name</span>, scales <span class="op">=</span> <span class="st">"free"</span><span class="op">)</span> <span class="op">+</span></span>
 <span>    <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/scale_brewer.html" class="external-link">scale_fill_brewer</a></span><span class="op">(</span>palette <span class="op">=</span> <span class="st">"Set2"</span><span class="op">)</span> <span class="op">+</span></span>
 <span>    <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/scale_discrete.html" class="external-link">scale_x_discrete</a></span><span class="op">(</span>guide <span class="op">=</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/guide_axis.html" class="external-link">guide_axis</a></span><span class="op">(</span>n.dodge <span class="op">=</span> <span class="fl">2</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span></span>
@@ -350,10 +348,10 @@ specific effects.</p>
 <div class="section level3">
 <h3 id="testing-using-mixed-effects-models">Testing using mixed effects models<a class="anchor" aria-label="anchor" href="#testing-using-mixed-effects-models"></a>
 </h3>
-<p>As the distribution of the area seems to be skewed we use a log
-transformation. Let’s have a look at the log-transformed area of the
-islets, faceted by patient.</p>
-<div class="sourceCode" id="cb17"><pre class="downlit sourceCode r">
+<p>As the distribution of the area seems to be skewed we use 1/4-power
+transformation. Let’s have a look at the transformed area of the islets,
+faceted by patient.</p>
+<div class="sourceCode" id="cb16"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">allIslets</span> <span class="op">|&gt;</span></span>
 <span>    <span class="fu">sf</span><span class="fu">::</span><span class="fu"><a href="https://r-spatial.github.io/sf/reference/st_geometry.html" class="external-link">st_drop_geometry</a></span><span class="op">(</span><span class="op">)</span> <span class="op">|&gt;</span></span>
 <span>    <span class="fu"><a href="https://dplyr.tidyverse.org/reference/select.html" class="external-link">select</a></span><span class="op">(</span><span class="va">patient_stage</span>, <span class="va">patient_id</span>, <span class="fu"><a href="https://rdrr.io/pkg/BiocGenerics/man/row_colnames.html" class="external-link">rownames</a></span><span class="op">(</span><span class="va">isletMetrics</span><span class="op">)</span><span class="op">)</span> <span class="op">|&gt;</span></span>
@@ -361,11 +359,12 @@ islets, faceted by patient.</p>
 <span>    <span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="va">name</span> <span class="op"><a href="https://rdrr.io/pkg/BiocGenerics/man/match.html" class="external-link">%in%</a></span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"Area"</span><span class="op">)</span><span class="op">)</span> <span class="op">|&gt;</span></span>
 <span>    <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html" class="external-link">ggplot</a></span><span class="op">(</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html" class="external-link">aes</a></span><span class="op">(</span></span>
 <span>        x <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/factor.html" class="external-link">as.factor</a></span><span class="op">(</span><span class="va">patient_id</span><span class="op">)</span>,</span>
-<span>        y <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/Log.html" class="external-link">log</a></span><span class="op">(</span><span class="va">value</span><span class="op">)</span>,</span>
+<span>        y <span class="op">=</span> <span class="op">(</span><span class="va">value</span><span class="op">)</span><span class="op">^</span><span class="op">(</span><span class="fl">1</span> <span class="op">/</span> <span class="fl">4</span><span class="op">)</span>,</span>
 <span>        fill <span class="op">=</span> <span class="va">patient_stage</span></span>
 <span>    <span class="op">)</span><span class="op">)</span> <span class="op">+</span></span>
-<span>    <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_boxplot.html" class="external-link">geom_boxplot</a></span><span class="op">(</span><span class="op">)</span> <span class="op">+</span></span>
-<span>    <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/facet_wrap.html" class="external-link">facet_wrap</a></span><span class="op">(</span><span class="op">~</span><span class="va">patient_stage</span>, scales <span class="op">=</span> <span class="st">"free"</span><span class="op">)</span> <span class="op">+</span></span>
+<span>    <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_violin.html" class="external-link">geom_violin</a></span><span class="op">(</span><span class="op">)</span> <span class="op">+</span></span>
+<span>    <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_boxplot.html" class="external-link">geom_boxplot</a></span><span class="op">(</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html" class="external-link">aes</a></span><span class="op">(</span>fill <span class="op">=</span> <span class="cn">NULL</span><span class="op">)</span>, width <span class="op">=</span> <span class="fl">0.3</span><span class="op">)</span> <span class="op">+</span></span>
+<span>    <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/facet_wrap.html" class="external-link">facet_wrap</a></span><span class="op">(</span> <span class="op">~</span> <span class="va">patient_stage</span>, scales <span class="op">=</span> <span class="st">"free"</span><span class="op">)</span> <span class="op">+</span></span>
 <span>    <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/scale_brewer.html" class="external-link">scale_fill_brewer</a></span><span class="op">(</span>palette <span class="op">=</span> <span class="st">"Set2"</span><span class="op">)</span> <span class="op">+</span></span>
 <span>    <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/scale_discrete.html" class="external-link">scale_x_discrete</a></span><span class="op">(</span>guide <span class="op">=</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/guide_axis.html" class="external-link">guide_axis</a></span><span class="op">(</span>n.dodge <span class="op">=</span> <span class="fl">2</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span></span>
 <span>    <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/guides.html" class="external-link">guides</a></span><span class="op">(</span>fill <span class="op">=</span> <span class="st">"none"</span><span class="op">)</span></span></code></pre></div>
@@ -383,56 +382,79 @@ fitting linear mixed effects models <span class="citation">(Bates et al.
 p-value calculation <span class="citation">(Kuznetsova, Brockhoff, and
 Christensen 2017)</span>.</p>
 <p>We can model differences between the patient stages as follows.</p>
-<div class="sourceCode" id="cb18"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb17"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">mod</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/lme4/man/lmer.html" class="external-link">lmer</a></span><span class="op">(</span></span>
-<span>    <span class="fu"><a href="https://rdrr.io/r/base/Log.html" class="external-link">log</a></span><span class="op">(</span><span class="va">Area</span><span class="op">)</span> <span class="op">~</span> <span class="va">patient_stage</span> <span class="op">+</span></span>
+<span>    <span class="op">(</span><span class="va">Area</span><span class="op">)</span><span class="op">^</span><span class="op">(</span><span class="fl">1</span><span class="op">/</span><span class="fl">4</span><span class="op">)</span> <span class="op">~</span> <span class="va">patient_stage</span> <span class="op">+</span></span>
 <span>        <span class="op">(</span><span class="fl">1</span> <span class="op">|</span> <span class="va">patient_id</span><span class="op">)</span> <span class="op">+</span> <span class="op">(</span><span class="fl">1</span> <span class="op">|</span> <span class="va">image_name</span><span class="op">)</span>,</span>
 <span>    data <span class="op">=</span> <span class="va">allIslets</span></span>
 <span><span class="op">)</span></span></code></pre></div>
+<div class="section level4">
+<h4 id="model-diagnostics">Model diagnostics<a class="anchor" aria-label="anchor" href="#model-diagnostics"></a>
+</h4>
+<p>Let’s have a look at the model diagnostics. First plot the residuals
+vs. the fitted values, colored by the patients.</p>
+<div class="sourceCode" id="cb18"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span></span>
+<span>    <span class="va">mod</span>,</span>
+<span>    <span class="fu"><a href="https://rdrr.io/r/stats/residuals.html" class="external-link">resid</a></span><span class="op">(</span><span class="va">.</span>, scaled <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span> <span class="op">~</span> <span class="fu"><a href="https://rdrr.io/r/stats/fitted.values.html" class="external-link">fitted</a></span><span class="op">(</span><span class="va">.</span><span class="op">)</span>,</span>
+<span>    col <span class="op">=</span> <span class="va">allIslets</span><span class="op">$</span><span class="va">patient_id</span>,</span>
+<span>    pch <span class="op">=</span> <span class="fl">12</span>,</span>
+<span>    abline <span class="op">=</span> <span class="fl">0</span>,</span>
+<span>    xlab <span class="op">=</span> <span class="st">"Fitted values"</span>,</span>
+<span>    ylab <span class="op">=</span> <span class="st">"Standardised residuals"</span></span>
+<span><span class="op">)</span></span></code></pre></div>
+<p><img src="ImcDiabetesIsletsVignette_files/figure-html/unnamed-chunk-16-1.png" width="700"></p>
+<p>Next, we’ll have a look at the Q-Q plot. The residuals seem to be
+approximately normally distributed with a slight light tail.</p>
 <div class="sourceCode" id="cb19"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/stats/qqnorm.html" class="external-link">qqnorm</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/stats/residuals.html" class="external-link">resid</a></span><span class="op">(</span><span class="va">mod</span><span class="op">)</span>, pch <span class="op">=</span> <span class="fl">16</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/stats/qqnorm.html" class="external-link">qqline</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/stats/residuals.html" class="external-link">resid</a></span><span class="op">(</span><span class="va">mod</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
+<p><img src="ImcDiabetesIsletsVignette_files/figure-html/unnamed-chunk-17-1.png" width="700"></p>
+<div class="sourceCode" id="cb20"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/summary.html" class="external-link">summary</a></span><span class="op">(</span><span class="va">mod</span><span class="op">)</span></span>
 <span><span class="co">#&gt; Linear mixed model fit by REML. t-tests use Satterthwaite's method [</span></span>
 <span><span class="co">#&gt; lmerModLmerTest]</span></span>
-<span><span class="co">#&gt; Formula: log(Area) ~ patient_stage + (1 | patient_id) + (1 | image_name)</span></span>
+<span><span class="co">#&gt; Formula: (Area)^(1/4) ~ patient_stage + (1 | patient_id) + (1 | image_name)</span></span>
 <span><span class="co">#&gt;    Data: allIslets</span></span>
 <span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; REML criterion at convergence: 2345.2</span></span>
+<span><span class="co">#&gt; REML criterion at convergence: 3089</span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; Scaled residuals: </span></span>
 <span><span class="co">#&gt;     Min      1Q  Median      3Q     Max </span></span>
-<span><span class="co">#&gt; -3.7625 -0.4564  0.1427  0.6511  2.1559 </span></span>
+<span><span class="co">#&gt; -2.5520 -0.6426 -0.0220  0.5797  3.3491 </span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; Random effects:</span></span>
 <span><span class="co">#&gt;  Groups     Name        Variance Std.Dev.</span></span>
-<span><span class="co">#&gt;  image_name (Intercept) 0.093952 0.30652 </span></span>
-<span><span class="co">#&gt;  patient_id (Intercept) 0.003495 0.05912 </span></span>
-<span><span class="co">#&gt;  Residual               2.904282 1.70420 </span></span>
+<span><span class="co">#&gt;  image_name (Intercept) 0.9758   0.9878  </span></span>
+<span><span class="co">#&gt;  patient_id (Intercept) 0.3144   0.5607  </span></span>
+<span><span class="co">#&gt;  Residual               9.5595   3.0918  </span></span>
 <span><span class="co">#&gt; Number of obs: 595, groups:  image_name, 205; patient_id, 12</span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; Fixed effects:</span></span>
 <span><span class="co">#&gt;                            Estimate Std. Error       df t value Pr(&gt;|t|)    </span></span>
-<span><span class="co">#&gt; (Intercept)                 8.41670    0.12838  6.96108  65.562 5.62e-11 ***</span></span>
-<span><span class="co">#&gt; patient_stageOnset          0.01989    0.19009  8.26100   0.105   0.9192    </span></span>
-<span><span class="co">#&gt; patient_stageLong-duration -0.61419    0.18252  6.58001  -3.365   0.0132 *  </span></span>
+<span><span class="co">#&gt; (Intercept)                 9.14884    0.37912  8.23737  24.132 6.18e-09 ***</span></span>
+<span><span class="co">#&gt; patient_stageOnset         -0.01422    0.54474  8.77680  -0.026   0.9798    </span></span>
+<span><span class="co">#&gt; patient_stageLong-duration -1.48260    0.53849  8.28372  -2.753   0.0241 *  </span></span>
 <span><span class="co">#&gt; ---</span></span>
 <span><span class="co">#&gt; Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1</span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; Correlation of Fixed Effects:</span></span>
 <span><span class="co">#&gt;             (Intr) ptnt_O</span></span>
-<span><span class="co">#&gt; ptnt_stgOns -0.675       </span></span>
-<span><span class="co">#&gt; ptnt_stgLn- -0.703  0.475</span></span></code></pre></div>
+<span><span class="co">#&gt; ptnt_stgOns -0.696       </span></span>
+<span><span class="co">#&gt; ptnt_stgLn- -0.704  0.490</span></span></code></pre></div>
 <p>As we can see in the fixed effects section in
-<code>summary(mod)</code> there is a significant difference in
-log-transformed islet area of long-duration patients with respect to
+<code>summary(mod)</code> there is a significant difference in 1/4-power
+transformed islet area of long-duration patients with respect to
 non-diabetic patients, <em>accounting for correlation on the patient and
 image level</em>. Note that this calculation was done on a random subset
 of the patient slides only.</p>
 </div>
 </div>
+</div>
 <div class="section level2">
 <h2 id="session-info">Session Info<a class="anchor" aria-label="anchor" href="#session-info"></a>
 </h2>
-<div class="sourceCode" id="cb20"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb21"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/utils/sessionInfo.html" class="external-link">sessionInfo</a></span><span class="op">(</span><span class="op">)</span></span>
 <span><span class="co">#&gt; R version 4.4.3 (2025-02-28)</span></span>
 <span><span class="co">#&gt; Platform: x86_64-pc-linux-gnu</span></span>
@@ -457,14 +479,14 @@ of the patient slides only.</p>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; other attached packages:</span></span>
 <span><span class="co">#&gt;  [1] ggfortify_0.4.17            tidyr_1.3.1                </span></span>
-<span><span class="co">#&gt;  [3] sosta_0.99.6                SpatialExperiment_1.16.0   </span></span>
+<span><span class="co">#&gt;  [3] sosta_0.99.7                SpatialExperiment_1.16.0   </span></span>
 <span><span class="co">#&gt;  [5] SingleCellExperiment_1.28.1 SummarizedExperiment_1.36.0</span></span>
 <span><span class="co">#&gt;  [7] Biobase_2.66.0              GenomicRanges_1.58.0       </span></span>
 <span><span class="co">#&gt;  [9] GenomeInfoDb_1.42.3         IRanges_2.40.1             </span></span>
 <span><span class="co">#&gt; [11] S4Vectors_0.44.0            MatrixGenerics_1.18.1      </span></span>
 <span><span class="co">#&gt; [13] matrixStats_1.5.0           sf_1.0-20                  </span></span>
 <span><span class="co">#&gt; [15] lmerTest_3.1-3              lme4_1.1-37                </span></span>
-<span><span class="co">#&gt; [17] Matrix_1.7-2                ggplot2_3.5.1              </span></span>
+<span><span class="co">#&gt; [17] Matrix_1.7-2                ggplot2_3.5.2              </span></span>
 <span><span class="co">#&gt; [19] ExperimentHub_2.14.0        AnnotationHub_3.14.0       </span></span>
 <span><span class="co">#&gt; [21] BiocFileCache_2.14.0        dbplyr_2.5.0               </span></span>
 <span><span class="co">#&gt; [23] BiocGenerics_0.52.0         dplyr_1.1.4                </span></span>
@@ -495,7 +517,7 @@ of the patient slides only.</p>
 <span><span class="co">#&gt;  [64] nlme_3.1-167            EBImage_4.48.0          grid_4.4.3             </span></span>
 <span><span class="co">#&gt;  [67] generics_0.1.3          gtable_0.3.6            spatstat.data_3.1-6    </span></span>
 <span><span class="co">#&gt;  [70] class_7.3-23            XVector_0.46.0          spatstat.geom_3.3-6    </span></span>
-<span><span class="co">#&gt;  [73] stringr_1.5.1           BiocVersion_3.20.0      pillar_1.10.1          </span></span>
+<span><span class="co">#&gt;  [73] stringr_1.5.1           BiocVersion_3.20.0      pillar_1.10.2          </span></span>
 <span><span class="co">#&gt;  [76] splines_4.4.3           lattice_0.22-6          bit_4.6.0              </span></span>
 <span><span class="co">#&gt;  [79] deldir_2.0-4            tidyselect_1.2.1        locfit_1.5-9.12        </span></span>
 <span><span class="co">#&gt;  [82] Biostrings_2.74.1       knitr_1.50              gridExtra_2.3          </span></span>
@@ -503,8 +525,8 @@ of the patient slides only.</p>
 <span><span class="co">#&gt;  [88] smoothr_1.0.1           stringi_1.8.7           UCSC.utils_1.2.0       </span></span>
 <span><span class="co">#&gt;  [91] fftwtools_0.9-11        yaml_2.3.10             boot_1.3-31            </span></span>
 <span><span class="co">#&gt;  [94] evaluate_1.0.3          codetools_0.2-20        tibble_3.2.1           </span></span>
-<span><span class="co">#&gt;  [97] BiocManager_1.30.25     cli_3.6.4               systemfonts_1.2.1      </span></span>
-<span><span class="co">#&gt; [100] Rdpack_2.6.3            munsell_0.5.1           jquerylib_0.1.4        </span></span>
+<span><span class="co">#&gt;  [97] BiocManager_1.30.25     cli_3.6.4               systemfonts_1.2.2      </span></span>
+<span><span class="co">#&gt; [100] Rdpack_2.6.4            munsell_0.5.1           jquerylib_0.1.4        </span></span>
 <span><span class="co">#&gt; [103] Rcpp_1.0.14             spatstat.random_3.3-3   png_0.1-8              </span></span>
 <span><span class="co">#&gt; [106] spatstat.univar_3.1-2   parallel_4.4.3          pkgdown_2.1.1          </span></span>
 <span><span class="co">#&gt; [109] blob_1.2.4              jpeg_0.1-11             bitops_1.0-9           </span></span>
