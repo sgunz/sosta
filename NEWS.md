@@ -1,9 +1,19 @@
+# sosta 0.99.7
+
+* Small updates in vignettes.
+* Updated news file for 0.99.6
+
+# sosta 0.99.6
+
+* Improved parallel computation by reducing memory overhead by using data frames within `mclapply` instead of `SpatialExperiment` objects.
+* Introduced new functions `.SPE2df` and `.SPE2ppp` to convert to different objects for reducing memory overhead. 
+
 # sosta 0.99.5
 
 * New Analysis Functions: Added `assignCellsToStructures`, `calculateBorderMetrics`, `calculateCellTypeFractions`, `calculateDistanceToBorder`, `calculateDistanceToTissueRegion`, and `calculateTissueRegionFractions` to improve spatial and structural analysis.  
 * Simulated data set: Introduced a new data set for testing and demonstrating package capabilities.  
 * Vignette update: Expanded documentation to include multi-sample and condition-based analysis.  
-* Bug fixes & optimizations: Addressed various issues and improved performance.  
+* Bug fixes & optimisations: Addressed various issues and improved performance.  
 * Code cleanup: Enhanced readability, maintainability, and structure. Consistent use of camelCase for function arguments.
 
 # sosta 0.99.4

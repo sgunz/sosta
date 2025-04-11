@@ -78,9 +78,6 @@ spe <- toSpatialExperiment(spe,
     sample_id = "image_name",
     spatialCoordsNames = c("cell_x", "cell_y")
 )
-# We don't need expression, so we remove it to free up memory
-assays(spe) <- list()
-gc()
 ```
 
 
@@ -140,7 +137,6 @@ n |>
     ggplot(aes(x = bndw, y = thres)) +
     geom_point()
 ```
-
 
 We note that the estimated bandwidth seems to vary a bit more than the estimated threshold. We will use the mean of the two estimated vectors as our parameters.
 
@@ -268,7 +264,8 @@ allIslets |>
     pivot_longer(-patient_stage) |>
     filter(name %in% c("Area", "Compactness", "Curl")) |>
     ggplot(aes(x = patient_stage, y = value, fill = patient_stage)) +
-    geom_boxplot() +
+    geom_violin() +
+    geom_boxplot(aes(fill = NULL), width = 0.3) +
     facet_wrap(~name, scales = "free") +
     scale_fill_brewer(palette = "Set2") +
     scale_x_discrete(guide = guide_axis(n.dodge = 2)) +
@@ -277,7 +274,7 @@ allIslets |>
 
 ## Testing using mixed effects models
 
-As the distribution of the area seems to be skewed we use a log transformation. Let's have a look at the log-transformed area of the islets, faceted by patient.
+As the distribution of the area seems to be skewed we use 1/4-power transformation. Let's have a look at the transformed area of the islets, faceted by patient.
 
 ```{r, fig.width=8, fig.height=6}
 allIslets |>
@@ -287,11 +284,12 @@ allIslets |>
     filter(name %in% c("Area")) |>
     ggplot(aes(
         x = as.factor(patient_id),
-        y = log(value),
+        y = (value)^(1 / 4),
         fill = patient_stage
     )) +
-    geom_boxplot() +
-    facet_wrap(~patient_stage, scales = "free") +
+    geom_violin() +
+    geom_boxplot(aes(fill = NULL), width = 0.3) +
+    facet_wrap( ~ patient_stage, scales = "free") +
     scale_fill_brewer(palette = "Set2") +
     scale_x_discrete(guide = guide_axis(n.dodge = 2)) +
     guides(fill = "none")
@@ -305,18 +303,40 @@ We can model differences between the patient stages as follows.
 
 ```{r}
 mod <- lmer(
-    log(Area) ~ patient_stage +
+    (Area)^(1/4) ~ patient_stage +
         (1 | patient_id) + (1 | image_name),
     data = allIslets
 )
 ```
 
+### Model diagnostics
+
+Let's have a look at the model diagnostics. First plot the residuals vs. the fitted values, colored by the patients.
+
+```{r}
+plot(
+    mod,
+    resid(., scaled = TRUE) ~ fitted(.),
+    col = allIslets$patient_id,
+    pch = 12,
+    abline = 0,
+    xlab = "Fitted values",
+    ylab = "Standardised residuals"
+)
+```
+
+Next, we'll have a look at the Q-Q plot. The residuals seem to be approximately normally distributed with a slight light tail.
+
+```{r}
+qqnorm(resid(mod), pch = 16)
+qqline(resid(mod))
+```
 
 ```{r}
 summary(mod)
 ```
 
-As we can see in the fixed effects section in `summary(mod)` there is a significant difference in log-transformed islet area of long-duration patients with respect to non-diabetic patients, *accounting for correlation on the patient and image level*. Note that this calculation was done on a random subset of the patient slides only.
+As we can see in the fixed effects section in `summary(mod)` there is a significant difference in 1/4-power transformed islet area of long-duration patients with respect to non-diabetic patients, *accounting for correlation on the patient and image level*. Note that this calculation was done on a random subset of the patient slides only.
 
 # Session Info
 
