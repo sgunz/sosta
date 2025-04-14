@@ -1,3 +1,7 @@
+# sosta 0.99.9
+
+* Clarification of the transformation used in the diabetic islets vignette.
+
 # sosta 0.99.8
 
 * Small changes in the vignettes and description.

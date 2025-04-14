@@ -273,7 +273,7 @@ allIslets |>
 
 ## Testing using mixed effects models
 
-As the distribution of the area seems to be skewed we use 1/6-power transformation. Let's have a look at the transformed area of the islets, faceted by patient.
+As the distribution of the area is very skewed we use a 1/6-power transformation. Let's have a look at the transformed area of the islets faceted by patient first.
 
 ```{r, fig.width=8, fig.height=6}
 allIslets |>
@@ -294,9 +294,9 @@ allIslets |>
     guides(fill = "none")
 ```
 
-We can see quite some variability within the patients and the different stages. As the individual structure level metrics are not independent we have to account for dependence between measurements. This dependence can lie on the level of the patient and the slide as we have repeated measurements for each level.
+We can see that the variability within the patients and the different stages is varying. As the individual structure level metrics are not independent we have to account for dependence between measurements. This dependence can lie on the level of the patient and the slide as we have repeated measurements for each level.
 
-To account for this, we will use mixed linear models with random effects for the patient and the individual slides (image name). We will use the `r BiocStyle::CRANpkg('lme4')` package for fitting linear mixed effects models [@batesFittingLinearMixedEffects2015] and `r BiocStyle::CRANpkg('lmerTest')` for p-value calculation [@kuznetsovaLmerTestPackageTests2017]. 
+To account for this, we will use mixed linear models with random effects for the patient and the individual slides (`image_name`). We will use the `r BiocStyle::CRANpkg('lme4')` package for fitting linear mixed effects models [@batesFittingLinearMixedEffects2015] and `r BiocStyle::CRANpkg('lmerTest')` for p-value calculation [@kuznetsovaLmerTestPackageTests2017]. 
 
 We can model differences between the patient stages as follows.
 
@@ -335,7 +335,7 @@ qqline(resid(mod))
 summary(mod)
 ```
 
-As we can see in the fixed effects section in `summary(mod)` there is a significant difference in 1/6-power transformed islet area of long-duration patients with respect to non-diabetic patients, *accounting for correlation on the patient and image level*. Note that this calculation was done on a random subset of the patient slides only.
+As we can see in the fixed effects section in `summary(mod)` there is a significant difference in the transformed islet area of long-duration patients with respect to non-diabetic patients, while the effect for onset patients is not statistically significant at the 5\% level. This results accounts for **correlation at both the patient and image level** as modeled by random intercepts. The somewhat arbitrary transformation (1/6-power) was chosen after inspection of the residual behavior in the model diagnostics and should not serve as a standard. Note that the calculation was performed on a random subset of the patient slides only.
 
 # Session Info
 
