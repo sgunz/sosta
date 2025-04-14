@@ -80,7 +80,6 @@ spe <- toSpatialExperiment(spe,
 )
 ```
 
-
 First, we plot the data for illustration. As we have multiple images per patient, we will subset to a few slides. As can be seen, the dimensions of the field of view are differing.
 
 ```{r plot-data}
@@ -274,7 +273,7 @@ allIslets |>
 
 ## Testing using mixed effects models
 
-As the distribution of the area seems to be skewed we use 1/4-power transformation. Let's have a look at the transformed area of the islets, faceted by patient.
+As the distribution of the area seems to be skewed we use 1/6-power transformation. Let's have a look at the transformed area of the islets, faceted by patient.
 
 ```{r, fig.width=8, fig.height=6}
 allIslets |>
@@ -284,7 +283,7 @@ allIslets |>
     filter(name %in% c("Area")) |>
     ggplot(aes(
         x = as.factor(patient_id),
-        y = (value)^(1 / 4),
+        y = (value)^(1 / 6),
         fill = patient_stage
     )) +
     geom_violin() +
@@ -303,7 +302,7 @@ We can model differences between the patient stages as follows.
 
 ```{r}
 mod <- lmer(
-    (Area)^(1/4) ~ patient_stage +
+    (Area)^(1/6) ~ patient_stage +
         (1 | patient_id) + (1 | image_name),
     data = allIslets
 )
@@ -325,7 +324,7 @@ plot(
 )
 ```
 
-Next, we'll have a look at the Q-Q plot. The residuals seem to be approximately normally distributed with a slight light tail.
+Next, we'll have a look at the Q-Q plot. The residuals seem to be approximately normally distributed with small deviations in the tails.
 
 ```{r}
 qqnorm(resid(mod), pch = 16)
@@ -336,7 +335,7 @@ qqline(resid(mod))
 summary(mod)
 ```
 
-As we can see in the fixed effects section in `summary(mod)` there is a significant difference in 1/4-power transformed islet area of long-duration patients with respect to non-diabetic patients, *accounting for correlation on the patient and image level*. Note that this calculation was done on a random subset of the patient slides only.
+As we can see in the fixed effects section in `summary(mod)` there is a significant difference in 1/6-power transformed islet area of long-duration patients with respect to non-diabetic patients, *accounting for correlation on the patient and image level*. Note that this calculation was done on a random subset of the patient slides only.
 
 # Session Info
 

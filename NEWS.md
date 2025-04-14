@@ -1,3 +1,7 @@
+# sosta 0.99.8
+
+* Small changes in the vignettes and description.
+
 # sosta 0.99.7
 
 * Small updates in vignettes.
