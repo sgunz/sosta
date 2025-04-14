@@ -4,7 +4,7 @@ pkgdown_sha: ~
 articles:
   ImcDiabetesIsletsVignette: ImcDiabetesIsletsVignette.html
   StructureReconstructionVignette: StructureReconstructionVignette.html
-last_built: 2025-04-11T13:49Z
+last_built: 2025-04-14T11:50Z
 urls:
   reference: https://sgunz.github.io/sosta/reference
   article: https://sgunz.github.io/sosta/articles
