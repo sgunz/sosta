@@ -20,7 +20,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">sosta</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.99.8</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.99.9</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -348,9 +348,9 @@ specific effects.</p>
 <div class="section level3">
 <h3 id="testing-using-mixed-effects-models">Testing using mixed effects models<a class="anchor" aria-label="anchor" href="#testing-using-mixed-effects-models"></a>
 </h3>
-<p>As the distribution of the area seems to be skewed we use 1/6-power
-transformation. Let’s have a look at the transformed area of the islets,
-faceted by patient.</p>
+<p>As the distribution of the area is very skewed we use a 1/6-power
+transformation. Let’s have a look at the transformed area of the islets
+faceted by patient first.</p>
 <div class="sourceCode" id="cb16"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">allIslets</span> <span class="op">|&gt;</span></span>
 <span>    <span class="fu">sf</span><span class="fu">::</span><span class="fu"><a href="https://r-spatial.github.io/sf/reference/st_geometry.html" class="external-link">st_drop_geometry</a></span><span class="op">(</span><span class="op">)</span> <span class="op">|&gt;</span></span>
@@ -369,14 +369,14 @@ faceted by patient.</p>
 <span>    <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/scale_discrete.html" class="external-link">scale_x_discrete</a></span><span class="op">(</span>guide <span class="op">=</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/guide_axis.html" class="external-link">guide_axis</a></span><span class="op">(</span>n.dodge <span class="op">=</span> <span class="fl">2</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span></span>
 <span>    <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/guides.html" class="external-link">guides</a></span><span class="op">(</span>fill <span class="op">=</span> <span class="st">"none"</span><span class="op">)</span></span></code></pre></div>
 <p><img src="ImcDiabetesIsletsVignette_files/figure-html/unnamed-chunk-14-1.png" width="768"></p>
-<p>We can see quite some variability within the patients and the
-different stages. As the individual structure level metrics are not
+<p>We can see that the variability within the patients and the different
+stages is varying. As the individual structure level metrics are not
 independent we have to account for dependence between measurements. This
 dependence can lie on the level of the patient and the slide as we have
 repeated measurements for each level.</p>
 <p>To account for this, we will use mixed linear models with random
-effects for the patient and the individual slides (image name). We will
-use the <em><a href="https://CRAN.R-project.org/package=lme4" class="external-link">lme4</a></em> package for
+effects for the patient and the individual slides
+(<code>image_name</code>). We will use the <em><a href="https://CRAN.R-project.org/package=lme4" class="external-link">lme4</a></em> package for
 fitting linear mixed effects models <span class="citation">(Bates et al.
 2015)</span> and <em><a href="https://CRAN.R-project.org/package=lmerTest" class="external-link">lmerTest</a></em> for
 p-value calculation <span class="citation">(Kuznetsova, Brockhoff, and
@@ -444,11 +444,16 @@ tails.</p>
 <span><span class="co">#&gt; ptnt_stgOns -0.691       </span></span>
 <span><span class="co">#&gt; ptnt_stgLn- -0.703  0.486</span></span></code></pre></div>
 <p>As we can see in the fixed effects section in
-<code>summary(mod)</code> there is a significant difference in 1/6-power
+<code>summary(mod)</code> there is a significant difference in the
 transformed islet area of long-duration patients with respect to
-non-diabetic patients, <em>accounting for correlation on the patient and
-image level</em>. Note that this calculation was done on a random subset
-of the patient slides only.</p>
+non-diabetic patients, while the effect for onset patients is not
+statistically significant at the 5% level. This results accounts for
+<strong>correlation at both the patient and image level</strong> as
+modeled by random intercepts. The somewhat arbitrary transformation
+(1/6-power) was chosen after inspection of the residual behavior in the
+model diagnostics and should not serve as a standard. Note that the
+calculation was performed on a random subset of the patient slides
+only.</p>
 </div>
 </div>
 </div>
@@ -480,7 +485,7 @@ of the patient slides only.</p>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; other attached packages:</span></span>
 <span><span class="co">#&gt;  [1] ggfortify_0.4.17            tidyr_1.3.1                </span></span>
-<span><span class="co">#&gt;  [3] sosta_0.99.8                SpatialExperiment_1.17.0   </span></span>
+<span><span class="co">#&gt;  [3] sosta_0.99.9                SpatialExperiment_1.17.0   </span></span>
 <span><span class="co">#&gt;  [5] SingleCellExperiment_1.29.2 SummarizedExperiment_1.37.0</span></span>
 <span><span class="co">#&gt;  [7] Biobase_2.67.0              GenomicRanges_1.59.1       </span></span>
 <span><span class="co">#&gt;  [9] GenomeInfoDb_1.43.4         IRanges_2.41.3             </span></span>
