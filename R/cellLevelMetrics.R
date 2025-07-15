@@ -23,7 +23,7 @@
 #'     marks = "cellType", imageCol = "imageName",
 #'     markSelect = "A", bndw = 3.5, thres = 0.045
 #' )
-#' # The function need colnames so we create them here
+#' # The function `assingCellsToStructures` needs colnames so we create them here
 #' colnames(sostaSPE) <- paste0("cell_", c(1:dim(sostaSPE)[2]))
 #'
 #' res <- assingCellsToStructures(
@@ -123,6 +123,9 @@ assingCellsToStructures <- function(spe, allStructs, imageCol, uniqueId = "struc
 #'     marks = "cellType", imageCol = "imageName",
 #'     markSelect = "A", bndw = 3.5, thres = 0.045
 #' )
+#' # The function `assingCellsToStructures` needs colnames so we create them here
+#' colnames(sostaSPE) <- paste0("cell_", c(1:dim(sostaSPE)[2]))
+#'
 #' colData(sostaSPE)$structAssign <- assingCellsToStructures(
 #'     spe = sostaSPE, allStructs = allStructs, imageCol = "imageName"
 #' )
@@ -172,8 +175,8 @@ cellTypeProportions <- function(spe, structColumn, cellTypeColumn, nCores = 1) {
 #' @param allStructs sf object; contains spatial structures with corresponding image names
 #' @param nCores integer; The number of cores to use for parallel processing (default is 1).
 #'
-#' @return A numeric vector containing the minimum distances between cells and structure boundaries,
-#' values within structures have negative values.
+#' @return A named list containing the minimum distances between cells and structure boundaries,
+#' values within structures have negative values. Names correspond to `colnames` of the `SpatialExperiment` input object.
 #'
 #' @importFrom sf st_distance st_boundary
 #' @importFrom parallel mclapply
@@ -188,12 +191,12 @@ cellTypeProportions <- function(spe, structColumn, cellTypeColumn, nCores = 1) {
 #'     marks = "cellType", imageCol = "imageName",
 #'     markSelect = "A", bndw = 3.5, thres = 0.045
 #' )
+#' # The function `assingCellsToStructures` needs colnames so we create them here
+#' colnames(sostaSPE) <- paste0("cell_", c(1:dim(sostaSPE)[2]))
 #'
 #' colData(sostaSPE)$structAssign <- assingCellsToStructures(
 #'     spe = sostaSPE, allStructs = allStructs, imageCol = "imageName"
 #' )
-#' # The function need colnames so we create them here
-#' colnames(sostaSPE) <- paste0("cell_", c(1:dim(sostaSPE)[2]))
 #'
 #' res <- minBoundaryDistances(
 #'     spe = sostaSPE, imageCol = "imageName", structColumn = "structAssign",

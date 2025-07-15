@@ -22,5 +22,5 @@ df <- .SPE2df(sostaSPE, marks = "cellType", imageCol = "imageName")
 ppp <- .df2ppp(df)
 }
 \seealso{
-\code{\link{.SPE2df}}, \code{\link{as.ppp}}
+\code{\link{.SPE2df}}, \code{\link{spatstat.geom::as.ppp}}
 }
