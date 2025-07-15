@@ -250,7 +250,7 @@ SPE2ppp <- function(
 #'
 #' @importFrom spatstat.geom as.ppp setmarks
 #'
-#' @seealso \code{\link{.SPE2df}}, \code{\link{as.ppp}}
+#' @seealso \code{\link{.SPE2df}}, \code{\link[spatstat.geom]{as.ppp}}
 #'
 #' @examples
 #' data(sostaSPE)

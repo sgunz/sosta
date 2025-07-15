@@ -42,7 +42,7 @@ colnames(sostaSPE) <- paste0("cell_", c(1:dim(sostaSPE)[2]))
 res <- assingCellsToStructures(
     spe = sostaSPE, allStructs = allStructs, imageCol = "imageName"
 )
-
+# Assign the structure assignment in the order of the columns in the `SpatialExperiment` object
 colData(sostaSPE)$structAssign <- res[colnames(sostaSPE)]
 
 if (require("ggplot2")) {
