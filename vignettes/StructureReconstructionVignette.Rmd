@@ -201,7 +201,13 @@ allStructs <- reconstructShapeDensitySPE(
 
 ## Intersection with cells
 
-Next, we assign cells in the `SingleCellExperiment` object to their specific structure. This is useful for later calculations.
+Next, we assign cells in the `SpatialExperiment` object to their specific structure. This is useful for later calculations. Such that the function can match the cells to the correct structures, we need the `colnames` to be defined in the `SpatialExperiment` object.
+
+```{r}
+# Define colnames by numbering the cells
+colnames(sostaSPE) <- paste0("cell_", c(1:dim(sostaSPE)[2]))
+```
+
 
 ```{r}
 assign <- assingCellsToStructures(sostaSPE, allStructs,

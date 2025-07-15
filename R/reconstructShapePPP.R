@@ -243,7 +243,7 @@ reconstructShapeDensitySPE <- function(spe, marks,
     rm(spe)
     gc()
     # Split up by image name
-    ls <- split(df, as.factor(df[, 3]))
+    ls <- split(df, as.factor(df[, imageCol]))
     # Calculate polygon for each id using multiple cores
     res_all <- mclapply(ls, function(x) {
         ppp <- .df2ppp(x)

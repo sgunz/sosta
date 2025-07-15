@@ -13,7 +13,7 @@ assingCellsToStructures(
 )
 }
 \arguments{
-\item{spe}{SpatialExperiment; An object of class \code{SpatialExperiment} containing spatial point data.}
+\item{spe}{SpatialExperiment; An object of class \code{SpatialExperiment} containing spatial point data. Must contain \code{colnames} for correct assignment.}
 
 \item{allStructs}{sf; A simple feature collection (sf object) representing spatial structures. Must contain a column which contains a unique identifier for each structure. Default = \code{structID}.}
 
@@ -24,7 +24,7 @@ assingCellsToStructures(
 \item{nCores}{integer; The number of cores to use for parallel processing (default is 1).}
 }
 \value{
-A vector with structure assignments for each spatial point in \code{spe}. Points that do not overlap with any structure are assigned \code{NA}.
+A named list with structure assignments for each spatial point in \code{spe}. Points that do not overlap with any structure are assigned \code{NA}. Names correspond to \code{colnames} of the \code{SpatialExperiment} input object.
 }
 \description{
 This function assigns each spatial coordinate in a \code{SpatialExperiment} object (\code{spe}) to the first intersecting structure from a given set of spatial structures.
@@ -36,9 +36,15 @@ allStructs <- reconstructShapeDensitySPE(sostaSPE,
     marks = "cellType", imageCol = "imageName",
     markSelect = "A", bndw = 3.5, thres = 0.045
 )
-colData(sostaSPE)$structAssign <- assingCellsToStructures(
+# The function need colnames so we create them here
+colnames(sostaSPE) <- paste0("cell_", c(1:dim(sostaSPE)[2]))
+
+res <- assingCellsToStructures(
     spe = sostaSPE, allStructs = allStructs, imageCol = "imageName"
 )
+
+colData(sostaSPE)$structAssign <- res[colnames(sostaSPE)]
+
 if (require("ggplot2")) {
     cbind(
         colData(sostaSPE[, sostaSPE[["imageName"]] == "image1"]),

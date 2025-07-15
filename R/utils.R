@@ -214,6 +214,7 @@ SPE2ppp <- function(
 #' @param marks character; name of column in `colData` with categorical marks
 #' @param imageCol character; name of a column in `colData` that corresponds to
 #' the image
+#' @param colNames logical; extract `colnames` from `SpatialExperiment`
 #' @returns data.frame with x, y coordinates, image, and categorical mark information
 #' @export
 #' @importFrom SpatialExperiment spatialCoords
@@ -222,12 +223,17 @@ SPE2ppp <- function(
 #' @examples
 #' data(sostaSPE)
 #' .SPE2df(sostaSPE, marks = "cellType", imageCol = "imageName") |> head()
-.SPE2df <- function(spe, imageCol, marks = NULL) {
+.SPE2df <- function(spe, imageCol, marks = NULL, colNames = FALSE) {
     df <- cbind(
         spatialCoords(spe),
         colData(spe)[, c(imageCol, marks)]
     ) |> as.data.frame()
     colnames(df) <- c(colnames(spatialCoords(spe)), imageCol, marks)
+    # set colnames if true
+    if (colNames == TRUE){
+        stopifnot("SpatialExperiment object must contain colnames" = !is.null(colnames(spe)))
+        df <- cbind(df, colnames(spe))
+        colnames(df)[length(colnames(df))] <- "colnamesSPE"}
     return(df)
 }
 

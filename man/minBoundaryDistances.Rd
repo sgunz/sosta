@@ -27,17 +27,25 @@ Compute minimum boundary distances for each cell within its corresponding image 
 \examples{
 library("SpatialExperiment")
 data("sostaSPE")
+
 allStructs <- reconstructShapeDensitySPE(sostaSPE,
     marks = "cellType", imageCol = "imageName",
     markSelect = "A", bndw = 3.5, thres = 0.045
 )
+
 colData(sostaSPE)$structAssign <- assingCellsToStructures(
     spe = sostaSPE, allStructs = allStructs, imageCol = "imageName"
 )
-colData(sostaSPE)$minDist <- minBoundaryDistances(
+# The function need colnames so we create them here
+colnames(sostaSPE) <- paste0("cell_", c(1:dim(sostaSPE)[2]))
+
+res <- minBoundaryDistances(
     spe = sostaSPE, imageCol = "imageName", structColumn = "structAssign",
     allStructs = allStructs
 )
+
+colData(sostaSPE)$minDist <- res[colnames(sostaSPE)]
+
 if (require("ggplot2")) {
     cbind(colData(sostaSPE), spatialCoords(sostaSPE)) |>
         as.data.frame() |>
