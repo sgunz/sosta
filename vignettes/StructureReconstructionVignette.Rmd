@@ -213,7 +213,8 @@ colnames(sostaSPE) <- paste0("cell_", c(1:dim(sostaSPE)[2]))
 assign <- assingCellsToStructures(sostaSPE, allStructs,
     imageCol = "imageName", nCores = 1
 )
-sostaSPE$structAssign <- assign
+# Assign using the correct order of the columns in the spe object
+sostaSPE$structAssign <- assign[colnames(sostaSPE)]
 ```
 
 
@@ -313,12 +314,14 @@ borders <- lapply(
 borders$imageName <- allStructs$imageName
 borders$borderID <- paste0("border_", allStructs$structID)
 
-sostaSPE$borderSf <- assingCellsToStructures(sostaSPE,
+borderAssign <- assingCellsToStructures(sostaSPE,
     borders,
     imageCol = "imageName",
     uniqueId = "borderID",
     nCores = 1
 )
+# Assign using the correct order of the columns in the spe object
+sostaSPE$borderSf <- borderAssign[colnames(sostaSPE)]
 ```
 
 

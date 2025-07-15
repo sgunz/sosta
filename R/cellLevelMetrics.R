@@ -29,7 +29,7 @@
 #' res <- assingCellsToStructures(
 #'     spe = sostaSPE, allStructs = allStructs, imageCol = "imageName"
 #' )
-#'
+#' # Assign the structure assignment in the order of the columns in the `SpatialExperiment` object
 #' colData(sostaSPE)$structAssign <- res[colnames(sostaSPE)]
 #'
 #' if (require("ggplot2")) {
@@ -90,7 +90,7 @@ assingCellsToStructures <- function(spe, allStructs, imageCol, uniqueId = "struc
         n_list <- apply(n, 1, function(x) which(x == TRUE)[1])
 
         # Assign structure ID or NA if no intersection
-        res <- ifelse(n_list == 0, NA, structsSel[["structID"]][n_list])
+        res <- ifelse(n_list == 0, NA, structsSel[[uniqueId]][n_list])
         return(data.frame(colnamesSPE = dfSel$colnamesSPE, structAssign = res))
     }, mc.cores = nCores)
     # bind results, extract assignemnt, name list
@@ -125,10 +125,10 @@ assingCellsToStructures <- function(spe, allStructs, imageCol, uniqueId = "struc
 #' )
 #' # The function `assingCellsToStructures` needs colnames so we create them here
 #' colnames(sostaSPE) <- paste0("cell_", c(1:dim(sostaSPE)[2]))
-#'
+#' # Assign the structure assignment in the order of the columns in the `SpatialExperiment` object
 #' colData(sostaSPE)$structAssign <- assingCellsToStructures(
 #'     spe = sostaSPE, allStructs = allStructs, imageCol = "imageName"
-#' )
+#' )[colnames(sostaSPE)]
 #' cellTypeProportions(sostaSPE, "structAssign", "cellType")
 cellTypeProportions <- function(spe, structColumn, cellTypeColumn, nCores = 1) {
     # Input checking
@@ -193,10 +193,10 @@ cellTypeProportions <- function(spe, structColumn, cellTypeColumn, nCores = 1) {
 #' )
 #' # The function `assingCellsToStructures` needs colnames so we create them here
 #' colnames(sostaSPE) <- paste0("cell_", c(1:dim(sostaSPE)[2]))
-#'
+#' # Assign the structure assignment in the order of the columns in the `SpatialExperiment` object
 #' colData(sostaSPE)$structAssign <- assingCellsToStructures(
 #'     spe = sostaSPE, allStructs = allStructs, imageCol = "imageName"
-#' )
+#' )[colnames(sostaSPE)]
 #'
 #' res <- minBoundaryDistances(
 #'     spe = sostaSPE, imageCol = "imageName", structColumn = "structAssign",
