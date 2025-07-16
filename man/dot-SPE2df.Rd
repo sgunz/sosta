@@ -4,7 +4,7 @@
 \alias{.SPE2df}
 \title{Function to convert \code{SpatialExperiment} object to a data frame}
 \usage{
-.SPE2df(spe, imageCol, marks = NULL, colNames = FALSE)
+.SPE2df(spe, imageCol = NULL, marks = NULL, colNames = FALSE)
 }
 \arguments{
 \item{spe}{SpatialExperiment; a object of class \code{SpatialExperiment}}

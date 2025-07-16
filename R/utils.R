@@ -156,7 +156,7 @@ getDimXY <- function(ppp, ydim) {
 #'
 #' @return ppp; object of type `ppp`
 #' @export
-#' @importFrom SpatialExperiment spatialCoords
+#' @importFrom SpatialExperiment spatialCoordsNames
 #' @importFrom SummarizedExperiment colData
 #' @importFrom spatstat.geom as.ppp setmarks
 #'
@@ -168,7 +168,7 @@ getDimXY <- function(ppp, ydim) {
 #' )
 SPE2ppp <- function(
         spe,
-        marks,
+        marks = NULL,
         imageCol = NULL,
         imageId = NULL) {
     # Input checking
@@ -193,17 +193,11 @@ SPE2ppp <- function(
         )
         spe <- spe[, colData(spe)[[imageCol]] %in% imageId]
     }
-
-    ppp <- as.ppp(
-        spatialCoords(spe),
-        c(
-            min(spatialCoords(spe)[, 1]),
-            max(spatialCoords(spe)[, 1]),
-            min(spatialCoords(spe)[, 2]),
-            max(spatialCoords(spe)[, 2])
-        )
-    )
-    ppp <- setmarks(ppp, colData(spe)[[marks]])
+    df <- .SPE2df(spe, imageCol = imageCol, marks = marks)
+    ppp <- .df2ppp(df,
+                   xName = spatialCoordsNames(spe)[1],
+                   yName = spatialCoordsNames(spe)[2],
+                   marks = marks)
     return(ppp)
 }
 
@@ -223,14 +217,14 @@ SPE2ppp <- function(
 #' @examples
 #' data(sostaSPE)
 #' .SPE2df(sostaSPE, marks = "cellType", imageCol = "imageName") |> head()
-.SPE2df <- function(spe, imageCol, marks = NULL, colNames = FALSE) {
+.SPE2df <- function(spe, imageCol = NULL, marks = NULL, colNames = FALSE) {
     df <- cbind(
         spatialCoords(spe),
         colData(spe)[, c(imageCol, marks)]
     ) |> as.data.frame()
     colnames(df) <- c(colnames(spatialCoords(spe)), imageCol, marks)
     # set colnames if true
-    if (colNames == TRUE){
+    if (colNames == TRUE) {
         stopifnot("SpatialExperiment object must contain colnames" = !is.null(colnames(spe)))
         df <- cbind(df, colnames(spe))
         colnames(df)[length(colnames(df))] <- "colnamesSPE"}
@@ -243,7 +237,9 @@ SPE2ppp <- function(
 #' Assumes that the `data.frame` is the output of `.SPE2df()`. Column order is important!
 #'
 #' @param df data.frame; with x, y coordinates, image, and categorical mark information.
-#' Order of columns is important.
+#' @param xName character; column name of x coordinate
+#' @param yName character; column name of y coordinate
+#' @param marks character; column name of the mark variable
 #'
 #' @return ppp; object of type `ppp`
 #' @export
@@ -255,21 +251,22 @@ SPE2ppp <- function(
 #' @examples
 #' data(sostaSPE)
 #' df <- .SPE2df(sostaSPE, marks = "cellType", imageCol = "imageName")
-#' ppp <- .df2ppp(df)
-.df2ppp <- function(df) {
+#' ppp <- .df2ppp(df, xName = "x", yName = "y", marks = "cellType")
+.df2ppp <- function(df, xName, yName, marks = NULL) {
     # create a matrix and the corresponding ppp
-    m <- data.matrix(df[, c(1, 2)])
+    m <- data.matrix(df[, c(xName, yName)])
     ppp <- as.ppp(
-        m[, c(1, 2)],
+        m[, c(xName, yName)],
         c(
-            as.numeric(min(m[, 1])),
-            as.numeric(max(m[, 1])),
-            as.numeric(min(m[, 2])),
-            as.numeric(max(m[, 2]))
+            as.numeric(min(m[, xName])),
+            as.numeric(max(m[, xName])),
+            as.numeric(min(m[, yName])),
+            as.numeric(max(m[, yName]))
         )
     )
     # Set the marks
-    ppp <- setmarks(ppp, as.factor(df[, 4]))
+    if (!is.null(marks)) {ppp <- setmarks(ppp, as.factor(df[, marks]))}
+    return(ppp)
 }
 
 
@@ -320,6 +317,7 @@ findIntensityThreshold <- function(
 #' @return list; list with the intensity image and the bandwidth and dimension parameters
 #' @importFrom spatstat.explore bw.diggle density.ppp
 #' @importFrom spatstat.geom subset.ppp
+#' @export
 .intensityImage <- function(
         ppp,
         markSelect = NULL,
