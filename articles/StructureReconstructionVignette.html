@@ -20,7 +20,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">sosta</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.99.9</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.0.1</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -294,21 +294,28 @@ use the estimated parameters from above.</p>
 <div class="section level3">
 <h3 id="intersection-with-cells">Intersection with cells<a class="anchor" aria-label="anchor" href="#intersection-with-cells"></a>
 </h3>
-<p>Next, we assign cells in the <code>SingleCellExperiment</code> object
-to their specific structure. This is useful for later calculations.</p>
+<p>Next, we assign cells in the <code>SpatialExperiment</code> object to
+their specific structure. This is useful for later calculations. Such
+that the function can match the cells to the correct structures, we need
+the <code>colnames</code> to be defined in the
+<code>SpatialExperiment</code> object.</p>
 <div class="sourceCode" id="cb13"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="co"># Define colnames by numbering the cells</span></span>
+<span><span class="fu"><a href="https://rdrr.io/pkg/BiocGenerics/man/row_colnames.html" class="external-link">colnames</a></span><span class="op">(</span><span class="va">sostaSPE</span><span class="op">)</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste0</a></span><span class="op">(</span><span class="st">"cell_"</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">1</span><span class="op">:</span><span class="fu"><a href="https://rdrr.io/r/base/dim.html" class="external-link">dim</a></span><span class="op">(</span><span class="va">sostaSPE</span><span class="op">)</span><span class="op">[</span><span class="fl">2</span><span class="op">]</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
+<div class="sourceCode" id="cb14"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">assign</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/assingCellsToStructures.html">assingCellsToStructures</a></span><span class="op">(</span><span class="va">sostaSPE</span>, <span class="va">allStructs</span>,</span>
 <span>    imageCol <span class="op">=</span> <span class="st">"imageName"</span>, nCores <span class="op">=</span> <span class="fl">1</span></span>
 <span><span class="op">)</span></span>
-<span><span class="va">sostaSPE</span><span class="op">$</span><span class="va">structAssign</span> <span class="op">&lt;-</span> <span class="va">assign</span></span></code></pre></div>
-<div class="sourceCode" id="cb14"><pre class="downlit sourceCode r">
+<span><span class="co"># Assign using the correct order of the columns in the spe object</span></span>
+<span><span class="va">sostaSPE</span><span class="op">$</span><span class="va">structAssign</span> <span class="op">&lt;-</span> <span class="va">assign</span><span class="op">[</span><span class="fu"><a href="https://rdrr.io/pkg/BiocGenerics/man/row_colnames.html" class="external-link">colnames</a></span><span class="op">(</span><span class="va">sostaSPE</span><span class="op">)</span><span class="op">]</span></span></code></pre></div>
+<div class="sourceCode" id="cb15"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/pkg/BiocGenerics/man/cbind.html" class="external-link">cbind</a></span><span class="op">(</span><span class="fu">colData</span><span class="op">(</span><span class="va">sostaSPE</span><span class="op">)</span>, <span class="fu"><a href="https://rdrr.io/pkg/SpatialExperiment/man/SpatialExperiment-methods.html" class="external-link">spatialCoords</a></span><span class="op">(</span><span class="va">sostaSPE</span><span class="op">)</span><span class="op">)</span> <span class="op">|&gt;</span></span>
 <span>    <span class="fu"><a href="https://rdrr.io/pkg/BiocGenerics/man/as.data.frame.html" class="external-link">as.data.frame</a></span><span class="op">(</span><span class="op">)</span> <span class="op">|&gt;</span></span>
 <span>    <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html" class="external-link">ggplot</a></span><span class="op">(</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html" class="external-link">aes</a></span><span class="op">(</span>x <span class="op">=</span> <span class="va">x</span>, y <span class="op">=</span> <span class="va">y</span>, color <span class="op">=</span> <span class="va">structAssign</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span></span>
 <span>    <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_point.html" class="external-link">geom_point</a></span><span class="op">(</span>size <span class="op">=</span> <span class="fl">0.25</span><span class="op">)</span> <span class="op">+</span></span>
 <span>    <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/facet_wrap.html" class="external-link">facet_wrap</a></span><span class="op">(</span><span class="op">~</span><span class="va">imageName</span><span class="op">)</span> <span class="op">+</span></span>
 <span>    <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/coord_fixed.html" class="external-link">coord_equal</a></span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
-<p><img src="StructureReconstructionVignette_files/figure-html/unnamed-chunk-12-1.png" width="700"></p>
+<p><img src="StructureReconstructionVignette_files/figure-html/unnamed-chunk-13-1.png" width="700"></p>
 </div>
 </div>
 <div class="section level2">
@@ -319,7 +326,7 @@ to their specific structure. This is useful for later calculations.</p>
 </h3>
 <p>Using the function <code>cellTypeProportions</code>, we can estimate
 the proportion of cell types within each individual structure.</p>
-<div class="sourceCode" id="cb15"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb16"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="../reference/cellTypeProportions.html">cellTypeProportions</a></span><span class="op">(</span><span class="va">sostaSPE</span>, <span class="st">"structAssign"</span>, <span class="st">"cellType"</span><span class="op">)</span></span>
 <span><span class="co">#&gt;                  A          B          C</span></span>
 <span><span class="co">#&gt; image1_1 0.7996255 0.12172285 0.07865169</span></span>
@@ -340,7 +347,7 @@ the proportion of cell types within each individual structure.</p>
 </h3>
 <p>The function <code>totalShapeMetrics</code> calculates a set of
 geometric metrics related to the shape of the structures.</p>
-<div class="sourceCode" id="cb16"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb17"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">shapeMetrics</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/totalShapeMetrics.html">totalShapeMetrics</a></span><span class="op">(</span><span class="va">allStructs</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">shapeMetrics</span><span class="op">)</span></span>
 <span><span class="co">#&gt;                  image1_1     image1_2    image1_3  image2_1     image2_2</span></span>
@@ -364,12 +371,12 @@ geometric metrics related to the shape of the structures.</p>
 <span><span class="co">#&gt; Circularity    0.9288492   0.7443243    0.5683033</span></span>
 <span><span class="co">#&gt; Solidity       0.9787015   0.9320010    0.6863814</span></span>
 <span><span class="co">#&gt; Curl           0.2514767   0.2936578    0.6032739</span></span></code></pre></div>
-<div class="sourceCode" id="cb17"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb18"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/pkg/BiocGenerics/man/cbind.html" class="external-link">cbind</a></span><span class="op">(</span><span class="va">allStructs</span>, <span class="fu"><a href="https://rdrr.io/pkg/BiocGenerics/man/t.html" class="external-link">t</a></span><span class="op">(</span><span class="va">shapeMetrics</span><span class="op">)</span><span class="op">)</span> <span class="op">|&gt;</span></span>
 <span>    <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html" class="external-link">ggplot</a></span><span class="op">(</span><span class="op">)</span> <span class="op">+</span></span>
 <span>    <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggsf.html" class="external-link">geom_sf</a></span><span class="op">(</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html" class="external-link">aes</a></span><span class="op">(</span>fill <span class="op">=</span> <span class="va">Area</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span></span>
 <span>    <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/facet_wrap.html" class="external-link">facet_wrap</a></span><span class="op">(</span><span class="op">~</span><span class="va">imageName</span><span class="op">)</span></span></code></pre></div>
-<p><img src="StructureReconstructionVignette_files/figure-html/unnamed-chunk-15-1.png" width="700"></p>
+<p><img src="StructureReconstructionVignette_files/figure-html/unnamed-chunk-16-1.png" width="700"></p>
 </div>
 </div>
 <div class="section level2">
@@ -381,7 +388,7 @@ geometric metrics related to the shape of the structures.</p>
 <p>Using the function <code>minBoundaryDistances</code>, we can compute
 the distance to the border structure. Negative values indicate that the
 points lie inside the structure.</p>
-<div class="sourceCode" id="cb18"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb19"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">sostaSPE</span><span class="op">$</span><span class="va">minDist</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/minBoundaryDistances.html">minBoundaryDistances</a></span><span class="op">(</span></span>
 <span>    spe <span class="op">=</span> <span class="va">sostaSPE</span>, imageCol <span class="op">=</span> <span class="st">"imageName"</span>,</span>
 <span>    structColumn <span class="op">=</span> <span class="st">"structAssign"</span>, allStructs <span class="op">=</span> <span class="va">allStructs</span></span>
@@ -402,10 +409,10 @@ points lie inside the structure.</p>
 <span>    <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/facet_wrap.html" class="external-link">facet_wrap</a></span><span class="op">(</span><span class="op">~</span><span class="va">imageName</span><span class="op">)</span></span>
 <span><span class="co">#&gt; Coordinate system already present. Adding new coordinate system, which will</span></span>
 <span><span class="co">#&gt; replace the existing one.</span></span></code></pre></div>
-<p><img src="StructureReconstructionVignette_files/figure-html/unnamed-chunk-16-1.png" width="700"></p>
+<p><img src="StructureReconstructionVignette_files/figure-html/unnamed-chunk-17-1.png" width="700"></p>
 <p>This information can be used to define border cells by thresholding
 to a range of positive and negative values.</p>
-<div class="sourceCode" id="cb19"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb20"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">sostaSPE</span><span class="op">$</span><span class="va">border</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/ifelse.html" class="external-link">ifelse</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/MathFun.html" class="external-link">abs</a></span><span class="op">(</span><span class="va">sostaSPE</span><span class="op">$</span><span class="va">minDist</span><span class="op">)</span> <span class="op">&lt;</span> <span class="fl">3</span>, <span class="cn">TRUE</span>, <span class="cn">FALSE</span><span class="op">)</span></span>
 <span></span>
 <span></span>
@@ -423,12 +430,12 @@ to a range of positive and negative values.</p>
 <span>    <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/facet_wrap.html" class="external-link">facet_wrap</a></span><span class="op">(</span><span class="op">~</span><span class="va">imageName</span><span class="op">)</span></span>
 <span><span class="co">#&gt; Coordinate system already present. Adding new coordinate system, which will</span></span>
 <span><span class="co">#&gt; replace the existing one.</span></span></code></pre></div>
-<p><img src="StructureReconstructionVignette_files/figure-html/unnamed-chunk-17-1.png" width="700"></p>
+<p><img src="StructureReconstructionVignette_files/figure-html/unnamed-chunk-18-1.png" width="700"></p>
 <p>Alternatively, borders can be defined using
 <code>st_difference</code> and <code>st_buffer</code> on the structure
 object. In this case we will have an <code>sf</code> polygon that
 correspond to the border region.</p>
-<div class="sourceCode" id="cb20"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb21"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">borders</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/BiocGenerics/man/lapply.html" class="external-link">lapply</a></span><span class="op">(</span></span>
 <span>    <span class="fu"><a href="https://r-spatial.github.io/sf/reference/st_geometry.html" class="external-link">st_geometry</a></span><span class="op">(</span><span class="va">allStructs</span><span class="op">)</span>,</span>
 <span>    \<span class="op">(</span><span class="va">x</span><span class="op">)</span> <span class="fu"><a href="https://r-spatial.github.io/sf/reference/geos_binary_ops.html" class="external-link">st_difference</a></span><span class="op">(</span><span class="fu"><a href="https://r-spatial.github.io/sf/reference/geos_unary.html" class="external-link">st_buffer</a></span><span class="op">(</span><span class="va">x</span>, <span class="fl">3</span><span class="op">)</span>, <span class="fu"><a href="https://r-spatial.github.io/sf/reference/geos_unary.html" class="external-link">st_buffer</a></span><span class="op">(</span><span class="va">x</span>, <span class="op">-</span><span class="fl">3</span><span class="op">)</span><span class="op">)</span></span>
@@ -439,13 +446,15 @@ correspond to the border region.</p>
 <span><span class="va">borders</span><span class="op">$</span><span class="va">imageName</span> <span class="op">&lt;-</span> <span class="va">allStructs</span><span class="op">$</span><span class="va">imageName</span></span>
 <span><span class="va">borders</span><span class="op">$</span><span class="va">borderID</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste0</a></span><span class="op">(</span><span class="st">"border_"</span>, <span class="va">allStructs</span><span class="op">$</span><span class="va">structID</span><span class="op">)</span></span>
 <span></span>
-<span><span class="va">sostaSPE</span><span class="op">$</span><span class="va">borderSf</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/assingCellsToStructures.html">assingCellsToStructures</a></span><span class="op">(</span><span class="va">sostaSPE</span>,</span>
+<span><span class="va">borderAssign</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/assingCellsToStructures.html">assingCellsToStructures</a></span><span class="op">(</span><span class="va">sostaSPE</span>,</span>
 <span>    <span class="va">borders</span>,</span>
 <span>    imageCol <span class="op">=</span> <span class="st">"imageName"</span>,</span>
 <span>    uniqueId <span class="op">=</span> <span class="st">"borderID"</span>,</span>
 <span>    nCores <span class="op">=</span> <span class="fl">1</span></span>
-<span><span class="op">)</span></span></code></pre></div>
-<div class="sourceCode" id="cb21"><pre class="downlit sourceCode r">
+<span><span class="op">)</span></span>
+<span><span class="co"># Assign using the correct order of the columns in the spe object</span></span>
+<span><span class="va">sostaSPE</span><span class="op">$</span><span class="va">borderSf</span> <span class="op">&lt;-</span> <span class="va">borderAssign</span><span class="op">[</span><span class="fu"><a href="https://rdrr.io/pkg/BiocGenerics/man/row_colnames.html" class="external-link">colnames</a></span><span class="op">(</span><span class="va">sostaSPE</span><span class="op">)</span><span class="op">]</span></span></code></pre></div>
+<div class="sourceCode" id="cb22"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/pkg/BiocGenerics/man/cbind.html" class="external-link">cbind</a></span><span class="op">(</span><span class="fu">colData</span><span class="op">(</span><span class="va">sostaSPE</span><span class="op">)</span>, <span class="fu"><a href="https://rdrr.io/pkg/SpatialExperiment/man/SpatialExperiment-methods.html" class="external-link">spatialCoords</a></span><span class="op">(</span><span class="va">sostaSPE</span><span class="op">)</span><span class="op">)</span> <span class="op">|&gt;</span></span>
 <span>    <span class="fu"><a href="https://rdrr.io/pkg/BiocGenerics/man/as.data.frame.html" class="external-link">as.data.frame</a></span><span class="op">(</span><span class="op">)</span> <span class="op">|&gt;</span></span>
 <span>    <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html" class="external-link">ggplot</a></span><span class="op">(</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html" class="external-link">aes</a></span><span class="op">(</span>x <span class="op">=</span> <span class="va">x</span>, y <span class="op">=</span> <span class="va">y</span>, color <span class="op">=</span> <span class="va">borderSf</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span></span>
@@ -460,15 +469,15 @@ correspond to the border region.</p>
 <span>    <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/facet_wrap.html" class="external-link">facet_wrap</a></span><span class="op">(</span><span class="op">~</span><span class="va">imageName</span><span class="op">)</span></span>
 <span><span class="co">#&gt; Coordinate system already present. Adding new coordinate system, which will</span></span>
 <span><span class="co">#&gt; replace the existing one.</span></span></code></pre></div>
-<p><img src="StructureReconstructionVignette_files/figure-html/unnamed-chunk-19-1.png" width="700"></p>
+<p><img src="StructureReconstructionVignette_files/figure-html/unnamed-chunk-20-1.png" width="700"></p>
 </div>
 </div>
 <div class="section level2">
 <h2 id="session-info">Session Info<a class="anchor" aria-label="anchor" href="#session-info"></a>
 </h2>
-<div class="sourceCode" id="cb22"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb23"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/utils/sessionInfo.html" class="external-link">sessionInfo</a></span><span class="op">(</span><span class="op">)</span></span>
-<span><span class="co">#&gt; R version 4.5.0 (2025-04-11)</span></span>
+<span><span class="co">#&gt; R version 4.5.1 (2025-06-13)</span></span>
 <span><span class="co">#&gt; Platform: x86_64-pc-linux-gnu</span></span>
 <span><span class="co">#&gt; Running under: Ubuntu 24.04.2 LTS</span></span>
 <span><span class="co">#&gt; </span></span>
@@ -490,48 +499,47 @@ correspond to the border region.</p>
 <span><span class="co">#&gt; [8] base     </span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; other attached packages:</span></span>
-<span><span class="co">#&gt;  [1] SpatialExperiment_1.17.0    SingleCellExperiment_1.29.2</span></span>
-<span><span class="co">#&gt;  [3] SummarizedExperiment_1.37.0 Biobase_2.67.0             </span></span>
-<span><span class="co">#&gt;  [5] GenomicRanges_1.59.1        GenomeInfoDb_1.43.4        </span></span>
-<span><span class="co">#&gt;  [7] IRanges_2.41.3              S4Vectors_0.45.4           </span></span>
-<span><span class="co">#&gt;  [9] BiocGenerics_0.53.6         generics_0.1.3             </span></span>
-<span><span class="co">#&gt; [11] MatrixGenerics_1.19.1       matrixStats_1.5.0          </span></span>
-<span><span class="co">#&gt; [13] sf_1.0-20                   ggplot2_3.5.2              </span></span>
+<span><span class="co">#&gt;  [1] SpatialExperiment_1.18.1    SingleCellExperiment_1.30.1</span></span>
+<span><span class="co">#&gt;  [3] SummarizedExperiment_1.38.1 Biobase_2.68.0             </span></span>
+<span><span class="co">#&gt;  [5] GenomicRanges_1.60.0        GenomeInfoDb_1.44.0        </span></span>
+<span><span class="co">#&gt;  [7] IRanges_2.42.0              S4Vectors_0.46.0           </span></span>
+<span><span class="co">#&gt;  [9] BiocGenerics_0.54.0         generics_0.1.4             </span></span>
+<span><span class="co">#&gt; [11] MatrixGenerics_1.20.0       matrixStats_1.5.0          </span></span>
+<span><span class="co">#&gt; [13] sf_1.0-21                   ggplot2_3.5.2              </span></span>
 <span><span class="co">#&gt; [15] tidyr_1.3.1                 dplyr_1.1.4                </span></span>
-<span><span class="co">#&gt; [17] sosta_0.99.9                BiocStyle_2.35.0           </span></span>
+<span><span class="co">#&gt; [17] sosta_1.0.1                 BiocStyle_2.36.0           </span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; loaded via a namespace (and not attached):</span></span>
 <span><span class="co">#&gt;  [1] DBI_1.2.3               bitops_1.0-9            deldir_2.0-4           </span></span>
-<span><span class="co">#&gt;  [4] rlang_1.1.5             magrittr_2.0.3          e1071_1.7-16           </span></span>
-<span><span class="co">#&gt;  [7] compiler_4.5.0          spatstat.geom_3.3-6     png_0.1-8              </span></span>
-<span><span class="co">#&gt; [10] systemfonts_1.2.2       fftwtools_0.9-11        vctrs_0.6.5            </span></span>
+<span><span class="co">#&gt;  [4] rlang_1.1.6             magrittr_2.0.3          e1071_1.7-16           </span></span>
+<span><span class="co">#&gt;  [7] compiler_4.5.1          spatstat.geom_3.4-1     png_0.1-8              </span></span>
+<span><span class="co">#&gt; [10] systemfonts_1.2.3       fftwtools_0.9-11        vctrs_0.6.5            </span></span>
 <span><span class="co">#&gt; [13] pkgconfig_2.0.3         crayon_1.5.3            fastmap_1.2.0          </span></span>
-<span><span class="co">#&gt; [16] magick_2.8.6            XVector_0.47.2          labeling_0.4.3         </span></span>
-<span><span class="co">#&gt; [19] rmarkdown_2.29          UCSC.utils_1.3.1        ragg_1.4.0             </span></span>
-<span><span class="co">#&gt; [22] purrr_1.0.4             xfun_0.52               cachem_1.1.0           </span></span>
-<span><span class="co">#&gt; [25] jsonlite_2.0.0          goftest_1.2-3           DelayedArray_0.33.6    </span></span>
-<span><span class="co">#&gt; [28] spatstat.utils_3.1-3    jpeg_0.1-11             tiff_0.1-12            </span></span>
-<span><span class="co">#&gt; [31] terra_1.8-42            parallel_4.5.0          R6_2.6.1               </span></span>
-<span><span class="co">#&gt; [34] bslib_0.9.0             spatstat.data_3.1-6     spatstat.univar_3.1-2  </span></span>
-<span><span class="co">#&gt; [37] jquerylib_0.1.4         Rcpp_1.0.14             bookdown_0.42          </span></span>
-<span><span class="co">#&gt; [40] knitr_1.50              tensor_1.5              Matrix_1.7-3           </span></span>
-<span><span class="co">#&gt; [43] tidyselect_1.2.1        abind_1.4-8             yaml_2.3.10            </span></span>
-<span><span class="co">#&gt; [46] EBImage_4.49.0          codetools_0.2-20        spatstat.random_3.3-3  </span></span>
-<span><span class="co">#&gt; [49] spatstat.explore_3.4-2  lattice_0.22-6          tibble_3.2.1           </span></span>
-<span><span class="co">#&gt; [52] withr_3.0.2             evaluate_1.0.3          desc_1.4.3             </span></span>
-<span><span class="co">#&gt; [55] units_0.8-7             proxy_0.4-27            polyclip_1.10-7        </span></span>
-<span><span class="co">#&gt; [58] pillar_1.10.2           BiocManager_1.30.25     KernSmooth_2.23-26     </span></span>
-<span><span class="co">#&gt; [61] smoothr_1.0.1           RCurl_1.98-1.17         munsell_0.5.1          </span></span>
-<span><span class="co">#&gt; [64] scales_1.3.0            class_7.3-23            glue_1.8.0             </span></span>
-<span><span class="co">#&gt; [67] tools_4.5.0             locfit_1.5-9.12         fs_1.6.5               </span></span>
-<span><span class="co">#&gt; [70] grid_4.5.0              colorspace_2.1-1        nlme_3.1-168           </span></span>
-<span><span class="co">#&gt; [73] GenomeInfoDbData_1.2.14 patchwork_1.3.0         cli_3.6.4              </span></span>
-<span><span class="co">#&gt; [76] spatstat.sparse_3.1-0   textshaping_1.0.0       viridisLite_0.4.2      </span></span>
-<span><span class="co">#&gt; [79] S4Arrays_1.7.3          gtable_0.3.6            sass_0.4.9             </span></span>
-<span><span class="co">#&gt; [82] digest_0.6.37           classInt_0.4-11         SparseArray_1.7.7      </span></span>
-<span><span class="co">#&gt; [85] rjson_0.2.23            htmlwidgets_1.6.4       farver_2.1.2           </span></span>
-<span><span class="co">#&gt; [88] htmltools_0.5.8.1       pkgdown_2.1.1           lifecycle_1.0.4        </span></span>
-<span><span class="co">#&gt; [91] httr_1.4.7</span></span></code></pre></div>
+<span><span class="co">#&gt; [16] magick_2.8.7            XVector_0.48.0          labeling_0.4.3         </span></span>
+<span><span class="co">#&gt; [19] rmarkdown_2.29          UCSC.utils_1.4.0        ragg_1.4.0             </span></span>
+<span><span class="co">#&gt; [22] purrr_1.1.0             xfun_0.52               cachem_1.1.0           </span></span>
+<span><span class="co">#&gt; [25] jsonlite_2.0.0          goftest_1.2-3           DelayedArray_0.34.1    </span></span>
+<span><span class="co">#&gt; [28] spatstat.utils_3.1-4    jpeg_0.1-11             tiff_0.1-12            </span></span>
+<span><span class="co">#&gt; [31] terra_1.8-54            parallel_4.5.1          R6_2.6.1               </span></span>
+<span><span class="co">#&gt; [34] bslib_0.9.0             RColorBrewer_1.1-3      spatstat.data_3.1-6    </span></span>
+<span><span class="co">#&gt; [37] spatstat.univar_3.1-4   jquerylib_0.1.4         Rcpp_1.1.0             </span></span>
+<span><span class="co">#&gt; [40] bookdown_0.43           knitr_1.50              tensor_1.5.1           </span></span>
+<span><span class="co">#&gt; [43] Matrix_1.7-3            tidyselect_1.2.1        abind_1.4-8            </span></span>
+<span><span class="co">#&gt; [46] yaml_2.3.10             EBImage_4.50.0          codetools_0.2-20       </span></span>
+<span><span class="co">#&gt; [49] spatstat.random_3.4-1   spatstat.explore_3.4-3  lattice_0.22-7         </span></span>
+<span><span class="co">#&gt; [52] tibble_3.3.0            withr_3.0.2             evaluate_1.0.4         </span></span>
+<span><span class="co">#&gt; [55] desc_1.4.3              units_0.8-7             proxy_0.4-27           </span></span>
+<span><span class="co">#&gt; [58] polyclip_1.10-7         pillar_1.11.0           BiocManager_1.30.26    </span></span>
+<span><span class="co">#&gt; [61] KernSmooth_2.23-26      smoothr_1.1.0           RCurl_1.98-1.17        </span></span>
+<span><span class="co">#&gt; [64] scales_1.4.0            class_7.3-23            glue_1.8.0             </span></span>
+<span><span class="co">#&gt; [67] tools_4.5.1             locfit_1.5-9.12         fs_1.6.6               </span></span>
+<span><span class="co">#&gt; [70] grid_4.5.1              nlme_3.1-168            GenomeInfoDbData_1.2.14</span></span>
+<span><span class="co">#&gt; [73] patchwork_1.3.1         cli_3.6.5               spatstat.sparse_3.1-0  </span></span>
+<span><span class="co">#&gt; [76] textshaping_1.0.1       viridisLite_0.4.2       S4Arrays_1.8.1         </span></span>
+<span><span class="co">#&gt; [79] gtable_0.3.6            sass_0.4.10             digest_0.6.37          </span></span>
+<span><span class="co">#&gt; [82] classInt_0.4-11         SparseArray_1.8.0       rjson_0.2.23           </span></span>
+<span><span class="co">#&gt; [85] htmlwidgets_1.6.4       farver_2.1.2            htmltools_0.5.8.1      </span></span>
+<span><span class="co">#&gt; [88] pkgdown_2.1.3           lifecycle_1.0.4         httr_1.4.7</span></span></code></pre></div>
 </div>
 <div class="section level2">
 <h2 class="unnumbered" id="references">References<a class="anchor" aria-label="anchor" href="#references"></a>
@@ -555,7 +563,7 @@ Vector Data</span>.”</span> <em>The R Journal</em> 10 (1): 439. <a href="https
 </div>
 
 <div class="pkgdown-footer-right">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.1.1.</p>
+  <p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.1.3.</p>
 </div>
 
     </footer>

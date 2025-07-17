@@ -7,7 +7,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">sosta</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.99.9</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.0.1</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -44,7 +44,7 @@
 
     <div class="section level2">
     <h2 id="ref-usage">Usage<a class="anchor" aria-label="anchor" href="#ref-usage"></a></h2>
-    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">.SPE2df</span><span class="op">(</span><span class="va">spe</span>, <span class="va">imageCol</span>, marks <span class="op">=</span> <span class="cn">NULL</span><span class="op">)</span></span></code></pre></div>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">.SPE2df</span><span class="op">(</span><span class="va">spe</span>, imageCol <span class="op">=</span> <span class="cn">NULL</span>, marks <span class="op">=</span> <span class="cn">NULL</span>, colNames <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span></code></pre></div>
     </div>
 
     <div class="section level2">
@@ -62,6 +62,10 @@ the image</p></dd>
 
 <dt id="arg-marks">marks<a class="anchor" aria-label="anchor" href="#arg-marks"></a></dt>
 <dd><p>character; name of column in <code>colData</code> with categorical marks</p></dd>
+
+
+<dt id="arg-colnames">colNames<a class="anchor" aria-label="anchor" href="#arg-colnames"></a></dt>
+<dd><p>logical; extract <code>colnames</code> from <code>SpatialExperiment</code></p></dd>
 
 </dl></div>
     <div class="section level2">
@@ -91,7 +95,7 @@ the image</p></dd>
 </div>
 
 <div class="pkgdown-footer-right">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.1.1.</p>
+  <p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.1.3.</p>
 </div>
 
     </footer></div>
