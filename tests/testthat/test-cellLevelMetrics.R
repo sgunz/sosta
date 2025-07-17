@@ -1,5 +1,8 @@
 library("SpatialExperiment")
 data("sostaSPE")
+
+colnames(sostaSPE) <- paste0("cell_", c(1:dim(sostaSPE)[2]))
+
 allStructs <- reconstructShapeDensitySPE(sostaSPE,
     marks = "cellType", imageCol = "imageName",
     markSelect = "A", bndw = 3.5, thres = 0.045
@@ -14,6 +17,12 @@ test_that("assingCellsToStructures returns correct output", {
     result <- assingCellsToStructures(sostaSPE, allStructs, "imageName")
     expect_type(result, "character")
     expect_length(result, ncol(sostaSPE))
+
+    # Perturbation test
+    spe <- sostaSPE[, sample(ncol(sostaSPE))]
+    resultPert <- assingCellsToStructures(spe, allStructs, "imageName")
+    expect_true(any(resultPert[colnames(sostaSPE)] == result))
+
 })
 
 test_that("assingCellsToStructures handles incorrect input", {
@@ -44,6 +53,12 @@ test_that("minBoundaryDistances returns correct numeric vector", {
     result <- minBoundaryDistances(sostaSPE, "imageName", "structAssign", allStructs)
     expect_type(result, "double")
     expect_length(result, ncol(sostaSPE))
+
+    # Test perturbation
+    spe <- sostaSPE[, sample(ncol(sostaSPE))]
+    resultPert <- minBoundaryDistances(spe, "imageName", "structAssign", allStructs)
+    expect_true(any(resultPert[colnames(sostaSPE)] == result))
+
 })
 
 test_that("minBoundaryDistances handles incorrect input", {

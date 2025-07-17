@@ -141,8 +141,10 @@ shapeIntensityImage <- function(
         plot_annotation(
             title = paste0(imageCol, ": ", imageId),
             subtitle = paste0(
-                "bndw: ", round(res$bndw, 4), "; estimated thres: ",
-                round(thres, 4)
+                "bndw: ", formatC(res$bndw, format = "e", digits = 3),
+                "; estimated thres: ",
+                formatC(thres, format = "e", digits = 3)
+
             ),
             caption = paste0(
                 "Dimension of the density image (pixels): ", res$dimyx[1],
@@ -220,7 +222,7 @@ reconstructShapeDensityImage <- function(spe, marks,
 #'
 #' @importFrom parallel mclapply
 #' @importFrom SummarizedExperiment colData
-#' @importFrom SpatialExperiment spatialCoords
+#' @importFrom SpatialExperiment spatialCoordsNames
 #' @importFrom spatstat.geom as.ppp setmarks
 #'
 #' @return simple feature collection
@@ -239,14 +241,17 @@ reconstructShapeDensitySPE <- function(spe, marks,
     nCores = 1) {
     # Create a data frame with all necessary variables for computational (memory) reasons
     df <- .SPE2df(spe, imageCol, marks)
+    xName <- spatialCoordsNames(spe)[1]
+    yName <- spatialCoordsNames(spe)[2]
     # Remove SPE to free up memory
     rm(spe)
     gc()
     # Split up by image name
-    ls <- split(df, as.factor(df[, 3]))
+    ls <- split(df, as.factor(df[, imageCol]))
+
     # Calculate polygon for each id using multiple cores
     res_all <- mclapply(ls, function(x) {
-        ppp <- .df2ppp(x)
+        ppp <- .df2ppp(x, xName, yName, marks)
         # Reconstruct the structure
         res <- reconstructShapeDensity(ppp, markSelect, bndw, thres, dim)
         if (is.null(res)) {
@@ -292,6 +297,7 @@ reconstructShapeDensitySPE <- function(spe, marks,
 #' @importFrom patchwork wrap_plots
 #' @importFrom ggplot2 ggplot aes_string geom_histogram theme_light
 #' @importFrom rlang .data
+#' @importFrom SpatialExperiment spatialCoordsNames
 #'
 #' @return tibble; tibble with estimated intensities and thresholds
 #' @export
@@ -332,15 +338,17 @@ estimateReconstructionParametersSPE <- function(
 
     # Create a data frame with all necessary variables for computational (memory) reasons
     df <- .SPE2df(spe, imageCol, marks)
+    xName <- spatialCoordsNames(spe)[1]
+    yName <- spatialCoordsNames(spe)[2]
     # Remove SPE to free up memory
     rm(spe)
     gc()
     # Split up by image name
-    ls <- split(df, as.factor(df[, 3]))
+    ls <- split(df, as.factor(df[, imageCol]))
 
     # we calculate the bandwidths and thresholds
     res <- mclapply(ls, function(x) {
-        ppp <- .df2ppp(x)
+        ppp <- .df2ppp(x, xName, yName, marks)
         res_x <- .intensityImage(ppp, markSelect, dim = dim)
         thres <- .intensityThreshold(res_x$denIm)
         return(list(img = x, bndw = as.numeric(res_x$bndw), thres = as.numeric(thres)))

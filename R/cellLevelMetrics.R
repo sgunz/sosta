@@ -2,13 +2,13 @@
 #'
 #' This function assigns each spatial coordinate in a `SpatialExperiment` object (`spe`) to the first intersecting structure from a given set of spatial structures.
 #'
-#' @param spe SpatialExperiment; An object of class `SpatialExperiment` containing spatial point data.
+#' @param spe SpatialExperiment; An object of class `SpatialExperiment` containing spatial point data. Must contain `colnames` for correct assignment.
 #' @param allStructs sf; A simple feature collection (sf object) representing spatial structures. Must contain a column which contains a unique identifier for each structure. Default = `structID`.
 #' @param imageCol character; The column name in `spe` and `allStructs` that identifies the corresponding image.
 #' @param uniqueId character; The column name in the simple feature collection for which to compute the assignment.
 #' @param nCores integer; The number of cores to use for parallel processing (default is 1).
 #'
-#' @returns A vector with structure assignments for each spatial point in `spe`. Points that do not overlap with any structure are assigned `NA`.
+#' @returns A named list with structure assignments for each spatial point in `spe`. Points that do not overlap with any structure are assigned `NA`. Names correspond to `colnames` of the `SpatialExperiment` input object.
 #'
 #' @importFrom sf st_intersects
 #' @importFrom SummarizedExperiment assays
@@ -23,9 +23,15 @@
 #'     marks = "cellType", imageCol = "imageName",
 #'     markSelect = "A", bndw = 3.5, thres = 0.045
 #' )
-#' colData(sostaSPE)$structAssign <- assingCellsToStructures(
+#' # The function `assingCellsToStructures` needs colnames so we create them here
+#' colnames(sostaSPE) <- paste0("cell_", c(1:dim(sostaSPE)[2]))
+#'
+#' res <- assingCellsToStructures(
 #'     spe = sostaSPE, allStructs = allStructs, imageCol = "imageName"
 #' )
+#' # Assign the structure assignment in the order of the columns in the `SpatialExperiment` object
+#' colData(sostaSPE)$structAssign <- res[colnames(sostaSPE)]
+#'
 #' if (require("ggplot2")) {
 #'     cbind(
 #'         colData(sostaSPE[, sostaSPE[["imageName"]] == "image1"]),
@@ -57,15 +63,12 @@ assingCellsToStructures <- function(spe, allStructs, imageCol, uniqueId = "struc
                 uniqueId %in% colnames(allStructs)
     )
     # Convert spe to df
-    df <- .SPE2df(spe, imageCol)
+    df <- .SPE2df(spe, imageCol, colNames = TRUE)
     # Split data frame
     ls <- split(df, as.factor(df[, imageCol]))
 
     # Using lapply to process each image separately
     res <- mclapply(ls, function(dfSel) {
-        # Create results vector with NA values
-        # resVect <- rep(NA, resLen)
-
         # Select image name
         sel <- unique(dfSel[, imageCol])
 
@@ -88,11 +91,13 @@ assingCellsToStructures <- function(spe, allStructs, imageCol, uniqueId = "struc
 
         # Assign structure ID or NA if no intersection
         res <- ifelse(n_list == 0, NA, structsSel[[uniqueId]][n_list])
-
-        return(res)
+        return(data.frame(colnamesSPE = dfSel$colnamesSPE, structAssign = res))
     }, mc.cores = nCores)
-
-    return(unlist(res))
+    # bind results, extract assignemnt, name list
+    rd <- do.call("rbind", res)
+    out <- rd$structAssign
+    names(out) <- rd$colnamesSPE
+    return(out[colnames(spe)])
 }
 
 #' Calculate the proportion of each cell type within spatial structures
@@ -118,9 +123,12 @@ assingCellsToStructures <- function(spe, allStructs, imageCol, uniqueId = "struc
 #'     marks = "cellType", imageCol = "imageName",
 #'     markSelect = "A", bndw = 3.5, thres = 0.045
 #' )
+#' # The function `assingCellsToStructures` needs colnames so we create them here
+#' colnames(sostaSPE) <- paste0("cell_", c(1:dim(sostaSPE)[2]))
+#' # Assign the structure assignment in the order of the columns in the `SpatialExperiment` object
 #' colData(sostaSPE)$structAssign <- assingCellsToStructures(
 #'     spe = sostaSPE, allStructs = allStructs, imageCol = "imageName"
-#' )
+#' )[colnames(sostaSPE)]
 #' cellTypeProportions(sostaSPE, "structAssign", "cellType")
 cellTypeProportions <- function(spe, structColumn, cellTypeColumn, nCores = 1) {
     # Input checking
@@ -167,8 +175,8 @@ cellTypeProportions <- function(spe, structColumn, cellTypeColumn, nCores = 1) {
 #' @param allStructs sf object; contains spatial structures with corresponding image names
 #' @param nCores integer; The number of cores to use for parallel processing (default is 1).
 #'
-#' @return A numeric vector containing the minimum distances between cells and structure boundaries,
-#' values within structures have negative values.
+#' @return A named list containing the minimum distances between cells and structure boundaries,
+#' values within structures have negative values. Names correspond to `colnames` of the `SpatialExperiment` input object.
 #'
 #' @importFrom sf st_distance st_boundary
 #' @importFrom parallel mclapply
@@ -178,17 +186,25 @@ cellTypeProportions <- function(spe, structColumn, cellTypeColumn, nCores = 1) {
 #' @examples
 #' library("SpatialExperiment")
 #' data("sostaSPE")
+#'
 #' allStructs <- reconstructShapeDensitySPE(sostaSPE,
 #'     marks = "cellType", imageCol = "imageName",
 #'     markSelect = "A", bndw = 3.5, thres = 0.045
 #' )
+#' # The function `assingCellsToStructures` needs colnames so we create them here
+#' colnames(sostaSPE) <- paste0("cell_", c(1:dim(sostaSPE)[2]))
+#' # Assign the structure assignment in the order of the columns in the `SpatialExperiment` object
 #' colData(sostaSPE)$structAssign <- assingCellsToStructures(
 #'     spe = sostaSPE, allStructs = allStructs, imageCol = "imageName"
-#' )
-#' colData(sostaSPE)$minDist <- minBoundaryDistances(
+#' )[colnames(sostaSPE)]
+#'
+#' res <- minBoundaryDistances(
 #'     spe = sostaSPE, imageCol = "imageName", structColumn = "structAssign",
 #'     allStructs = allStructs
 #' )
+#'
+#' colData(sostaSPE)$minDist <- res[colnames(sostaSPE)]
+#'
 #' if (require("ggplot2")) {
 #'     cbind(colData(sostaSPE), spatialCoords(sostaSPE)) |>
 #'         as.data.frame() |>
@@ -230,12 +246,12 @@ minBoundaryDistances <- function(spe, imageCol,
     images <- images[!is.na(images)]
 
     # Convert spe to df
-    df <- .SPE2df(spe, imageCol)
+    df <- .SPE2df(spe, imageCol, colNames = TRUE)
     # Split data frame
     ls <- split(df, as.factor(df[, imageCol]))
 
     # Compute the minimum distance to structure boundaries for each cell
-    res <- mclapply(ls, function(dfSel) {
+    resdf <- mclapply(ls, function(dfSel) {
         # Select image name
         sel <- unique(dfSel[, imageCol])
 
@@ -259,13 +275,18 @@ minBoundaryDistances <- function(spe, imageCol,
 
         # Store the minimum distance for each cell
         res <- apply(dist, 1, min)
-        return(res)
+        return(data.frame(colnamesSPE = dfSel$colnamesSPE, minDist = res))
     }, mc.cores = nCores)
 
-    overlap_vect <- unlist(res)
+    # bind results, extract assignment, name list
+    rd <- do.call("rbind", resdf)
+    out <- rd$minDist
+    names(out) <- rd$colnamesSPE
 
     # Negate distances for assigned structures
-    overlap_vect[!is.na(spe[[structColumn]])] <- -overlap_vect[!is.na(spe[[structColumn]])]
+    out[colnames(spe)][!is.na(spe[[structColumn]])] <-
+        -out[colnames(spe)][!is.na(spe[[structColumn]])]
 
-    return(overlap_vect)
+    return(out[colnames(spe)])
 }
+

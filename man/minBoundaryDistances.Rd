@@ -18,8 +18,8 @@ minBoundaryDistances(spe, imageCol, structColumn, allStructs, nCores = 1)
 \item{nCores}{integer; The number of cores to use for parallel processing (default is 1).}
 }
 \value{
-A numeric vector containing the minimum distances between cells and structure boundaries,
-values within structures have negative values.
+A named list containing the minimum distances between cells and structure boundaries,
+values within structures have negative values. Names correspond to \code{colnames} of the \code{SpatialExperiment} input object.
 }
 \description{
 Compute minimum boundary distances for each cell within its corresponding image structures
@@ -27,17 +27,25 @@ Compute minimum boundary distances for each cell within its corresponding image 
 \examples{
 library("SpatialExperiment")
 data("sostaSPE")
+
 allStructs <- reconstructShapeDensitySPE(sostaSPE,
     marks = "cellType", imageCol = "imageName",
     markSelect = "A", bndw = 3.5, thres = 0.045
 )
+# The function `assingCellsToStructures` needs colnames so we create them here
+colnames(sostaSPE) <- paste0("cell_", c(1:dim(sostaSPE)[2]))
+# Assign the structure assignment in the order of the columns in the `SpatialExperiment` object
 colData(sostaSPE)$structAssign <- assingCellsToStructures(
     spe = sostaSPE, allStructs = allStructs, imageCol = "imageName"
-)
-colData(sostaSPE)$minDist <- minBoundaryDistances(
+)[colnames(sostaSPE)]
+
+res <- minBoundaryDistances(
     spe = sostaSPE, imageCol = "imageName", structColumn = "structAssign",
     allStructs = allStructs
 )
+
+colData(sostaSPE)$minDist <- res[colnames(sostaSPE)]
+
 if (require("ggplot2")) {
     cbind(colData(sostaSPE), spatialCoords(sostaSPE)) |>
         as.data.frame() |>

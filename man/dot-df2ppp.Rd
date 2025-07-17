@@ -4,11 +4,16 @@
 \alias{.df2ppp}
 \title{Function to convert \code{data.frame} to \code{ppp} object}
 \usage{
-.df2ppp(df)
+.df2ppp(df, xName, yName, marks = NULL)
 }
 \arguments{
-\item{df}{data.frame; with x, y coordinates, image, and categorical mark information.
-Order of columns is important.}
+\item{df}{data.frame; with x, y coordinates, image, and categorical mark information.}
+
+\item{xName}{character; column name of x coordinate}
+
+\item{yName}{character; column name of y coordinate}
+
+\item{marks}{character; column name of the mark variable}
 }
 \value{
 ppp; object of type \code{ppp}
@@ -19,8 +24,8 @@ Assumes that the \code{data.frame} is the output of \code{.SPE2df()}. Column ord
 \examples{
 data(sostaSPE)
 df <- .SPE2df(sostaSPE, marks = "cellType", imageCol = "imageName")
-ppp <- .df2ppp(df)
+ppp <- .df2ppp(df, xName = "x", yName = "y", marks = "cellType")
 }
 \seealso{
-\code{\link{.SPE2df}}, \code{\link{as.ppp}}
+\code{\link{.SPE2df}}, \code{\link[spatstat.geom]{as.ppp}}
 }

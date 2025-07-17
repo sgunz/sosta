@@ -4,7 +4,7 @@
 \alias{.SPE2df}
 \title{Function to convert \code{SpatialExperiment} object to a data frame}
 \usage{
-.SPE2df(spe, imageCol, marks = NULL)
+.SPE2df(spe, imageCol = NULL, marks = NULL, colNames = FALSE)
 }
 \arguments{
 \item{spe}{SpatialExperiment; a object of class \code{SpatialExperiment}}
@@ -13,6 +13,8 @@
 the image}
 
 \item{marks}{character; name of column in \code{colData} with categorical marks}
+
+\item{colNames}{logical; extract \code{colnames} from \code{SpatialExperiment}}
 }
 \value{
 data.frame with x, y coordinates, image, and categorical mark information

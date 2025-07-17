@@ -4,7 +4,7 @@
 \alias{SPE2ppp}
 \title{Function to convert spatial coordinates of a \code{SpatialExperiment} object to a \code{ppp} object}
 \usage{
-SPE2ppp(spe, marks, imageCol = NULL, imageId = NULL)
+SPE2ppp(spe, marks = NULL, imageCol = NULL, imageId = NULL)
 }
 \arguments{
 \item{spe}{SpatialExperiment; a object of class \code{SpatialExperiment}}

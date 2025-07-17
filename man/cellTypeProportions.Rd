@@ -29,8 +29,11 @@ allStructs <- reconstructShapeDensitySPE(sostaSPE,
     marks = "cellType", imageCol = "imageName",
     markSelect = "A", bndw = 3.5, thres = 0.045
 )
+# The function `assingCellsToStructures` needs colnames so we create them here
+colnames(sostaSPE) <- paste0("cell_", c(1:dim(sostaSPE)[2]))
+# Assign the structure assignment in the order of the columns in the `SpatialExperiment` object
 colData(sostaSPE)$structAssign <- assingCellsToStructures(
     spe = sostaSPE, allStructs = allStructs, imageCol = "imageName"
-)
+)[colnames(sostaSPE)]
 cellTypeProportions(sostaSPE, "structAssign", "cellType")
 }
