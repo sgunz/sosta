@@ -7,7 +7,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">sosta</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.0.1</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.1.0</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -58,7 +58,7 @@
 
 
 <dl><dt id="arg-spe">spe<a class="anchor" aria-label="anchor" href="#arg-spe"></a></dt>
-<dd><p>SpatialExperiment; An object of class <code>SpatialExperiment</code> containing spatial point data. Must contain <code>colnames</code> for correct assignment.</p></dd>
+<dd><p>SpatialExperiment; An object of class <code>SpatialExperiment</code> containing spatial point data.</p></dd>
 
 
 <dt id="arg-allstructs">allStructs<a class="anchor" aria-label="anchor" href="#arg-allstructs"></a></dt>
@@ -79,7 +79,7 @@
 </dl></div>
     <div class="section level2">
     <h2 id="value">Value<a class="anchor" aria-label="anchor" href="#value"></a></h2>
-    <p>A named list with structure assignments for each spatial point in <code>spe</code>. Points that do not overlap with any structure are assigned <code>NA</code>. Names correspond to <code>colnames</code> of the <code>SpatialExperiment</code> input object.</p>
+    <p>A vector with structure assignments for each spatial point in <code>spe</code>. Points that do not overlap with any structure are assigned <code>NA</code>.</p>
     </div>
 
     <div class="section level2">
@@ -161,15 +161,9 @@
 <span class="r-in"><span>    marks <span class="op">=</span> <span class="st">"cellType"</span>, imageCol <span class="op">=</span> <span class="st">"imageName"</span>,</span></span>
 <span class="r-in"><span>    markSelect <span class="op">=</span> <span class="st">"A"</span>, bndw <span class="op">=</span> <span class="fl">3.5</span>, thres <span class="op">=</span> <span class="fl">0.045</span></span></span>
 <span class="r-in"><span><span class="op">)</span></span></span>
-<span class="r-in"><span><span class="co"># The function `assingCellsToStructures` needs colnames so we create them here</span></span></span>
-<span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/base/colnames.html" class="external-link">colnames</a></span><span class="op">(</span><span class="va">sostaSPE</span><span class="op">)</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste0</a></span><span class="op">(</span><span class="st">"cell_"</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">1</span><span class="op">:</span><span class="fu"><a href="https://rdrr.io/r/base/dim.html" class="external-link">dim</a></span><span class="op">(</span><span class="va">sostaSPE</span><span class="op">)</span><span class="op">[</span><span class="fl">2</span><span class="op">]</span><span class="op">)</span><span class="op">)</span></span></span>
-<span class="r-in"><span></span></span>
-<span class="r-in"><span><span class="va">res</span> <span class="op">&lt;-</span> <span class="fu">assingCellsToStructures</span><span class="op">(</span></span></span>
+<span class="r-in"><span><span class="fu">colData</span><span class="op">(</span><span class="va">sostaSPE</span><span class="op">)</span><span class="op">$</span><span class="va">structAssign</span> <span class="op">&lt;-</span> <span class="fu">assingCellsToStructures</span><span class="op">(</span></span></span>
 <span class="r-in"><span>    spe <span class="op">=</span> <span class="va">sostaSPE</span>, allStructs <span class="op">=</span> <span class="va">allStructs</span>, imageCol <span class="op">=</span> <span class="st">"imageName"</span></span></span>
 <span class="r-in"><span><span class="op">)</span></span></span>
-<span class="r-in"><span><span class="co"># Assign the structure assignment in the order of the columns in the `SpatialExperiment` object</span></span></span>
-<span class="r-in"><span><span class="fu">colData</span><span class="op">(</span><span class="va">sostaSPE</span><span class="op">)</span><span class="op">$</span><span class="va">structAssign</span> <span class="op">&lt;-</span> <span class="va">res</span><span class="op">[</span><span class="fu"><a href="https://rdrr.io/r/base/colnames.html" class="external-link">colnames</a></span><span class="op">(</span><span class="va">sostaSPE</span><span class="op">)</span><span class="op">]</span></span></span>
-<span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="kw">if</span> <span class="op">(</span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">require</a></span><span class="op">(</span><span class="st"><a href="https://ggplot2.tidyverse.org" class="external-link">"ggplot2"</a></span><span class="op">)</span><span class="op">)</span> <span class="op">{</span></span></span>
 <span class="r-in"><span>    <span class="fu"><a href="https://rdrr.io/r/base/cbind.html" class="external-link">cbind</a></span><span class="op">(</span></span></span>
 <span class="r-in"><span>        <span class="fu">colData</span><span class="op">(</span><span class="va">sostaSPE</span><span class="op">[</span>, <span class="va">sostaSPE</span><span class="op">[[</span><span class="st">"imageName"</span><span class="op">]</span><span class="op">]</span> <span class="op">==</span> <span class="st">"image1"</span><span class="op">]</span><span class="op">)</span>,</span></span>
