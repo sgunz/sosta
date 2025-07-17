@@ -39,6 +39,7 @@
 #' @importFrom sf st_union
 #' @importFrom smoothr smooth
 #' @importFrom SpatialExperiment spatialCoords
+#' @importFrom SpatialExperiment spatialCoordsNames
 #' @importFrom spatstat.explore bw.diggle
 #' @importFrom spatstat.explore density.ppp
 #' @importFrom spatstat.geom as.rectangle
