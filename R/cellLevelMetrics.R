@@ -97,7 +97,7 @@ assingCellsToStructures <- function(spe, allStructs, imageCol, uniqueId = "struc
     rd <- do.call("rbind", res)
     out <- rd$structAssign
     names(out) <- rd$colnamesSPE
-    return(out)
+    return(out[colnames(spe)])
 }
 
 #' Calculate the proportion of each cell type within spatial structures
@@ -284,8 +284,9 @@ minBoundaryDistances <- function(spe, imageCol,
     names(out) <- rd$colnamesSPE
 
     # Negate distances for assigned structures
-    out[!is.na(spe[[structColumn]])] <- -out[!is.na(spe[[structColumn]])]
+    out[colnames(spe)][!is.na(spe[[structColumn]])] <-
+        -out[colnames(spe)][!is.na(spe[[structColumn]])]
 
-    return(out)
+    return(out[colnames(spe)])
 }
 
