@@ -10,6 +10,7 @@
 #' @param bndw bandwidth of kernel density estimator
 #' @param thres intensity threshold for the reconstruction
 #' @param dim numeric; x dimension of the final reconstruction.
+#' @param complement logical; reconstruct everything but the mark of interest, default = `FALSE`
 #'
 #' @return sf object of class `POLYGON`
 #' @importFrom sf st_cast st_make_valid st_sf st_is_empty st_geometry
@@ -22,7 +23,7 @@
 #' struct <- reconstructShapeDensity(ppp, markSelect = "A", thres = thres, dim = 500)
 #' plot(struct)
 reconstructShapeDensity <- function(ppp, markSelect = NULL,
-    bndw = NULL, thres = NULL, dim) {
+    bndw = NULL, thres = NULL, complement = FALSE, dim) {
     # estimate density
     res <- .intensityImage(ppp, markSelect, bndw, dim)
 
@@ -37,7 +38,11 @@ reconstructShapeDensity <- function(ppp, markSelect = NULL,
     }
 
     # construct spatstat window from matrix with true false entries
-    mat <- ifelse(t(as.matrix(res$denIm)) > thres, TRUE, FALSE)
+    if (complement == FALSE) {
+        mat <- ifelse(t(as.matrix(res$denIm)) > thres, TRUE, FALSE)
+    } else if (complement == TRUE) {
+        mat <- ifelse(t(as.matrix(res$denIm)) < thres, TRUE, FALSE)
+    }
 
     # Check if we get empty or full polygon
     if (all(mat == 1)) {
@@ -177,6 +182,7 @@ shapeIntensityImage <- function(
 #' @param thres numeric; intensity threshold for the reconstruction;
 #' if NULL the threshold is set as the mean between the mode of the pixel intensity
 #' distributions
+#' @param complement logical; reconstruct everything but the mark of interest, default = `FALSE`
 #' @return sf object of class `POLYGON`
 #' @importFrom spatstat.geom subset.ppp
 #' @export
@@ -189,12 +195,13 @@ shapeIntensityImage <- function(
 #' )
 #' plot(struct)
 reconstructShapeDensityImage <- function(spe, marks,
-    imageCol, imageId, markSelect, dim = 500, bndw = NULL, thres = NULL) {
+    imageCol, imageId, markSelect, dim = 500, bndw = NULL,
+    thres = NULL, complement = FALSE) {
     # Convert the spe object to a point pattern object
     ppp <- SPE2ppp(spe, marks, imageCol, imageId)
 
     # Get the structure
-    struct <- reconstructShapeDensity(ppp, markSelect, bndw, thres, dim)
+    struct <- reconstructShapeDensity(ppp, markSelect, bndw, thres, complement, dim)
     return(struct)
 }
 
@@ -217,6 +224,7 @@ reconstructShapeDensityImage <- function(spe, marks,
 #' @param thres numeric; intensity threshold for the reconstruction;
 #' if NULL the threshold is set as the mean between the mode of the pixel intensity
 #' distributions estimated for each image individual
+#' @param complement logical; reconstruct everything but the mark of interest, default = `FALSE`
 #' @param nCores numeric; number of cores for parallel processing using
 #' `mclapply`. Default = 1
 #'
@@ -237,7 +245,7 @@ reconstructShapeDensityImage <- function(spe, marks,
 #' allStructs
 reconstructShapeDensitySPE <- function(spe, marks,
     imageCol, markSelect,
-    dim = 500, bndw = NULL, thres = NULL,
+    dim = 500, bndw = NULL, thres = NULL, complement = FALSE,
     nCores = 1) {
     # Create a data frame with all necessary variables for computational (memory) reasons
     df <- .SPE2df(spe, imageCol, marks)
@@ -253,7 +261,7 @@ reconstructShapeDensitySPE <- function(spe, marks,
     res_all <- mclapply(ls, function(x) {
         ppp <- .df2ppp(x, xName, yName, marks)
         # Reconstruct the structure
-        res <- reconstructShapeDensity(ppp, markSelect, bndw, thres, dim)
+        res <- reconstructShapeDensity(ppp, markSelect, bndw, thres, complement, dim)
         if (is.null(res)) {
             message(paste0(
                 "No structure found in: ",

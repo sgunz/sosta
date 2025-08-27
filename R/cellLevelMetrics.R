@@ -347,15 +347,17 @@ minCellTypeStructDist <- function(spe, allStructs, structID = "structID",
             return(NULL)
         }
 
+        # Convert spatial coordinates to sf points object
         spatialCoordsSf <- st_as_sf(dfSel[, c(1, 2)],
-                                    coords = c(colnames(dfSel)[1], colnames(dfSel)[2])
-        )
+                                    coords = c(
+                                        colnames(dfSel)[1],
+                                        colnames(dfSel)[2]
+                                    ))
 
         dist <- st_distance(spatialCoordsSf, st_boundary(subStruct))
         colnames(dist) <- st_drop_geometry(subStruct)[, structID]
 
-        # dfSel[, 4] is assumed to be cellTypeColumn
-        resDist <- aggregate(dist ~ dfSel[, 4], FUN = min)
+        resDist <- aggregate(dist ~ dfSel[, cellTypeColumn], FUN = min)
         colnames(resDist)[1] <- cellTypeColumn
 
         return(resDist)
