@@ -52,7 +52,8 @@
 <span>  <span class="va">markSelect</span>,</span>
 <span>  dim <span class="op">=</span> <span class="fl">500</span>,</span>
 <span>  bndw <span class="op">=</span> <span class="cn">NULL</span>,</span>
-<span>  thres <span class="op">=</span> <span class="cn">NULL</span></span>
+<span>  thres <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  complement <span class="op">=</span> <span class="cn">FALSE</span></span>
 <span><span class="op">)</span></span></code></pre></div>
     </div>
 
@@ -100,6 +101,10 @@ the <code>bw.diggle</code> function.</p></dd>
 <dd><p>numeric; intensity threshold for the reconstruction;
 if NULL the threshold is set as the mean between the mode of the pixel intensity
 distributions</p></dd>
+
+
+<dt id="arg-complement">complement<a class="anchor" aria-label="anchor" href="#arg-complement"></a></dt>
+<dd><p>logical; reconstruct everything but the mark of interest, default = <code>FALSE</code></p></dd>
 
 </dl></div>
     <div class="section level2">
