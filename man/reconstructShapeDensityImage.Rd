@@ -12,7 +12,8 @@ reconstructShapeDensityImage(
   markSelect,
   dim = 500,
   bndw = NULL,
-  thres = NULL
+  thres = NULL,
+  complement = FALSE
 )
 }
 \arguments{
@@ -41,6 +42,8 @@ the \code{bw.diggle} function.}
 \item{thres}{numeric; intensity threshold for the reconstruction;
 if NULL the threshold is set as the mean between the mode of the pixel intensity
 distributions}
+
+\item{complement}{logical; reconstruct everything but the mark of interest, default = \code{FALSE}}
 }
 \value{
 sf object of class \code{POLYGON}

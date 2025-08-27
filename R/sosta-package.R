@@ -52,6 +52,7 @@
 #' @importFrom spatstat.geom subset.ppp
 #' @importFrom spatstat.geom superimpose
 #' @importFrom spatstat.random rpoispp
+#' @importFrom stats aggregate
 #' @importFrom stats density
 #' @importFrom stats runif
 #' @importFrom SummarizedExperiment assays

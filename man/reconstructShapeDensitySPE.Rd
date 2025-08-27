@@ -12,6 +12,7 @@ reconstructShapeDensitySPE(
   dim = 500,
   bndw = NULL,
   thres = NULL,
+  complement = FALSE,
   nCores = 1
 )
 }
@@ -38,6 +39,8 @@ the \code{bw.diggle} function for each image individually.}
 \item{thres}{numeric; intensity threshold for the reconstruction;
 if NULL the threshold is set as the mean between the mode of the pixel intensity
 distributions estimated for each image individual}
+
+\item{complement}{logical; reconstruct everything but the mark of interest, default = \code{FALSE}}
 
 \item{nCores}{numeric; number of cores for parallel processing using
 \code{mclapply}. Default = 1}
