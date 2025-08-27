@@ -332,13 +332,13 @@ findIntensityThreshold <- function(
         stopifnot("'bndw' must be a single numeric value" = is.numeric(bndw) && length(bndw) == 1)
     }
 
-    # Extract the islet cells
+    # Extract the cells of interest
     if (!is.null(markSelect)) {
         stopifnot(
             "All values in 'markSelect' must exist in 'marks' of 'ppp'; i.e.,
-            there have to be at least two cells of each cell type in
+            there have to be at least two cells of one cell type in
             each image of your dataset" =
-                all(markSelect %in% marks(ppp))
+                any(markSelect %in% marks(ppp))
         )
         ppSel <- subset.ppp(ppp, marks %in% markSelect)
     } else {
