@@ -290,3 +290,82 @@ minBoundaryDistances <- function(spe, imageCol,
     return(out[colnames(spe)])
 }
 
+#' Compute minimum distances from each cell types to structure boundaries per structure
+#'
+#' @param spe SpatialExperiment object
+#' @param allStructs sf object; contains spatial structures with corresponding image names
+#' @param structID character; name of the column in `allStructs` containing structure IDs (default: "structID")
+#' @param cellTypeColumn character; name of the `colData` column specifying cell types
+#' @param imageCol character; name of the `colData` column specifying the image name
+#' @param nCores integer; Number of cores for parallel processing (default = 1)
+#'
+#' @return A data frame where rows are structure IDs and cols are cell types with minimum distances
+#'
+#' @importFrom sf st_as_sf st_boundary st_distance st_drop_geometry
+#' @importFrom parallel mclapply
+#' @importFrom dplyr full_join
+#'
+#' @export
+#'
+#' @examples
+#' data("sostaSPE")
+#' allStructs <- reconstructShapeDensitySPE(sostaSPE,
+#'     marks = "cellType", imageCol = "imageName",
+#'     markSelect = "A", bndw = 3.5, thres = 0.045
+#' )
+#' minCellTypeStructDist(sostaSPE, allStructs, cellTypeColumn = "cellType", imageCol = "imageName")
+minCellTypeStructDist <- function(spe, allStructs, structID = "structID",
+                                        cellTypeColumn, imageCol, nCores = 1) {
+    # Input checks
+    stopifnot(
+        "'spe' must be a SpatialExperiment object" = inherits(spe, "SpatialExperiment"),
+        "'allStructs' must be an sf object" = inherits(allStructs, "sf"),
+        "'structID' must be a single character string and in allStructs" =
+            is.character(structID) && length(structID) == 1 && structID %in% colnames(allStructs),
+        "'cellTypeColumn' must exist in colData(spe)" =
+            cellTypeColumn %in% colnames(colData(spe)),
+        "'imageCol' must exist in colData(spe) and allStructs" =
+            imageCol %in% colnames(colData(spe)) && imageCol %in% colnames(allStructs)
+    )
+
+    # Extract unique image names and remove NAs
+    images <- unique(spe[[imageCol]])
+    images <- images[!is.na(images)]
+
+    # Convert spe to data frame with spatial coords + metadata
+    df <- .SPE2df(spe, imageCol, marks = cellTypeColumn)
+
+    # Split by image
+    ls <- split(df, as.factor(df[[imageCol]]))
+
+    # Parallel processing
+    res <- mclapply(ls, function(dfSel) {
+        selImage <- unique(dfSel[[imageCol]])
+        subStruct <- allStructs[allStructs[[imageCol]] %in% selImage, ]
+
+        if (nrow(subStruct) == 0) {
+            return(NULL)
+        }
+
+        # Convert spatial coordinates to sf points object
+        spatialCoordsSf <- st_as_sf(dfSel[, c(1, 2)],
+                                    coords = c(
+                                        colnames(dfSel)[1],
+                                        colnames(dfSel)[2]
+                                    ))
+
+        dist <- st_distance(spatialCoordsSf, st_boundary(subStruct))
+        colnames(dist) <- st_drop_geometry(subStruct)[, structID]
+
+        resDist <- aggregate(dist ~ dfSel[, cellTypeColumn], FUN = min)
+        colnames(resDist)[1] <- cellTypeColumn
+
+        return(resDist)
+    }, mc.cores = nCores)
+
+    # Combine to one df, NA when cell type no present in one sample
+    resDf <- Reduce(function(x, y) full_join(x, y, by = cellTypeColumn), res)
+    # Change orientation of resDf
+    rownames(resDf) <- resDf[[cellTypeColumn]]
+    return(as.data.frame(t(resDf[,-1])))
+}

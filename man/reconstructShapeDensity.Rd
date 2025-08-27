@@ -4,7 +4,14 @@
 \alias{reconstructShapeDensity}
 \title{Reconstruct polygon from point pattern density}
 \usage{
-reconstructShapeDensity(ppp, markSelect = NULL, bndw = NULL, thres = NULL, dim)
+reconstructShapeDensity(
+  ppp,
+  markSelect = NULL,
+  bndw = NULL,
+  thres = NULL,
+  complement = FALSE,
+  dim
+)
 }
 \arguments{
 \item{ppp}{point pattern object of class \code{ppp}}
@@ -15,6 +22,8 @@ reconstruction}
 \item{bndw}{bandwidth of kernel density estimator}
 
 \item{thres}{intensity threshold for the reconstruction}
+
+\item{complement}{logical; reconstruct everything but the mark of interest, default = \code{FALSE}}
 
 \item{dim}{numeric; x dimension of the final reconstruction.}
 }

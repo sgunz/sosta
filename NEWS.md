@@ -1,3 +1,13 @@
+# sosta 1.1.1
+
+* added new function `minCellTypeStructDist`
+* added possibility to reconstruct everything around an object (`complement = TRUE`)
+* relaxed assertion of having at least two cells of each cell type in reconstruction to having at least one of one cell type
+
+# sosta 1.0.1
+
+* fix problems in when assigning cell to structures
+
 # sosta 0.99.9
 
 * Clarification of the transformation used in the diabetic islets vignette.
