@@ -1,9 +1,12 @@
 
 <!-- README.md is generated from README.Rmd. Please edit that file -->
 
+<img src="inst/extdata/sosta.png" width="200" align="right"/>
+
 # Spatial Omic Structure Analysis
 
 <!-- badges: start -->
+
 <!-- badges: end -->
 
 `sosta` (spatial omics structure analysis) is a framework to
@@ -18,20 +21,35 @@ additional custom metrics that fit the needs of users.
 
 ## Installation
 
-You can install the development version of `sosta` from
-[GitHub](https://github.com/) with:
+Installation of the latest [Bioconductor
+version](https://bioconductor.org/packages/sosta) can be done as
+follows:
+
+``` r
+if (!requireNamespace("BiocManager")) {
+    install.packages("BiocManager")
+}
+BiocManager::install("sosta")
+```
+
+You can install the development version of `sosta` from GitHub with:
 
 ``` r
 # install.packages("devtools")
 devtools::install_github("sgunz/sosta")
 ```
 
-## Disclaimer
-
-This package is still under active development.
-
 ## Feedback
 
 We are happy to get your feedback. Please send it via email to [Samuel
 Gunz](https://www.mls.uzh.ch/en/research/robinson/groupmembers/samuel-gunz.html)
 or open a issue on [GitHub](https://github.com/sgunz/sosta/issues).
+
+## Citation
+
+If you use `sosta` please consider citing:
+
+> Gunz, Samuel, Helena Lucia Crowell, and Mark D. Robinson. “Analysis of
+> Anatomical Multi-Cellular Structures from Spatial Omics Data Using
+> Sosta”, p. 2025.10.13.682065. bioRxiv, 14 Oct. 2025,
+> <https://doi.org/10.1101/2025.10.13.682065>.

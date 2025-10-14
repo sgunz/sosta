@@ -1,3 +1,11 @@
+# sosta 1.1.3
+
+* added sticker and preprint reference
+
+# sosta 1.1.2
+
+* switch from `GenomeInfoDb` to new `Seqinfo` package 
+
 # sosta 1.1.1
 
 * added new function `minCellTypeStructDist`
