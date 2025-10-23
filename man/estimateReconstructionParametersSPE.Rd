@@ -7,7 +7,7 @@
 estimateReconstructionParametersSPE(
   spe,
   marks,
-  imageCol,
+  imageCol = NULL,
   markSelect = NULL,
   nImages = NULL,
   fun = "bw.diggle",
@@ -42,7 +42,7 @@ Default = 500}
 Default = 1}
 
 \item{plotHist}{logical; if histogram of estimated densities and thresholds
-should be plotted. Default = TRUE}
+should be plotted (only if \code{imageCol} is not NULL). Default = TRUE}
 }
 \value{
 tibble; tibble with estimated intensities and thresholds

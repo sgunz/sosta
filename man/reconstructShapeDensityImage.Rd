@@ -7,8 +7,8 @@
 reconstructShapeDensityImage(
   spe,
   marks,
-  imageCol,
-  imageId,
+  imageCol = NULL,
+  imageId = NULL,
   markSelect,
   dim = 500,
   bndw = NULL,

@@ -110,8 +110,8 @@ reconstructShapeDensity <- function(ppp, markSelect = NULL,
 #' )
 shapeIntensityImage <- function(
         spe, marks,
-        imageCol,
-        imageId,
+        imageCol = NULL,
+        imageId = NULL,
         markSelect,
         bndw = NULL,
         dim = 500) {
@@ -194,9 +194,16 @@ shapeIntensityImage <- function(
 #'     markSelect = "A", dim = 500
 #' )
 #' plot(struct)
-reconstructShapeDensityImage <- function(spe, marks,
-    imageCol, imageId, markSelect, dim = 500, bndw = NULL,
-    thres = NULL, complement = FALSE) {
+reconstructShapeDensityImage <- function(spe,
+                                         marks,
+                                         imageCol = NULL,
+                                         imageId = NULL,
+                                         markSelect,
+                                         dim = 500,
+                                         bndw = NULL,
+                                         thres = NULL,
+                                         complement = FALSE
+) {
     # Convert the spe object to a point pattern object
     ppp <- SPE2ppp(spe, marks, imageCol, imageId)
 
@@ -243,10 +250,16 @@ reconstructShapeDensityImage <- function(spe, marks,
 #'     markSelect = "A", bndw = 3.5, thres = 0.005
 #' )
 #' allStructs
-reconstructShapeDensitySPE <- function(spe, marks,
-    imageCol, markSelect,
-    dim = 500, bndw = NULL, thres = NULL, complement = FALSE,
-    nCores = 1) {
+reconstructShapeDensitySPE <- function(spe,
+                                       marks,
+                                       imageCol = NULL,
+                                       markSelect,
+                                       dim = 500,
+                                       bndw = NULL,
+                                       thres = NULL,
+                                       complement = FALSE,
+                                       nCores = 1
+) {
     # Create a data frame with all necessary variables for computational (memory) reasons
     df <- .SPE2df(spe, imageCol, marks)
     xName <- spatialCoordsNames(spe)[1]
@@ -255,7 +268,8 @@ reconstructShapeDensitySPE <- function(spe, marks,
     rm(spe)
     gc()
     # Split up by image name
-    ls <- split(df, as.factor(df[, imageCol]))
+    if (is.null(imageCol)) {ls <- list(df)}
+    else { ls <- split(df, as.factor(df[, imageCol])) }
 
     # Calculate polygon for each id using multiple cores
     res_all <- mclapply(ls, function(x) {
@@ -265,13 +279,15 @@ reconstructShapeDensitySPE <- function(spe, marks,
         if (is.null(res)) {
             message(paste0(
                 "No structure found in: ",
-                unique(x[, 3])
+                ifelse(!is.null(imageCol), unique(x[, imageCol]), "")
             ), " (see Warning below)")
             return()
         }
         # Assign imageId
-        res[["structID"]] <- paste0(unique(x[, 3]), "_", c(1:dim(res)[1]))
-        res[[imageCol]] <- unique(x[, 3])
+        if (!is.null(imageCol)){
+            res[["structID"]] <- paste0(unique(x[, imageCol]), "_", c(1:dim(res)[1]))
+            res[[imageCol]] <- unique(x[, imageCol])
+        }
         return(res)
     }, mc.cores = nCores)
     # Return data frame with all structures
@@ -297,7 +313,7 @@ reconstructShapeDensitySPE <- function(spe, marks,
 #' @param nCores numeric; number of cores for parallel processing using `mclapply`.
 #' Default = 1
 #' @param plotHist logical; if histogram of estimated densities and thresholds
-#' should be plotted. Default = TRUE
+#' should be plotted (only if `imageCol` is not NULL). Default = TRUE
 #'
 #' @importFrom spatstat.geom subset.ppp
 #' @importFrom SummarizedExperiment colData assays
@@ -319,7 +335,7 @@ reconstructShapeDensitySPE <- function(spe, marks,
 estimateReconstructionParametersSPE <- function(
         spe,
         marks,
-        imageCol,
+        imageCol = NULL,
         markSelect = NULL,
         nImages = NULL,
         fun = "bw.diggle",
@@ -330,56 +346,66 @@ estimateReconstructionParametersSPE <- function(
     if (!is.null(nImages)) {
         stopifnot("'nImages' must be numeric" = is.numeric(nImages))
         stopifnot(
-            "'nImages' must be smaller or equal to the number of images in the `SpatialExperiment`" =
+            "'nImages' must be smaller or equal to the number
+            of images in the `SpatialExperiment`" =
                 (nImages < length(unique(colData(spe)[[imageCol]])))
         )
     }
 
-    # get the id's of all images
-    allImages <- colData(spe)[[imageCol]] |> unique()
-    # default is to take all values
-    if (is.null(nImages)) nImages <- length(allImages)
-    # alternatively we sample some images
-    sampleImages <- sample(allImages, nImages)
-    # Select sampled images
-    spe <- spe[, colData(spe)[[imageCol]] %in% sampleImages]
-
-    # Create a data frame with all necessary variables for computational (memory) reasons
-    df <- .SPE2df(spe, imageCol, marks)
-    xName <- spatialCoordsNames(spe)[1]
-    yName <- spatialCoordsNames(spe)[2]
-    # Remove SPE to free up memory
-    rm(spe)
-    gc()
-    # Split up by image name
-    ls <- split(df, as.factor(df[, imageCol]))
-
-    # we calculate the bandwidths and thresholds
-    res <- mclapply(ls, function(x) {
-        ppp <- .df2ppp(x, xName, yName, marks)
+    if(is.null(imageCol)){
+        ppp <- SPE2ppp(spe, marks = marks)
         res_x <- .intensityImage(ppp, markSelect, dim = dim)
         thres <- .intensityThreshold(res_x$denIm)
-        return(list(img = x, bndw = as.numeric(res_x$bndw), thres = as.numeric(thres)))
-    }, mc.cores = nCores)
-
-    # collect in one data frame
-    res <- as.data.frame(do.call(rbind, res))
-    res$bndw <- as.numeric(res$bndw)
-    res$thres <- as.numeric(res$thres)
-
-    if (plotHist == TRUE & nImages > 1) {
-        p1 <- res |>
-            ggplot(aes(x = .data$bndw)) +
-            geom_histogram(bins = round(nImages / 2)) +
-            theme_light()
-
-        p2 <- res |>
-            ggplot(aes(x = .data$thres)) +
-            geom_histogram(bins = round(nImages / 2)) +
-            theme_light()
-
-        plot(wrap_plots(p1, p2, ncol = 2))
+        res <- list(bndw = as.numeric(res_x$bndw),
+                    thres = as.numeric(thres))
     }
 
+    else{
+        # get the id's of all images
+        allImages <- colData(spe)[[imageCol]] |> unique()
+        # default is to take all values
+        if (is.null(nImages)) nImages <- length(allImages)
+        # alternatively we sample some images
+        sampleImages <- sample(allImages, nImages)
+        # Select sampled images
+        spe <- spe[, colData(spe)[[imageCol]] %in% sampleImages]
+
+        # Create a data frame with all necessary variables for computational (memory) reasons
+        df <- .SPE2df(spe, imageCol, marks)
+        xName <- spatialCoordsNames(spe)[1]
+        yName <- spatialCoordsNames(spe)[2]
+        # Remove SPE to free up memory
+        rm(spe)
+        gc()
+        # Split up by image name
+        ls <- split(df, as.factor(df[, imageCol]))
+
+        # we calculate the bandwidths and thresholds
+        res <- mclapply(ls, function(x) {
+            ppp <- .df2ppp(x, xName, yName, marks)
+            res_x <- .intensityImage(ppp, markSelect, dim = dim)
+            thres <- .intensityThreshold(res_x$denIm)
+            return(list(img = x, bndw = as.numeric(res_x$bndw), thres = as.numeric(thres)))
+        }, mc.cores = nCores)
+
+        # collect in one data frame
+        res <- as.data.frame(do.call(rbind, res))
+        res$bndw <- as.numeric(res$bndw)
+        res$thres <- as.numeric(res$thres)
+
+        if (plotHist == TRUE & nImages > 1) {
+            p1 <- res |>
+                ggplot(aes(x = .data$bndw)) +
+                geom_histogram(bins = round(nImages / 2)) +
+                theme_light()
+
+            p2 <- res |>
+                ggplot(aes(x = .data$thres)) +
+                geom_histogram(bins = round(nImages / 2)) +
+                theme_light()
+
+            plot(wrap_plots(p1, p2, ncol = 2))
+        }
+    }
     return(res)
 }

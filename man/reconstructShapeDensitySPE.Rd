@@ -7,7 +7,7 @@
 reconstructShapeDensitySPE(
   spe,
   marks,
-  imageCol,
+  imageCol = NULL,
   markSelect,
   dim = 500,
   bndw = NULL,

@@ -7,8 +7,8 @@
 shapeIntensityImage(
   spe,
   marks,
-  imageCol,
-  imageId,
+  imageCol = NULL,
+  imageId = NULL,
   markSelect,
   bndw = NULL,
   dim = 500

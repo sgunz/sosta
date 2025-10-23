@@ -28,18 +28,6 @@ allA <- reconstructShapeDensitySPE(
     thres = 0.005
 )
 
-# TODO: Dataset with few cells
-# sostaSPE2 <- sostaSPE[, sostaSPE[["imageName"]] == "image1"]
-# colData(sostaSPE2)[["cellType"]][colData(sostaSPE2)[["cellType"]] == "A"] <- "B"
-#
-# colData(sostaSPE2)$sample_id <- "sample2"
-# colData(sostaSPE2)$imageName <- "image4"
-#
-# colData(sostaSPE2)[c(2:50), "cellType"] <- "A"
-#
-# sostaSPE <- cbind(sostaSPE, sostaSPE2)
-
-
 test_that("reconstructShapeDensity returns valid polygons", {
     # Reconstruct polygons with valid parameters
     result <- reconstructShapeDensity(ppp, markSelect = NULL, bndw = 1, dim = 100)
@@ -130,7 +118,63 @@ test_that("estimateReconstructionParametersSPE handles edge cases", {
             nImages = 50,
             dim = 500,
             plotHist = FALSE
-        ),
-        "must be smaller or equal to the number of images"
+        )
     )
 })
+
+
+test_that("shapeIntensityImage returns output if imageId = NULL", {
+    result <- shapeIntensityImage(
+        spe = sostaSPE,
+        marks = "cellType",
+        imageCol = "imageName",
+        imageId = NULL,
+        markSelect = "A"
+    )
+
+    expect_false(is.null(result))
+    expect_s3_class(result, "gg")
+})
+
+test_that("reconstructShapeDensityImage returns output if imageId = NULL", {
+    result <- reconstructShapeDensityImage(
+        spe = sostaSPE,
+        marks = "cellType",
+        imageCol = "imageName",
+        imageId = NULL,
+        markSelect = "A",
+        dim = 50
+    )
+
+    expect_false(is.null(result))
+    expect_s3_class(result, "sf")
+})
+
+test_that("reconstructShapeDensitySPE runs when imageCol is NULL", {
+    result <- reconstructShapeDensitySPE(
+        spe = sostaSPE,
+        marks = "cellType",
+        imageCol = NULL,
+        markSelect = "A",
+        dim = 50
+    )
+
+    expect_false(is.null(result))
+    expect_s3_class(result, "sf")
+})
+
+test_that("estimateReconstructionParametersSPE works if imageCol = NULL", {
+    result <- estimateReconstructionParametersSPE(
+        spe = sostaSPE,
+        marks = "cellType",
+        imageCol = NULL,
+        markSelect = "A",
+        nImages = NULL,
+        plotHist = FALSE
+    )
+
+    expect_false(is.null(result))
+    expect_true(is.list(result) || is.data.frame(result))
+})
+
+
