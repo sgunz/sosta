@@ -1,3 +1,8 @@
+# sosta 1.1.4
+
+* the argument `imageCol` is now not longer needed in reconstruction functions
+* `assingCellsToStructures` for large datasets and 1 sample
+
 # sosta 1.1.3
 
 * added sticker and preprint reference
