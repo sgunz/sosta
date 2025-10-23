@@ -8,6 +8,9 @@ ppp <- spatstat.geom::ppp(
 # load sostaSPE object
 data("sostaSPE")
 
+# subset
+speSel <- sostaSPE[, sostaSPE[["imageName"]] == "image1"]
+
 # Test the reconstruction function
 polyA <- reconstructShapeDensityImage(
     sostaSPE,
@@ -27,6 +30,13 @@ allA <- reconstructShapeDensitySPE(
     bndw = 3.5,
     thres = 0.005
 )
+
+test_that(".SPE2df is invariant to imageCol assignment", {
+    df1 <- .SPE2df(speSel, marks = "cellType")
+    df2 <- .SPE2df(speSel, imageCol = "imageName", marks = "cellType")
+
+    expect_true(any(df1[,c(1,2,3)] == df2[,c(1,2,3)]))
+})
 
 test_that("reconstructShapeDensity returns valid polygons", {
     # Reconstruct polygons with valid parameters

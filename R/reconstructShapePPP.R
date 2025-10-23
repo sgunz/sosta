@@ -25,7 +25,9 @@
 reconstructShapeDensity <- function(ppp, markSelect = NULL,
     bndw = NULL, thres = NULL, complement = FALSE, dim) {
     # estimate density
-    res <- .intensityImage(ppp, markSelect, bndw, dim)
+    res <- .intensityImage(ppp = ppp,
+                           markSelect = markSelect,
+                           bndw = bndw, dim = dim)
 
     if (!is.null(thres)) {
         stopifnot("'thres' must be a single numeric value" = is.numeric(thres) &&
@@ -285,9 +287,12 @@ reconstructShapeDensitySPE <- function(spe,
         }
         # Assign imageId
         if (!is.null(imageCol)){
-            res[["structID"]] <- paste0(unique(x[, imageCol]), "_", c(1:dim(res)[1]))
+            res[["structID"]] <- paste0(unique(x[, imageCol]),
+                                        "_", c(1:dim(res)[1]))
             res[[imageCol]] <- unique(x[, imageCol])
         }
+        else {res[["structID"]] <- paste0("struct",
+                                         "_", c(1:dim(res)[1]))}
         return(res)
     }, mc.cores = nCores)
     # Return data frame with all structures

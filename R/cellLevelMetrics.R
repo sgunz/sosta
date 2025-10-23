@@ -42,7 +42,11 @@
 #'         geom_point(size = 0.25) +
 #'         coord_equal()
 #' }
-assingCellsToStructures <- function(spe, allStructs, imageCol, uniqueId = "structID", nCores = 1) {
+assingCellsToStructures <- function(spe,
+                                    allStructs,
+                                    imageCol = NULL,
+                                    uniqueId = "structID",
+                                    nCores = 1) {
     # Input checking
     stopifnot(
         "'spe' must be an object of class 'SpatialExperiment'" =
@@ -53,46 +57,62 @@ assingCellsToStructures <- function(spe, allStructs, imageCol, uniqueId = "struc
             inherits(allStructs, "sf")
     )
     stopifnot(
-        "'imageCol' must exist in colnames(allStructs)" =
-            length(imageCol) == 1 &&
-                imageCol %in% colnames(allStructs)
-    )
-    stopifnot(
         "'uniqueId' must exist in colnames(allStructs)" =
             length(uniqueId) == 1 &&
                 uniqueId %in% colnames(allStructs)
     )
-    # Convert spe to df
-    df <- .SPE2df(spe, imageCol, colNames = TRUE)
-    # Split data frame
-    ls <- split(df, as.factor(df[, imageCol]))
 
-    # Using lapply to process each image separately
-    res <- mclapply(ls, function(dfSel) {
-        # Select image name
-        sel <- unique(dfSel[, imageCol])
+    if (is.null(imageCol)) {
+        df <- .SPE2df(spe, colNames = TRUE)
+        blocks <- split(df, ceiling(seq_len(nrow(df)) / 10000))
 
-        # Subset structure object for the current image
-        structsSel <- allStructs[allStructs[[imageCol]] == sel, ]
-
-        # Convert spatial coordinates to sf points object
-        spatialCoordsSf <- st_as_sf(dfSel[, c(1, 2)],
-            coords = c(
-                colnames(dfSel)[1],
-                colnames(dfSel)[2]
-            )
+        res <- mclapply(blocks, function(dfSel) {
+            spatialCoordsSf <- st_as_sf(dfSel[, c(1, 2)], coords = c(colnames(dfSel)[1],
+                                                                     colnames(dfSel)[2]))
+            n <- st_intersects(spatialCoordsSf, allStructs, sparse = FALSE)
+            n_list <- apply(n, 1, function(x) which(x == TRUE)[1])
+            res <- ifelse(n_list == 0, NA, allStructs[[uniqueId]][n_list])
+            return(data.frame(colnamesSPE = dfSel$colnamesSPE, structAssign = res))
+        }, mc.cores = nCores)
+    }
+    else{
+        stopifnot(
+            "'imageCol' must exist in colnames(allStructs)" =
+                length(imageCol) == 1 &&
+                imageCol %in% colnames(allStructs)
         )
+        # Convert spe to df
+        df <- .SPE2df(spe, imageCol, colNames = TRUE)
+        # Split data frame
+        ls <- split(df, as.factor(df[, imageCol]))
 
-        # Compute intersections between spatial points and structures
-        n <- st_intersects(spatialCoordsSf, structsSel, sparse = FALSE)
+        # Using lapply to process each image separately
+        res <- mclapply(ls, function(dfSel) {
+            # Select image name
+            sel <- unique(dfSel[, imageCol])
 
-        # Extract the first structure ID for each point (if multiple, take the first)
-        n_list <- apply(n, 1, function(x) which(x == TRUE)[1])
+            # Subset structure object for the current image
+            structsSel <- allStructs[allStructs[[imageCol]] == sel, ]
 
-        # Assign structure ID or NA if no intersection
-        res <- ifelse(n_list == 0, NA, structsSel[[uniqueId]][n_list])
-        return(data.frame(colnamesSPE = dfSel$colnamesSPE, structAssign = res))
-    }, mc.cores = nCores)
+            # Convert spatial coordinates to sf points object
+            spatialCoordsSf <- st_as_sf(dfSel[, c(1, 2)],
+                                        coords = c(
+                                            colnames(dfSel)[1],
+                                            colnames(dfSel)[2]
+                                        )
+            )
+
+            # Compute intersections between spatial points and structures
+            n <- st_intersects(spatialCoordsSf, structsSel, sparse = FALSE)
+
+            # Extract the first structure ID for each point (if multiple, take the first)
+            n_list <- apply(n, 1, function(x) which(x == TRUE)[1])
+
+            # Assign structure ID or NA if no intersection
+            res <- ifelse(n_list == 0, NA, structsSel[[uniqueId]][n_list])
+            return(data.frame(colnamesSPE = dfSel$colnamesSPE, structAssign = res))
+        }, mc.cores = nCores)
+    }
     # bind results, extract assignemnt, name list
     rd <- do.call("rbind", res)
     out <- rd$structAssign

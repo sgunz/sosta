@@ -218,11 +218,12 @@ SPE2ppp <- function(
 #' data(sostaSPE)
 #' .SPE2df(sostaSPE, marks = "cellType", imageCol = "imageName") |> head()
 .SPE2df <- function(spe, imageCol = NULL, marks = NULL, colNames = FALSE) {
-    df <- cbind(
-        spatialCoords(spe),
-        colData(spe)[, c(imageCol, marks)]
-    ) |> as.data.frame()
-    colnames(df) <- c(colnames(spatialCoords(spe)), imageCol, marks)
+    # construct data frame
+    df <- data.frame(spatialCoords(spe)[, 1],
+                     spatialCoords(spe)[, 2],
+                     colData(spe)[, c(marks, imageCol)])
+    # set df colnames
+    colnames(df) <- c(colnames(spatialCoords(spe)), marks, imageCol)
     # set colnames if true
     if (colNames == TRUE) {
         stopifnot("SpatialExperiment object must contain colnames" = !is.null(colnames(spe)))

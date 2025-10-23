@@ -7,7 +7,7 @@
 assingCellsToStructures(
   spe,
   allStructs,
-  imageCol,
+  imageCol = NULL,
   uniqueId = "structID",
   nCores = 1
 )
