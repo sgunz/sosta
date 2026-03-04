@@ -1,3 +1,8 @@
+# sosta 1.3.2
+
+* changed `minBoundaryDistances` to allow for distance to FOV border characterization
+* added "Structure boundary vs FOV boundary" section to vignette.
+
 # sosta 1.3.1
 
 * added argument to simulate noise in `createPointPatternTissue`
