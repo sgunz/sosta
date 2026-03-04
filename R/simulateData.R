@@ -42,6 +42,7 @@ simulateTissueBlobs <- function(size, seedNumber, clumpSize) {
 #' @param tissueImage Matrix; A binary matrix representing the simulated tissue.
 #' @param intA Numeric; Intensity of type "A" points (points per unit area) on tissue regions.
 #' @param intB Numeric; Intensity of type "B" points (points per unit area) on non-tissue regions.
+#' @param noiseA Numeric; Intensity of type "A" points (points per unit area) on non-tissue regions.
 #' @param intCInA Numeric; Intensity of type "C" points placed in extended regions around tissue.
 #' @param intCInB Numeric; Intensity of type "C" points placed within tissue.
 #'
@@ -52,10 +53,15 @@ simulateTissueBlobs <- function(size, seedNumber, clumpSize) {
 #'
 #' @examples
 #' tissueImage <- simulateTissueBlobs(128, 100, 7)
-#' createPointPatternTissue(tissueImage, 0.1, 0.1, 0.005, 0.005)
+#' createPointPatternTissue(tissueImage, 0.01, 0.01, 0.005, 0.005, 0.005)
 #'
 #' @export
-createPointPatternTissue <- function(tissueImage, intA, intB, intCInA, intCInB) {
+createPointPatternTissue <- function(tissueImage,
+                                     intA,
+                                     intB,
+                                     noiseA = 0.005,
+                                     intCInA,
+                                     intCInB) {
     # Create a binary image of non-tissue
     nonTissue <- (tissueImage == 0)
 
@@ -66,7 +72,7 @@ createPointPatternTissue <- function(tissueImage, intA, intB, intCInA, intCInB) 
 
     # Create point pattern with noise
     pointsA <- rpoispp(intA, win = tissueWindow)
-    aNoise <- rpoispp(intA / 20, win = extendedWindow)
+    aNoise <- rpoispp(noiseA, win = extendedWindow)
     pointsB <- rpoispp(intB, win = nonTissueWindow)
     pointsC <- rpoispp(intCInA, win = extendedWindow)
     pointsC2 <- rpoispp(intCInB, win = tissueWindow)

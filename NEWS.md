@@ -1,3 +1,12 @@
+# sosta 1.3.1
+
+* added argument to simulate noise in `createPointPatternTissue`
+* improved intensity value threshold estimation for reconstruction in `.intensityThreshold`
+
+# sosta 1.2.0
+
+* Bioc 3.22 release version
+
 # sosta 1.1.4
 
 * the argument `imageCol` is now not longer needed in reconstruction functions

@@ -4,7 +4,14 @@
 \alias{createPointPatternTissue}
 \title{Create a Point Pattern on a Simulated Tissue Image}
 \usage{
-createPointPatternTissue(tissueImage, intA, intB, intCInA, intCInB)
+createPointPatternTissue(
+  tissueImage,
+  intA,
+  intB,
+  noiseA = 0.005,
+  intCInA,
+  intCInB
+)
 }
 \arguments{
 \item{tissueImage}{Matrix; A binary matrix representing the simulated tissue.}
@@ -12,6 +19,8 @@ createPointPatternTissue(tissueImage, intA, intB, intCInA, intCInB)
 \item{intA}{Numeric; Intensity of type "A" points (points per unit area) on tissue regions.}
 
 \item{intB}{Numeric; Intensity of type "B" points (points per unit area) on non-tissue regions.}
+
+\item{noiseA}{Numeric; Intensity of type "A" points (points per unit area) on non-tissue regions.}
 
 \item{intCInA}{Numeric; Intensity of type "C" points placed in extended regions around tissue.}
 
@@ -25,6 +34,6 @@ This function generates a spatial point pattern with different types of points (
 }
 \examples{
 tissueImage <- simulateTissueBlobs(128, 100, 7)
-createPointPatternTissue(tissueImage, 0.1, 0.1, 0.005, 0.005)
+createPointPatternTissue(tissueImage, 0.01, 0.01, 0.005, 0.005, 0.005)
 
 }
