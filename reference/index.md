@@ -72,7 +72,7 @@
   : Intensity plot
 
 - [`shapeMetrics()`](https://sgunz.github.io/sosta/reference/shapeMetrics.md)
-  : Calculate a set of shape metrics of a polygon
+  : Calculate a set of shape metrics of a single polygon
 
 - [`simulateTissueBlobs()`](https://sgunz.github.io/sosta/reference/simulateTissueBlobs.md)
   : Simulate Tissue Blobs
@@ -91,7 +91,7 @@
   : Calculate curl of a polygon
 
 - [`stFeatureAxes()`](https://sgunz.github.io/sosta/reference/stFeatureAxes.md)
-  : Calculate the length of feature axes of an sf polygon
+  : Calculate the length of feature axes of a single sf polygon
 
 - [`totalShapeMetrics()`](https://sgunz.github.io/sosta/reference/totalShapeMetrics.md)
   : Calculate a set of shape metrics of a set of polygons

@@ -22,7 +22,7 @@ matrix; matrix of shape metrics
 
 Calculate a set of shape metrics of a set of polygons. The function
 calculates all metrics that are implemented in the function
-[`shapeMetrics()`](https://sgunz.github.io/sosta/reference/shapeMetrics.md)
+[`shapeMetrics`](https://sgunz.github.io/sosta/reference/shapeMetrics.md)
 
 ## Examples
 

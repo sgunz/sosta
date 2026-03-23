@@ -7,7 +7,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">sosta</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.3.0</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.3.3</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -44,7 +44,14 @@
 
     <div class="section level2">
     <h2 id="ref-usage">Usage<a class="anchor" aria-label="anchor" href="#ref-usage"></a></h2>
-    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">createPointPatternTissue</span><span class="op">(</span><span class="va">tissueImage</span>, <span class="va">intA</span>, <span class="va">intB</span>, <span class="va">intCInA</span>, <span class="va">intCInB</span><span class="op">)</span></span></code></pre></div>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">createPointPatternTissue</span><span class="op">(</span></span>
+<span>  <span class="va">tissueImage</span>,</span>
+<span>  <span class="va">intA</span>,</span>
+<span>  <span class="va">intB</span>,</span>
+<span>  noiseA <span class="op">=</span> <span class="fl">0.005</span>,</span>
+<span>  <span class="va">intCInA</span>,</span>
+<span>  <span class="va">intCInB</span></span>
+<span><span class="op">)</span></span></code></pre></div>
     </div>
 
     <div class="section level2">
@@ -63,6 +70,10 @@
 <dd><p>Numeric; Intensity of type "B" points (points per unit area) on non-tissue regions.</p></dd>
 
 
+<dt id="arg-noisea">noiseA<a class="anchor" aria-label="anchor" href="#arg-noisea"></a></dt>
+<dd><p>Numeric; Intensity of type "A" points (points per unit area) on non-tissue regions.</p></dd>
+
+
 <dt id="arg-intcina">intCInA<a class="anchor" aria-label="anchor" href="#arg-intcina"></a></dt>
 <dd><p>Numeric; Intensity of type "C" points placed in extended regions around tissue.</p></dd>
 
@@ -79,8 +90,8 @@
     <div class="section level2">
     <h2 id="ref-examples">Examples<a class="anchor" aria-label="anchor" href="#ref-examples"></a></h2>
     <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="va">tissueImage</span> <span class="op">&lt;-</span> <span class="fu"><a href="simulateTissueBlobs.html">simulateTissueBlobs</a></span><span class="op">(</span><span class="fl">128</span>, <span class="fl">100</span>, <span class="fl">7</span><span class="op">)</span></span></span>
-<span class="r-in"><span><span class="fu">createPointPatternTissue</span><span class="op">(</span><span class="va">tissueImage</span>, <span class="fl">0.1</span>, <span class="fl">0.1</span>, <span class="fl">0.005</span>, <span class="fl">0.005</span><span class="op">)</span></span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Marked planar point pattern: 1822 points</span>
+<span class="r-in"><span><span class="fu">createPointPatternTissue</span><span class="op">(</span><span class="va">tissueImage</span>, <span class="fl">0.01</span>, <span class="fl">0.01</span>, <span class="fl">0.005</span>, <span class="fl">0.005</span>, <span class="fl">0.005</span><span class="op">)</span></span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Marked planar point pattern: 382 points</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> marks are of storage type  ‘character’</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> window: rectangle = [0, 128] x [0, 128] units</span>
 <span class="r-in"><span></span></span>

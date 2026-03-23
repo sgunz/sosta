@@ -1,6 +1,6 @@
-# Calculate a set of shape metrics of a polygon
+# Calculate a set of shape metrics of a single polygon
 
-Calculate a set of shape metrics of a polygon
+Calculate a set of shape metrics of a single polygon
 
 ## Usage
 
@@ -17,6 +17,11 @@ shapeMetrics(sfPoly)
 ## Value
 
 list; list of shape metrics
+
+## Details
+
+For multiple polyogns or a MULTIPOLYGON object use the function
+[`totalShapeMetrics`](https://sgunz.github.io/sosta/reference/totalShapeMetrics.md)
 
 ## Examples
 

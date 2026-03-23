@@ -6,7 +6,7 @@ spatial structures
 ## Usage
 
 ``` r
-.intensityThreshold(densityImage, steps = 250)
+.intensityThreshold(densityImage, steps = 250, minRange = 0.15)
 ```
 
 ## Arguments
@@ -20,6 +20,11 @@ spatial structures
   numeric; value used to filter the density estimates, where only
   densities greater than the maximum value divided by `threshold` are
   considered. Default is 250.
+
+- minRange:
+
+  numeric; value used to filter minimal threshold in percent of total
+  range. Should range between (0,1\].
 
 ## Value
 

@@ -6,7 +6,14 @@ points (`A`, `B`, `C`) distributed over the simulated tissue structure.
 ## Usage
 
 ``` r
-createPointPatternTissue(tissueImage, intA, intB, intCInA, intCInB)
+createPointPatternTissue(
+  tissueImage,
+  intA,
+  intB,
+  noiseA = 0.005,
+  intCInA,
+  intCInB
+)
 ```
 
 ## Arguments
@@ -23,6 +30,11 @@ createPointPatternTissue(tissueImage, intA, intB, intCInA, intCInB)
 - intB:
 
   Numeric; Intensity of type "B" points (points per unit area) on
+  non-tissue regions.
+
+- noiseA:
+
+  Numeric; Intensity of type "A" points (points per unit area) on
   non-tissue regions.
 
 - intCInA:
@@ -42,8 +54,8 @@ A `ppp` object representing the spatial point pattern.
 
 ``` r
 tissueImage <- simulateTissueBlobs(128, 100, 7)
-createPointPatternTissue(tissueImage, 0.1, 0.1, 0.005, 0.005)
-#> Marked planar point pattern: 1822 points
+createPointPatternTissue(tissueImage, 0.01, 0.01, 0.005, 0.005, 0.005)
+#> Marked planar point pattern: 382 points
 #> marks are of storage type  ‘character’
 #> window: rectangle = [0, 128] x [0, 128] units
 ```

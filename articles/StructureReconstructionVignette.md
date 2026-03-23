@@ -438,11 +438,95 @@ cbind(colData(sostaSPE), spatialCoords(sostaSPE)) |>
 
 ![](StructureReconstructionVignette_files/figure-html/unnamed-chunk-20-1.png)
 
+### Structure boundary vs FOV boundary
+
+When defining border cells, the field of view (FOV) can cut through the
+reconstructed polygon(s). This can cause cells that are actually inside
+the structure to be classified as border cells. To avoid this, we
+compute the distance to the FOV boundary and remove cells that are close
+to it.
+
+The FOV in this example ranges from coordinates 0 to 128 in the $x$ and
+$y$ direction. We therefore define polygons that span the entire FOV.
+Since there are multiple samples, we replicate these polygons and label
+them accordingly.
+
+``` r
+# create the fov bounding box using st_bbox
+fov_bbox <- st_bbox(c(xmin = 0, ymin = 0, xmax = 128, ymax = 128))
+
+# convert to polygon
+fov <- st_as_sfc(fov_bbox)
+
+# one fov per image
+fovBorder <- rep(fov, length(unique(sostaSPE$imageName))) |>
+  st_as_sf()
+
+# name the polygons accordingly
+fovBorder$imageName <- unique(sostaSPE$imageName)
+
+fovBorder
+#> Simple feature collection with 3 features and 1 field
+#> Geometry type: POLYGON
+#> Dimension:     XY
+#> Bounding box:  xmin: 0 ymin: 0 xmax: 128 ymax: 128
+#> CRS:           NA
+#>                                x imageName
+#> 1 POLYGON ((0 0, 128 0, 128 1...    image1
+#> 2 POLYGON ((0 0, 128 0, 128 1...    image2
+#> 3 POLYGON ((0 0, 128 0, 128 1...    image3
+```
+
+Now we use the function `minBoundaryDistances` to get the distances to
+the FOV border.
+
+``` r
+sostaSPE$fovBorderDist <- minBoundaryDistances(
+  spe = sostaSPE,
+  imageCol = "imageName",
+  structColumn = "imageName", # here any variable that is true for all cells
+  allStructs = fovBorder
+) |> 
+  abs()
+```
+
+``` r
+cbind(colData(sostaSPE), spatialCoords(sostaSPE)) |>
+    as.data.frame() |>
+    ggplot(aes(x = x, y = y, color = fovBorderDist)) +
+    geom_point(size = 0.25) +
+    facet_wrap(~imageName) +
+    coord_equal() +
+    facet_wrap(~imageName)
+```
+
+![](StructureReconstructionVignette_files/figure-html/unnamed-chunk-23-1.png)
+
+We can use the distance to the FOV border to correct the border
+assignments.
+
+``` r
+sostaSPE$borderCorrected <- 
+  ifelse(sostaSPE$fovBorderDist > 5, sostaSPE$borderSf, NA)
+```
+
+``` r
+cbind(colData(sostaSPE), spatialCoords(sostaSPE)) |>
+    as.data.frame() |>
+    ggplot(aes(x = x, y = y, color = borderCorrected)) +
+    geom_point(size = 0.25) +
+    facet_wrap(~imageName) +
+    coord_equal() +
+    facet_wrap(~imageName)
+```
+
+![](StructureReconstructionVignette_files/figure-html/unnamed-chunk-25-1.png)
+
 ## Session Info
 
 ``` r
 sessionInfo()
-#> R version 4.5.2 (2025-10-31)
+#> R version 4.5.3 (2026-03-11)
 #> Platform: x86_64-pc-linux-gnu
 #> Running under: Ubuntu 24.04.3 LTS
 #> 
@@ -470,38 +554,38 @@ sessionInfo()
 #>  [7] IRanges_2.44.0              S4Vectors_0.48.0           
 #>  [9] BiocGenerics_0.56.0         generics_0.1.4             
 #> [11] MatrixGenerics_1.22.0       matrixStats_1.5.0          
-#> [13] sf_1.0-24                   ggplot2_4.0.2              
+#> [13] sf_1.1-0                    ggplot2_4.0.2              
 #> [15] tidyr_1.3.2                 dplyr_1.2.0                
-#> [17] sosta_1.3.0                 BiocStyle_2.38.0           
+#> [17] sosta_1.3.3                 BiocStyle_2.38.0           
 #> 
 #> loaded via a namespace (and not attached):
-#>  [1] DBI_1.2.3              bitops_1.0-9           deldir_2.0-4          
+#>  [1] DBI_1.3.0              bitops_1.0-9           deldir_2.0-4          
 #>  [4] rlang_1.1.7            magrittr_2.0.4         e1071_1.7-17          
-#>  [7] compiler_4.5.2         spatstat.geom_3.7-0    png_0.1-8             
-#> [10] systemfonts_1.3.1      fftwtools_0.9-11       vctrs_0.7.1           
-#> [13] pkgconfig_2.0.3        fastmap_1.2.0          magick_2.9.0          
+#>  [7] compiler_4.5.3         spatstat.geom_3.7-2    png_0.1-9             
+#> [10] systemfonts_1.3.2      fftwtools_0.9-11       vctrs_0.7.2           
+#> [13] pkgconfig_2.0.3        fastmap_1.2.0          magick_2.9.1          
 #> [16] XVector_0.50.0         labeling_0.4.3         rmarkdown_2.30        
-#> [19] ragg_1.5.0             purrr_1.2.1            xfun_0.56             
+#> [19] ragg_1.5.1             purrr_1.2.1            xfun_0.57             
 #> [22] cachem_1.1.0           jsonlite_2.0.0         goftest_1.2-3         
-#> [25] DelayedArray_0.36.0    spatstat.utils_3.2-1   jpeg_0.1-11           
-#> [28] tiff_0.1-12            terra_1.8-93           parallel_4.5.2        
+#> [25] DelayedArray_0.36.0    spatstat.utils_3.2-2   jpeg_0.1-11           
+#> [28] tiff_0.1-12            terra_1.9-1            parallel_4.5.3        
 #> [31] R6_2.6.1               bslib_0.10.0           RColorBrewer_1.1-3    
-#> [34] spatstat.data_3.1-9    spatstat.univar_3.1-6  jquerylib_0.1.4       
+#> [34] spatstat.data_3.1-9    spatstat.univar_3.1-7  jquerylib_0.1.4       
 #> [37] Rcpp_1.1.1             bookdown_0.46          knitr_1.51            
 #> [40] tensor_1.5.1           Matrix_1.7-4           tidyselect_1.2.1      
 #> [43] abind_1.4-8            yaml_2.3.12            EBImage_4.52.0        
-#> [46] codetools_0.2-20       spatstat.random_3.4-4  spatstat.explore_3.7-0
-#> [49] lattice_0.22-7         tibble_3.3.1           withr_3.0.2           
+#> [46] codetools_0.2-20       spatstat.random_3.4-5  spatstat.explore_3.8-0
+#> [49] lattice_0.22-9         tibble_3.3.1           withr_3.0.2           
 #> [52] S7_0.2.1               evaluate_1.0.5         desc_1.4.3            
-#> [55] units_1.0-0            proxy_0.4-29           polyclip_1.10-7       
+#> [55] units_1.0-1            proxy_0.4-29           polyclip_1.10-7       
 #> [58] pillar_1.11.1          BiocManager_1.30.27    KernSmooth_2.23-26    
-#> [61] smoothr_1.2.1          RCurl_1.98-1.17        scales_1.4.0          
-#> [64] class_7.3-23           glue_1.8.0             tools_4.5.2           
-#> [67] locfit_1.5-9.12        fs_1.6.6               grid_4.5.2            
+#> [61] smoothr_1.2.1          RCurl_1.98-1.18        scales_1.4.0          
+#> [64] class_7.3-23           glue_1.8.0             tools_4.5.3           
+#> [67] locfit_1.5-9.12        fs_2.0.0               grid_4.5.3            
 #> [70] nlme_3.1-168           patchwork_1.3.2        cli_3.6.5             
-#> [73] spatstat.sparse_3.1-0  textshaping_1.0.4      viridisLite_0.4.3     
+#> [73] spatstat.sparse_3.1-0  textshaping_1.0.5      viridisLite_0.4.3     
 #> [76] S4Arrays_1.10.1        gtable_0.3.6           sass_0.4.10           
-#> [79] digest_0.6.39          classInt_0.4-11        SparseArray_1.10.8    
+#> [79] digest_0.6.39          classInt_0.4-11        SparseArray_1.10.9    
 #> [82] rjson_0.2.23           htmlwidgets_1.6.4      farver_2.1.2          
 #> [85] htmltools_0.5.9        pkgdown_2.2.0          lifecycle_1.0.5
 ```

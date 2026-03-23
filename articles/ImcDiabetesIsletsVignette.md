@@ -110,6 +110,12 @@ n <- estimateReconstructionParametersSPE(
     nImages = 25,
     plotHist = TRUE
 )
+#> Minimal threshold: 15% of intensity range used.
+#>                        Consider manually adjusting the intensity threshold
+#> Minimal threshold: 15% of intensity range used.
+#>                        Consider manually adjusting the intensity threshold
+#> Minimal threshold: 15% of intensity range used.
+#>                        Consider manually adjusting the intensity threshold
 ```
 
 ![](ImcDiabetesIsletsVignette_files/figure-html/unnamed-chunk-3-1.png)
@@ -131,7 +137,7 @@ as our parameters.
 
 ``` r
 (thresSPE <- mean(n$thres))
-#> [1] 0.003578595
+#> [1] 0.003694566
 (bndwSPE <- mean(n$bndw))
 #> [1] 13.4399
 ```
@@ -211,17 +217,17 @@ allIslets |>
 #>    patient_id     n
 #>         <int> <int>
 #>  1       6089    30
-#>  2       6126    50
-#>  3       6134    49
-#>  4       6180    60
+#>  2       6126    49
+#>  3       6134    48
+#>  4       6180    58
 #>  5       6228    47
-#>  6       6264    76
+#>  6       6264    77
 #>  7       6278    58
-#>  8       6362    47
-#>  9       6380    32
+#>  8       6362    44
+#>  9       6380    31
 #> 10       6386    58
 #> 11       6414    45
-#> 12       6418    43
+#> 12       6418    41
 ```
 
 ## Calculation of metrics
@@ -393,31 +399,31 @@ summary(mod)
 #> Formula: (Area)^(1/6) ~ patient_stage + (1 | patient_id) + (1 | image_name)
 #>    Data: allIslets
 #> 
-#> REML criterion at convergence: 1777.4
+#> REML criterion at convergence: 1726.9
 #> 
 #> Scaled residuals: 
 #>      Min       1Q   Median       3Q      Max 
-#> -2.77422 -0.62552  0.01764  0.61841  2.95125 
+#> -2.90562 -0.61536  0.03178  0.62925  2.66719 
 #> 
 #> Random effects:
 #>  Groups     Name        Variance Std.Dev.
-#>  image_name (Intercept) 0.07784  0.2790  
-#>  patient_id (Intercept) 0.01899  0.1378  
-#>  Residual               1.06960  1.0342  
-#> Number of obs: 595, groups:  image_name, 205; patient_id, 12
+#>  image_name (Intercept) 0.11059  0.3326  
+#>  patient_id (Intercept) 0.03887  0.1971  
+#>  Residual               0.99338  0.9967  
+#> Number of obs: 586, groups:  image_name, 205; patient_id, 12
 #> 
 #> Fixed effects:
-#>                             Estimate Std. Error        df t value Pr(>|t|)    
-#> (Intercept)                 4.272865   0.106814  8.004669  40.003 1.66e-10 ***
-#> patient_stageOnset          0.003055   0.154626  8.772459   0.020   0.9847    
-#> patient_stageLong-duration -0.454462   0.151913  7.996487  -2.992   0.0173 *  
+#>                            Estimate Std. Error       df t value Pr(>|t|)    
+#> (Intercept)                 4.30415    0.12932  8.33738  33.282 3.67e-10 ***
+#> patient_stageOnset          0.02182    0.18566  8.85529   0.118   0.9091    
+#> patient_stageLong-duration -0.46690    0.18363  8.39242  -2.543   0.0333 *  
 #> ---
 #> Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
 #> 
 #> Correlation of Fixed Effects:
 #>             (Intr) ptnt_O
-#> ptnt_stgOns -0.691       
-#> ptnt_stgLn- -0.703  0.486
+#> ptnt_stgOns -0.697       
+#> ptnt_stgLn- -0.704  0.491
 ```
 
 As we can see in the fixed effects section in `summary(mod)` there is a
@@ -434,7 +440,7 @@ calculation was performed on a random subset of the patient slides only.
 
 ``` r
 sessionInfo()
-#> R version 4.5.2 (2025-10-31)
+#> R version 4.5.3 (2026-03-11)
 #> Platform: x86_64-pc-linux-gnu
 #> Running under: Ubuntu 24.04.3 LTS
 #> 
@@ -457,13 +463,13 @@ sessionInfo()
 #> 
 #> other attached packages:
 #>  [1] ggfortify_0.4.19            tidyr_1.3.2                
-#>  [3] sosta_1.3.0                 SpatialExperiment_1.20.0   
+#>  [3] sosta_1.3.3                 SpatialExperiment_1.20.0   
 #>  [5] SingleCellExperiment_1.32.0 SummarizedExperiment_1.40.0
 #>  [7] Biobase_2.70.0              GenomicRanges_1.62.1       
 #>  [9] Seqinfo_1.0.0               IRanges_2.44.0             
 #> [11] S4Vectors_0.48.0            MatrixGenerics_1.22.0      
-#> [13] matrixStats_1.5.0           sf_1.0-24                  
-#> [15] lmerTest_3.2-0              lme4_1.1-38                
+#> [13] matrixStats_1.5.0           sf_1.1-0                   
+#> [15] lmerTest_3.2-1              lme4_2.0-1                 
 #> [17] Matrix_1.7-4                ggplot2_4.0.2              
 #> [19] ExperimentHub_3.0.0         AnnotationHub_4.0.0        
 #> [21] BiocFileCache_3.0.0         dbplyr_2.5.2               
@@ -472,39 +478,39 @@ sessionInfo()
 #> 
 #> loaded via a namespace (and not attached):
 #>   [1] RColorBrewer_1.1-3     jsonlite_2.0.0         magrittr_2.0.4        
-#>   [4] spatstat.utils_3.2-1   magick_2.9.0           farver_2.1.2          
-#>   [7] nloptr_2.2.1           rmarkdown_2.30         fs_1.6.6              
-#>  [10] ragg_1.5.0             vctrs_0.7.1            memoise_2.0.1         
-#>  [13] minqa_1.2.8            spatstat.explore_3.7-0 RCurl_1.98-1.17       
-#>  [16] terra_1.8-93           htmltools_0.5.9        S4Arrays_1.10.1       
-#>  [19] curl_7.0.0             SparseArray_1.10.8     sass_0.4.10           
+#>   [4] spatstat.utils_3.2-2   magick_2.9.1           farver_2.1.2          
+#>   [7] nloptr_2.2.1           rmarkdown_2.30         fs_2.0.0              
+#>  [10] ragg_1.5.1             vctrs_0.7.2            memoise_2.0.1         
+#>  [13] minqa_1.2.8            spatstat.explore_3.8-0 RCurl_1.98-1.18       
+#>  [16] terra_1.9-1            htmltools_0.5.9        S4Arrays_1.10.1       
+#>  [19] curl_7.0.0             SparseArray_1.10.9     sass_0.4.10           
 #>  [22] KernSmooth_2.23-26     bslib_0.10.0           htmlwidgets_1.6.4     
 #>  [25] desc_1.4.3             httr2_1.2.2            cachem_1.1.0          
 #>  [28] lifecycle_1.0.5        pkgconfig_2.0.3        R6_2.6.1              
 #>  [31] fastmap_1.2.0          rbibutils_2.4.1        digest_0.6.39         
 #>  [34] numDeriv_2016.8-1.1    patchwork_1.3.2        AnnotationDbi_1.72.0  
-#>  [37] tensor_1.5.1           textshaping_1.0.4      RSQLite_2.4.6         
+#>  [37] tensor_1.5.1           textshaping_1.0.5      RSQLite_2.4.6         
 #>  [40] labeling_0.4.3         filelock_1.0.3         spatstat.sparse_3.1-0 
 #>  [43] httr_1.4.8             polyclip_1.10-7        abind_1.4-8           
-#>  [46] compiler_4.5.2         proxy_0.4-29           bit64_4.6.0-1         
+#>  [46] compiler_4.5.3         proxy_0.4-29           bit64_4.6.0-1         
 #>  [49] withr_3.0.2            S7_0.2.1               tiff_0.1-12           
-#>  [52] DBI_1.2.3              MASS_7.3-65            rappdirs_0.3.4        
+#>  [52] DBI_1.3.0              MASS_7.3-65            rappdirs_0.3.4        
 #>  [55] DelayedArray_0.36.0    rjson_0.2.23           classInt_0.4-11       
-#>  [58] tools_4.5.2            units_1.0-0            goftest_1.2-3         
+#>  [58] tools_4.5.3            units_1.0-1            goftest_1.2-3         
 #>  [61] glue_1.8.0             nlme_3.1-168           EBImage_4.52.0        
-#>  [64] grid_4.5.2             gtable_0.3.6           spatstat.data_3.1-9   
-#>  [67] class_7.3-23           XVector_0.50.0         spatstat.geom_3.7-0   
+#>  [64] grid_4.5.3             gtable_0.3.6           spatstat.data_3.1-9   
+#>  [67] class_7.3-23           XVector_0.50.0         spatstat.geom_3.7-2   
 #>  [70] stringr_1.6.0          BiocVersion_3.22.0     pillar_1.11.1         
-#>  [73] splines_4.5.2          lattice_0.22-7         bit_4.6.0             
+#>  [73] splines_4.5.3          lattice_0.22-9         bit_4.6.0             
 #>  [76] deldir_2.0-4           tidyselect_1.2.1       locfit_1.5-9.12       
 #>  [79] Biostrings_2.78.0      knitr_1.51             reformulas_0.4.4      
-#>  [82] gridExtra_2.3          bookdown_0.46          xfun_0.56             
+#>  [82] gridExtra_2.3          bookdown_0.46          xfun_0.57             
 #>  [85] smoothr_1.2.1          stringi_1.8.7          fftwtools_0.9-11      
 #>  [88] yaml_2.3.12            boot_1.3-32            evaluate_1.0.5        
 #>  [91] codetools_0.2-20       tibble_3.3.1           BiocManager_1.30.27   
-#>  [94] cli_3.6.5              systemfonts_1.3.1      Rdpack_2.6.6          
-#>  [97] jquerylib_0.1.4        Rcpp_1.1.1             spatstat.random_3.4-4 
-#> [100] png_0.1-8              spatstat.univar_3.1-6  parallel_4.5.2        
+#>  [94] cli_3.6.5              systemfonts_1.3.2      Rdpack_2.6.6          
+#>  [97] jquerylib_0.1.4        Rcpp_1.1.1             spatstat.random_3.4-5 
+#> [100] png_0.1-9              spatstat.univar_3.1-7  parallel_4.5.3        
 #> [103] pkgdown_2.2.0          blob_1.3.0             jpeg_0.1-11           
 #> [106] bitops_1.0-9           viridisLite_0.4.3      scales_1.4.0          
 #> [109] e1071_1.7-17           purrr_1.2.1            crayon_1.5.3          

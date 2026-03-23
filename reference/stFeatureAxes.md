@@ -1,6 +1,6 @@
-# Calculate the length of feature axes of an sf polygon
+# Calculate the length of feature axes of a single sf polygon
 
-Calculate the length of feature axes of an sf polygon
+Calculate the length of feature axes of a single sf polygon
 
 ## Usage
 

@@ -6,7 +6,13 @@ corresponding image structures
 ## Usage
 
 ``` r
-minBoundaryDistances(spe, imageCol, structColumn, allStructs, nCores = 1)
+minBoundaryDistances(
+  spe,
+  imageCol,
+  structColumn = NULL,
+  allStructs,
+  nCores = 1
+)
 ```
 
 ## Arguments
@@ -22,7 +28,7 @@ minBoundaryDistances(spe, imageCol, structColumn, allStructs, nCores = 1)
 - structColumn:
 
   character; name of the `colData` column specifying structure
-  assignments
+  assignments. Default = NULL.
 
 - allStructs:
 
