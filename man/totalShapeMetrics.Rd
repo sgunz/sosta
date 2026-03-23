@@ -18,7 +18,7 @@ Calculate a set of shape metrics of a set of polygons
 \details{
 Calculate a set of shape metrics of a set of polygons.
 The function calculates all metrics that are implemented in the function
-\code{shapeMetrics()}
+\code{\link{shapeMetrics}}
 }
 \examples{
 data(sostaSPE)

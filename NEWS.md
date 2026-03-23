@@ -1,3 +1,8 @@
+# sosta 1.3.3
+
+* clarified difference between `shapeMetric` and `totalShapeMetrics`.
+* updated FOV border characterization in vignette.
+
 # sosta 1.3.2
 
 * changed `minBoundaryDistances` to allow for distance to FOV border characterization

@@ -1,4 +1,8 @@
-#' Calculate a set of shape metrics of a polygon
+#' Calculate a set of shape metrics of a single polygon
+#'
+#' @details
+#' For multiple polyogns or a MULTIPOLYGON object use the function \code{\link{totalShapeMetrics}}
+#'
 #'
 #' @param sfPoly POLYGON of class sfc
 #'
@@ -67,7 +71,7 @@ shapeMetrics <- function(sfPoly) {
 #' @details
 #' Calculate a set of shape metrics of a set of polygons.
 #' The function calculates all metrics that are implemented in the function
-#' `shapeMetrics()`
+#' \code{\link{shapeMetrics}}
 #'
 #' @param sfInput `MULTIPOLYGON` of class sf
 #'

@@ -2,7 +2,7 @@
 % Please edit documentation in R/calculateMetrics.R
 \name{shapeMetrics}
 \alias{shapeMetrics}
-\title{Calculate a set of shape metrics of a polygon}
+\title{Calculate a set of shape metrics of a single polygon}
 \usage{
 shapeMetrics(sfPoly)
 }
@@ -13,7 +13,10 @@ shapeMetrics(sfPoly)
 list; list of shape metrics
 }
 \description{
-Calculate a set of shape metrics of a polygon
+Calculate a set of shape metrics of a single polygon
+}
+\details{
+For multiple polyogns or a MULTIPOLYGON object use the function \code{\link{totalShapeMetrics}}
 }
 \examples{
 matrix_R <- matrix(c(

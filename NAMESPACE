@@ -3,6 +3,7 @@
 export(.SPE2df)
 export(.df2ppp)
 export(.intensityImage)
+export(.intensityThreshold)
 export(SPE2ppp)
 export(assingCellsToStructures)
 export(binaryImageToSF)

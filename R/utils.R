@@ -374,6 +374,7 @@ findIntensityThreshold <- function(
 #'
 #' @return numeric; estimated threshold
 #' @importFrom stats density
+#' @export
 .intensityThreshold <- function(densityImage, steps = 250, minRange = 0.15) {
     # take all densities greater than certain threshold due to numerical properties
     # of the density estimation
