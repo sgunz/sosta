@@ -25,6 +25,8 @@ shapeMetrics <- function(sfPoly) {
     # Input checks
     stopifnot("'sfPoly' must be a valid sfc object" = inherits(sfPoly, "sfc"))
     stopifnot("'sfPoly' must be of type POLYGON" = st_geometry_type(sfPoly) == "POLYGON")
+    stopifnot("'sfPoly' must be a single POLYGON,
+    use `sosta::totalShapeMetrics` for a set of POLYGONs" = length(st_geometry_type(sfPoly)) == 1)
     # Area
     shapeArea <- st_area(sfPoly)
     # Perimeter

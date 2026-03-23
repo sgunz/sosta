@@ -342,9 +342,9 @@ cbind(colData(sostaSPE), spatialCoords(sostaSPE)) |>
 
 ## Structure boundary vs FOV boundary
 
-A common issue when defining border cells is that the field of view (FOV) 'cuts' the reconstructed polygon. This means that defined border cells may actually be inside the structure. To account for this we define the distance to the FOV border and then exclude the cells that are close to the FOV border.
+When defining border cells, the field of view (FOV) can cut through the reconstructed polygon(s). This can cause cells that are actually inside the structure to be classified as border cells. To avoid this, we compute the distance to the FOV boundary and remove cells that are close to it.
 
-The fov in this example ranges from coordinates 0 to 128 in the $x$ and $y$ direction. We therefore create polygons that cover the entire field of view. As we have multiple samples we replicate the polygons and name them coorespondingly.
+The FOV in this example ranges from coordinates 0 to 128 in the $x$ and $y$ direction. We therefore define polygons that span the entire FOV. Since there are multiple samples, we replicate these polygons and label them accordingly.
 
 ```{r}
 # create the fov bounding box using st_bbox
@@ -385,7 +385,7 @@ cbind(colData(sostaSPE), spatialCoords(sostaSPE)) |>
     facet_wrap(~imageName)
 ```
 
-We can use the distance to the FOV border to correct the border assingment.
+We can use the distance to the FOV border to correct the border assignments.
 
 ```{r}
 sostaSPE$borderCorrected <- 
