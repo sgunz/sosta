@@ -369,10 +369,13 @@ findIntensityThreshold <- function(
 #' @param steps numeric; value used to filter the density estimates, where only
 #' densities greater than the maximum value divided by \code{threshold} are considered.
 #' Default is 250.
+#' @param minRange numeric; value used to filter minimal threshold in percent of
+#' total range. Should range between (0,1].
 #'
 #' @return numeric; estimated threshold
 #' @importFrom stats density
-.intensityThreshold <- function(densityImage, steps = 250) {
+#' @export
+.intensityThreshold <- function(densityImage, steps = 250, minRange = 0.15) {
     # take all densities greater than certain threshold due to numerical properties
     # of the density estimation
     denDf <- densityImage |> as.data.frame()
@@ -381,7 +384,11 @@ findIntensityThreshold <- function(
     peaks <- newDen$x[which(diff(sign(diff(newDen$y))) == -2)]
     # define peak values
     peakVals <- newDen$y[which(diff(sign(diff(newDen$y))) == -2)]
+    peakVals <- peakVals /  max(newDen$y)
+    # filter very small values
+    peaks <- peaks[peakVals > 0.05]
     # the threshold is the mean between the two main modes of the distribution
+    # if there is only one mode, this is the value.
     if (length(peaks) == 1) {
         thres <- peaks
     } else {
@@ -389,7 +396,13 @@ findIntensityThreshold <- function(
             peaks[order(peaks, decreasing = FALSE)[1]]) / 2 +
             peaks[order(peaks, decreasing = FALSE)[1]]
     }
-    return(thres)
+    # added min threshold: at least minRange of intensity range
+    minThres <- diff(range(newDen$x)) * minRange
+    if(thres < minThres) {
+        message(paste0("Minimal threshold: ", minRange*100, "% of intensity range used.
+                       Consider manually adjusting the intensity threshold"))
+    }
+    return(max(thres, minThres))
 }
 
 #' Function to convert spatialCoords to an sf object

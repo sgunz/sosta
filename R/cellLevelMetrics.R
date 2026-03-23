@@ -191,7 +191,7 @@ cellTypeProportions <- function(spe, structColumn, cellTypeColumn, nCores = 1) {
 #'
 #' @param spe SpatialExperiment object
 #' @param imageCol character; name of the `colData` column specifying the image name
-#' @param structColumn character; name of the `colData` column specifying structure assignments
+#' @param structColumn character; name of the `colData` column specifying structure assignments. Default = NULL.
 #' @param allStructs sf object; contains spatial structures with corresponding image names
 #' @param nCores integer; The number of cores to use for parallel processing (default is 1).
 #'
@@ -234,27 +234,30 @@ cellTypeProportions <- function(spe, structColumn, cellTypeColumn, nCores = 1) {
 #'         geom_sf(data = allStructs, fill = NA, inherit.aes = FALSE) +
 #'         facet_wrap(~imageName)
 #' }
-minBoundaryDistances <- function(spe, imageCol,
-    structColumn, allStructs, nCores = 1) {
+minBoundaryDistances <- function(spe,
+                                 imageCol,
+                                 structColumn = NULL,
+                                 allStructs,
+                                 nCores = 1) {
     # Input checking
-    stopifnot(
-        "'spe' must be an object of class 'SpatialExperiment'" =
-            inherits(spe, "SpatialExperiment")
-    )
-    stopifnot(
-        "'allStructs' must be an object of class 'sf'" =
-            inherits(allStructs, "sf")
-    )
+    stopifnot("'spe' must be an object of class 'SpatialExperiment'" =
+                  inherits(spe, "SpatialExperiment"))
+    stopifnot("'allStructs' must be an object of class 'sf'" =
+                  inherits(allStructs, "sf"))
     stopifnot(
         "'imageCol' must be a character string and exist in colData(spe) and colnames(allStructs)'" =
             is.character(imageCol) && length(imageCol) == 1 &&
-                imageCol %in% colnames(colData(spe)) && imageCol %in% colnames(allStructs)
+            imageCol %in% colnames(colData(spe)) &&
+            imageCol %in% colnames(allStructs)
     )
-    stopifnot(
-        "'structColumn' must be a character string and exist in colData(spe)'" =
-            is.character(structColumn) && length(structColumn) == 1 &&
+    if (!is.null(structColumn)) {
+        stopifnot(
+            "'structColumn' must be a character string and exist in colData(spe)'" =
+                !is.null(structColumn) && is.character(structColumn) &&
+                length(structColumn) == 1 &&
                 structColumn %in% colnames(colData(spe))
-    )
+        )
+    }
     stopifnot(
         "'nCores' must be a positive integer'" =
             is.numeric(nCores) && length(nCores) == 1 &&
@@ -304,8 +307,10 @@ minBoundaryDistances <- function(spe, imageCol,
     names(out) <- rd$colnamesSPE
 
     # Negate distances for assigned structures
-    out[colnames(spe)][!is.na(spe[[structColumn]])] <-
-        -out[colnames(spe)][!is.na(spe[[structColumn]])]
+    if (!is.null(structColumn)) {
+        out[colnames(spe)][!is.na(spe[[structColumn]])] <-
+            -out[colnames(spe)][!is.na(spe[[structColumn]])]
+    }
 
     return(out[colnames(spe)])
 }

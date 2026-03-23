@@ -340,6 +340,68 @@ cbind(colData(sostaSPE), spatialCoords(sostaSPE)) |>
     facet_wrap(~imageName)
 ```
 
+## Structure boundary vs FOV boundary
+
+When defining border cells, the field of view (FOV) can cut through the reconstructed polygon(s). This can cause cells that are actually inside the structure to be classified as border cells. To avoid this, we compute the distance to the FOV boundary and remove cells that are close to it.
+
+The FOV in this example ranges from coordinates 0 to 128 in the $x$ and $y$ direction. We therefore define polygons that span the entire FOV. Since there are multiple samples, we replicate these polygons and label them accordingly.
+
+```{r}
+# create the fov bounding box using st_bbox
+fov_bbox <- st_bbox(c(xmin = 0, ymin = 0, xmax = 128, ymax = 128))
+
+# convert to polygon
+fov <- st_as_sfc(fov_bbox)
+
+# one fov per image
+fovBorder <- rep(fov, length(unique(sostaSPE$imageName))) |>
+  st_as_sf()
+
+# name the polygons accordingly
+fovBorder$imageName <- unique(sostaSPE$imageName)
+
+fovBorder
+```
+
+Now we use the function `minBoundaryDistances` to get the distances to the FOV border. 
+
+```{r}
+sostaSPE$fovBorderDist <- minBoundaryDistances(
+  spe = sostaSPE,
+  imageCol = "imageName",
+  structColumn = "imageName", # here any variable that is true for all cells
+  allStructs = fovBorder
+) |> 
+  abs()
+```
+
+```{r}
+cbind(colData(sostaSPE), spatialCoords(sostaSPE)) |>
+    as.data.frame() |>
+    ggplot(aes(x = x, y = y, color = fovBorderDist)) +
+    geom_point(size = 0.25) +
+    facet_wrap(~imageName) +
+    coord_equal() +
+    facet_wrap(~imageName)
+```
+
+We can use the distance to the FOV border to correct the border assignments.
+
+```{r}
+sostaSPE$borderCorrected <- 
+  ifelse(sostaSPE$fovBorderDist > 5, sostaSPE$borderSf, NA)
+```
+
+```{r}
+cbind(colData(sostaSPE), spatialCoords(sostaSPE)) |>
+    as.data.frame() |>
+    ggplot(aes(x = x, y = y, color = borderCorrected)) +
+    geom_point(size = 0.25) +
+    facet_wrap(~imageName) +
+    coord_equal() +
+    facet_wrap(~imageName)
+```
+
 # Session Info
 
 ```{r sessionInfo}

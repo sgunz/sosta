@@ -1,4 +1,8 @@
-#' Calculate a set of shape metrics of a polygon
+#' Calculate a set of shape metrics of a single polygon
+#'
+#' @details
+#' For multiple polyogns or a MULTIPOLYGON object use the function \code{\link{totalShapeMetrics}}
+#'
 #'
 #' @param sfPoly POLYGON of class sfc
 #'
@@ -25,6 +29,8 @@ shapeMetrics <- function(sfPoly) {
     # Input checks
     stopifnot("'sfPoly' must be a valid sfc object" = inherits(sfPoly, "sfc"))
     stopifnot("'sfPoly' must be of type POLYGON" = st_geometry_type(sfPoly) == "POLYGON")
+    stopifnot("'sfPoly' must be a single POLYGON,
+    use `sosta::totalShapeMetrics` for a set of POLYGONs" = length(st_geometry_type(sfPoly)) == 1)
     # Area
     shapeArea <- st_area(sfPoly)
     # Perimeter
@@ -65,7 +71,7 @@ shapeMetrics <- function(sfPoly) {
 #' @details
 #' Calculate a set of shape metrics of a set of polygons.
 #' The function calculates all metrics that are implemented in the function
-#' `shapeMetrics()`
+#' \code{\link{shapeMetrics}}
 #'
 #' @param sfInput `MULTIPOLYGON` of class sf
 #'

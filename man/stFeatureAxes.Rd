@@ -2,7 +2,7 @@
 % Please edit documentation in R/shapeMetricsFromSF.R
 \name{stFeatureAxes}
 \alias{stFeatureAxes}
-\title{Calculate the length of feature axes of an sf polygon}
+\title{Calculate the length of feature axes of a single sf polygon}
 \usage{
 stFeatureAxes(sfPoly)
 }
@@ -13,7 +13,7 @@ stFeatureAxes(sfPoly)
 list; list containing the major and minor axis lengths
 }
 \description{
-Calculate the length of feature axes of an sf polygon
+Calculate the length of feature axes of a single sf polygon
 }
 \examples{
 matrixR <- matrix(c(

@@ -1,4 +1,4 @@
-#' Calculate the length of feature axes of an sf polygon
+#' Calculate the length of feature axes of a single sf polygon
 #'
 #' @param sfPoly `POLYGON ` of class `sf`
 #' @importFrom sf st_minimum_rotated_rectangle st_coordinates

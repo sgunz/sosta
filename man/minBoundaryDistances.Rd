@@ -4,14 +4,20 @@
 \alias{minBoundaryDistances}
 \title{Compute minimum boundary distances for each cell within its corresponding image structures}
 \usage{
-minBoundaryDistances(spe, imageCol, structColumn, allStructs, nCores = 1)
+minBoundaryDistances(
+  spe,
+  imageCol,
+  structColumn = NULL,
+  allStructs,
+  nCores = 1
+)
 }
 \arguments{
 \item{spe}{SpatialExperiment object}
 
 \item{imageCol}{character; name of the \code{colData} column specifying the image name}
 
-\item{structColumn}{character; name of the \code{colData} column specifying structure assignments}
+\item{structColumn}{character; name of the \code{colData} column specifying structure assignments. Default = NULL.}
 
 \item{allStructs}{sf object; contains spatial structures with corresponding image names}
 
