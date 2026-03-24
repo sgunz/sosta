@@ -561,11 +561,11 @@ sessionInfo()
 #> loaded via a namespace (and not attached):
 #>  [1] DBI_1.3.0              bitops_1.0-9           deldir_2.0-4          
 #>  [4] rlang_1.1.7            magrittr_2.0.4         e1071_1.7-17          
-#>  [7] compiler_4.5.3         spatstat.geom_3.7-2    png_0.1-9             
+#>  [7] compiler_4.5.3         spatstat.geom_3.7-3    png_0.1-9             
 #> [10] systemfonts_1.3.2      fftwtools_0.9-11       vctrs_0.7.2           
 #> [13] pkgconfig_2.0.3        fastmap_1.2.0          magick_2.9.1          
 #> [16] XVector_0.50.0         labeling_0.4.3         rmarkdown_2.30        
-#> [19] ragg_1.5.1             purrr_1.2.1            xfun_0.57             
+#> [19] ragg_1.5.2             purrr_1.2.1            xfun_0.57             
 #> [22] cachem_1.1.0           jsonlite_2.0.0         goftest_1.2-3         
 #> [25] DelayedArray_0.36.0    spatstat.utils_3.2-2   jpeg_0.1-11           
 #> [28] tiff_0.1-12            terra_1.9-1            parallel_4.5.3        
