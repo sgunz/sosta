@@ -556,7 +556,7 @@ sessionInfo()
 #> [11] MatrixGenerics_1.22.0       matrixStats_1.5.0          
 #> [13] sf_1.1-0                    ggplot2_4.0.2              
 #> [15] tidyr_1.3.2                 dplyr_1.2.0                
-#> [17] sosta_1.3.3                 BiocStyle_2.38.0           
+#> [17] sosta_1.3.4                 BiocStyle_2.38.0           
 #> 
 #> loaded via a namespace (and not attached):
 #>  [1] DBI_1.3.0              bitops_1.0-9           deldir_2.0-4          

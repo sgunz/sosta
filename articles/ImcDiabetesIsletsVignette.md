@@ -463,7 +463,7 @@ sessionInfo()
 #> 
 #> other attached packages:
 #>  [1] ggfortify_0.4.19            tidyr_1.3.2                
-#>  [3] sosta_1.3.3                 SpatialExperiment_1.20.0   
+#>  [3] sosta_1.3.4                 SpatialExperiment_1.20.0   
 #>  [5] SingleCellExperiment_1.32.0 SummarizedExperiment_1.40.0
 #>  [7] Biobase_2.70.0              GenomicRanges_1.62.1       
 #>  [9] Seqinfo_1.0.0               IRanges_2.44.0             
