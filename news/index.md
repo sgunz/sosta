@@ -4,7 +4,6 @@
 
 - clarified difference between `shapeMetric` and `totalShapeMetrics`.
 - updated FOV border characterization in vignette.
-- added `check-bioc` github actions
 
 ## sosta 1.3.2
 

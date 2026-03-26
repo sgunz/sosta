@@ -442,7 +442,7 @@ calculation was performed on a random subset of the patient slides only.
 sessionInfo()
 #> R version 4.5.3 (2026-03-11)
 #> Platform: x86_64-pc-linux-gnu
-#> Running under: Ubuntu 24.04.3 LTS
+#> Running under: Ubuntu 24.04.4 LTS
 #> 
 #> Matrix products: default
 #> BLAS:   /usr/lib/x86_64-linux-gnu/openblas-pthread/libblas.so.3 
@@ -479,7 +479,7 @@ sessionInfo()
 #> loaded via a namespace (and not attached):
 #>   [1] RColorBrewer_1.1-3     jsonlite_2.0.0         magrittr_2.0.4        
 #>   [4] spatstat.utils_3.2-2   magick_2.9.1           farver_2.1.2          
-#>   [7] nloptr_2.2.1           rmarkdown_2.30         fs_2.0.0              
+#>   [7] nloptr_2.2.1           rmarkdown_2.30         fs_2.0.1              
 #>  [10] ragg_1.5.2             vctrs_0.7.2            memoise_2.0.1         
 #>  [13] minqa_1.2.8            spatstat.explore_3.8-0 RCurl_1.98-1.18       
 #>  [16] terra_1.9-1            htmltools_0.5.9        S4Arrays_1.10.1       

@@ -528,7 +528,7 @@ cbind(colData(sostaSPE), spatialCoords(sostaSPE)) |>
 sessionInfo()
 #> R version 4.5.3 (2026-03-11)
 #> Platform: x86_64-pc-linux-gnu
-#> Running under: Ubuntu 24.04.3 LTS
+#> Running under: Ubuntu 24.04.4 LTS
 #> 
 #> Matrix products: default
 #> BLAS:   /usr/lib/x86_64-linux-gnu/openblas-pthread/libblas.so.3 
@@ -581,7 +581,7 @@ sessionInfo()
 #> [58] pillar_1.11.1          BiocManager_1.30.27    KernSmooth_2.23-26    
 #> [61] smoothr_1.2.1          RCurl_1.98-1.18        scales_1.4.0          
 #> [64] class_7.3-23           glue_1.8.0             tools_4.5.3           
-#> [67] locfit_1.5-9.12        fs_2.0.0               grid_4.5.3            
+#> [67] locfit_1.5-9.12        fs_2.0.1               grid_4.5.3            
 #> [70] nlme_3.1-168           patchwork_1.3.2        cli_3.6.5             
 #> [73] spatstat.sparse_3.1-0  textshaping_1.0.5      viridisLite_0.4.3     
 #> [76] S4Arrays_1.10.1        gtable_0.3.6           sass_0.4.10           
