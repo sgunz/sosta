@@ -1,3 +1,7 @@
+# sosta 1.3.4
+
+* removed non working GitHub actions
+
 # sosta 1.3.3
 
 * clarified difference between `shapeMetric` and `totalShapeMetrics`.
