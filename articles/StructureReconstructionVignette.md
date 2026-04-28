@@ -9,7 +9,7 @@ and cell level.
 
 ## Installation
 
-The *[sosta](https://bioconductor.org/packages/3.22/sosta)* package can
+The *[sosta](https://bioconductor.org/packages/3.23/sosta)* package can
 be installed from Bioconductor as follows:
 
 ``` r
@@ -38,7 +38,7 @@ theme_set(theme_bw())
 
 As an example, we will load an simulated dataset with three images and
 three cell types A, B and C, stored as a
-*[SpatialExperiment](https://bioconductor.org/packages/3.22/SpatialExperiment)*
+*[SpatialExperiment](https://bioconductor.org/packages/3.23/SpatialExperiment)*
 object:
 
 ``` r
@@ -526,7 +526,7 @@ cbind(colData(sostaSPE), spatialCoords(sostaSPE)) |>
 
 ``` r
 sessionInfo()
-#> R version 4.5.3 (2026-03-11)
+#> R version 4.6.0 (2026-04-24)
 #> Platform: x86_64-pc-linux-gnu
 #> Running under: Ubuntu 24.04.4 LTS
 #> 
@@ -548,44 +548,44 @@ sessionInfo()
 #> [8] base     
 #> 
 #> other attached packages:
-#>  [1] SpatialExperiment_1.20.0    SingleCellExperiment_1.32.0
-#>  [3] SummarizedExperiment_1.40.0 Biobase_2.70.0             
-#>  [5] GenomicRanges_1.62.1        Seqinfo_1.0.0              
-#>  [7] IRanges_2.44.0              S4Vectors_0.48.0           
-#>  [9] BiocGenerics_0.56.0         generics_0.1.4             
-#> [11] MatrixGenerics_1.22.0       matrixStats_1.5.0          
-#> [13] sf_1.1-0                    ggplot2_4.0.2              
-#> [15] tidyr_1.3.2                 dplyr_1.2.0                
-#> [17] sosta_1.3.4                 BiocStyle_2.38.0           
+#>  [1] SpatialExperiment_1.21.0    SingleCellExperiment_1.33.2
+#>  [3] SummarizedExperiment_1.41.1 Biobase_2.71.0             
+#>  [5] GenomicRanges_1.63.2        Seqinfo_1.1.0              
+#>  [7] IRanges_2.45.0              S4Vectors_0.49.3           
+#>  [9] BiocGenerics_0.57.1         generics_0.1.4             
+#> [11] MatrixGenerics_1.23.0       matrixStats_1.5.0          
+#> [13] sf_1.1-0                    ggplot2_4.0.3              
+#> [15] tidyr_1.3.2                 dplyr_1.2.1                
+#> [17] sosta_1.5.0                 BiocStyle_2.39.0           
 #> 
 #> loaded via a namespace (and not attached):
 #>  [1] DBI_1.3.0              bitops_1.0-9           deldir_2.0-4          
-#>  [4] rlang_1.1.7            magrittr_2.0.4         e1071_1.7-17          
-#>  [7] compiler_4.5.3         spatstat.geom_3.7-3    png_0.1-9             
-#> [10] systemfonts_1.3.2      fftwtools_0.9-11       vctrs_0.7.2           
+#>  [4] rlang_1.2.0            magrittr_2.0.5         e1071_1.7-17          
+#>  [7] compiler_4.6.0         spatstat.geom_3.7-3    png_0.1-9             
+#> [10] systemfonts_1.3.2      fftwtools_0.9-11       vctrs_0.7.3           
 #> [13] pkgconfig_2.0.3        fastmap_1.2.0          magick_2.9.1          
-#> [16] XVector_0.50.0         labeling_0.4.3         rmarkdown_2.30        
-#> [19] ragg_1.5.2             purrr_1.2.1            xfun_0.57             
+#> [16] XVector_0.51.0         labeling_0.4.3         rmarkdown_2.31        
+#> [19] ragg_1.5.2             purrr_1.2.2            xfun_0.57             
 #> [22] cachem_1.1.0           jsonlite_2.0.0         goftest_1.2-3         
-#> [25] DelayedArray_0.36.0    spatstat.utils_3.2-2   jpeg_0.1-11           
-#> [28] tiff_0.1-12            terra_1.9-1            parallel_4.5.3        
+#> [25] DelayedArray_0.37.1    spatstat.utils_3.2-2   jpeg_0.1-11           
+#> [28] tiff_0.1-12            terra_1.9-11           parallel_4.6.0        
 #> [31] R6_2.6.1               bslib_0.10.0           RColorBrewer_1.1-3    
 #> [34] spatstat.data_3.1-9    spatstat.univar_3.1-7  jquerylib_0.1.4       
-#> [37] Rcpp_1.1.1             bookdown_0.46          knitr_1.51            
-#> [40] tensor_1.5.1           Matrix_1.7-4           tidyselect_1.2.1      
-#> [43] abind_1.4-8            yaml_2.3.12            EBImage_4.52.0        
+#> [37] Rcpp_1.1.1-1.1         bookdown_0.46          knitr_1.51            
+#> [40] tensor_1.5.1           Matrix_1.7-5           tidyselect_1.2.1      
+#> [43] abind_1.4-8            yaml_2.3.12            EBImage_4.53.0        
 #> [46] codetools_0.2-20       spatstat.random_3.4-5  spatstat.explore_3.8-0
 #> [49] lattice_0.22-9         tibble_3.3.1           withr_3.0.2           
-#> [52] S7_0.2.1               evaluate_1.0.5         desc_1.4.3            
+#> [52] S7_0.2.2               evaluate_1.0.5         desc_1.4.3            
 #> [55] units_1.0-1            proxy_0.4-29           polyclip_1.10-7       
 #> [58] pillar_1.11.1          BiocManager_1.30.27    KernSmooth_2.23-26    
 #> [61] smoothr_1.2.1          RCurl_1.98-1.18        scales_1.4.0          
-#> [64] class_7.3-23           glue_1.8.0             tools_4.5.3           
-#> [67] locfit_1.5-9.12        fs_2.0.1               grid_4.5.3            
-#> [70] nlme_3.1-168           patchwork_1.3.2        cli_3.6.5             
+#> [64] class_7.3-23           glue_1.8.1             tools_4.6.0           
+#> [67] locfit_1.5-9.12        fs_2.1.0               grid_4.6.0            
+#> [70] nlme_3.1-169           patchwork_1.3.2        cli_3.6.6             
 #> [73] spatstat.sparse_3.1-0  textshaping_1.0.5      viridisLite_0.4.3     
-#> [76] S4Arrays_1.10.1        gtable_0.3.6           sass_0.4.10           
-#> [79] digest_0.6.39          classInt_0.4-11        SparseArray_1.10.9    
+#> [76] S4Arrays_1.11.1        gtable_0.3.6           sass_0.4.10           
+#> [79] digest_0.6.39          classInt_0.4-11        SparseArray_1.11.13   
 #> [82] rjson_0.2.23           htmlwidgets_1.6.4      farver_2.1.2          
 #> [85] htmltools_0.5.9        pkgdown_2.2.0          lifecycle_1.0.5
 ```
