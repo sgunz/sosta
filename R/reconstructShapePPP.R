@@ -146,10 +146,10 @@ shapeIntensityImage <- function(
 
     p <- wrap_plots(denIm, den_hist, ncol = 2) +
         plot_annotation(
-            title = paste0(imageCol, ": ", imageId),
+            title = ifelse(is.null(imageCol), "", paste0(imageCol, ": ", imageId)),
             subtitle = paste0(
-                "bndw: ", formatC(res$bndw, format = "e", digits = 3),
-                "; estimated thres: ",
+                "Estimated kernel bandwith (bndw): ", formatC(res$bndw, format = "e", digits = 3),
+                "; estimated intensity threshold (thres): ",
                 formatC(thres, format = "e", digits = 3)
 
             ),
