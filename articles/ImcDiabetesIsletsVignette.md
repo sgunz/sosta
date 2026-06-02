@@ -14,6 +14,7 @@ The *[sosta](https://bioconductor.org/packages/3.23/sosta)* package can
 be installed from Bioconductor as follows:
 
 ``` r
+
 if (!requireNamespace("BiocManager")) {
     install.packages("BiocManager")
 }
@@ -25,6 +26,7 @@ BiocManager::install("sosta")
 For this vignette, we will need several additional packages:
 
 ``` r
+
 library("dplyr")
 library("ExperimentHub")
 library("ggplot2")
@@ -50,6 +52,7 @@ patient, we will subset to a few slides. As can be seen, the dimensions
 of the field of view are differing.
 
 ``` r
+
 df <- cbind(
     colData(spe[, spe$image_name %in% c("E04", "E03", "G01", "J02")]),
     spatialCoords(spe[, spe$image_name %in% c("E04", "E03", "G01", "J02")])
@@ -77,6 +80,7 @@ parameters that we use for reconstruction afterwards. For one image this
 can be illustrated as follows.
 
 ``` r
+
 shapeIntensityImage(
     spe,
     marks = "cell_category",
@@ -102,6 +106,7 @@ the density threshold for reconstruction. We subset 25 random images to
 speed up computation.
 
 ``` r
+
 n <- estimateReconstructionParametersSPE(
     spe,
     marks = "cell_category",
@@ -124,6 +129,7 @@ We can inspect the relationship of the estimated bandwidth and
 threshold.
 
 ``` r
+
 n |>
     ggplot(aes(x = bndw, y = thres)) +
     geom_point()
@@ -136,6 +142,7 @@ estimated threshold. We will use the mean of the two estimated vectors
 as our parameters.
 
 ``` r
+
 (thresSPE <- mean(n$thres))
 #> [1] 0.003694566
 (bndwSPE <- mean(n$bndw))
@@ -150,6 +157,7 @@ above. For computational reasons, we will subset to 20 images per
 patient for the rest of the vignette.
 
 ``` r
+
 # Sample 15 images per patient
 sel <- colData(spe) |>
     as.data.frame() |>
@@ -168,6 +176,7 @@ speSel$image_name |>
 ```
 
 ``` r
+
 # Run on all images
 allIslets <- reconstructShapeDensitySPE(
     speSel,
@@ -187,6 +196,7 @@ contains the polygons (`<GEOMETRY>` column), a structure identifier
 patient metadata to the object.
 
 ``` r
+
 colsKeep <- c(
     "patient_stage", "tissue_slide", "tissue_region",
     "patient_id", "patient_disease_duration",
@@ -208,6 +218,7 @@ Using standard operations on data frames we can inspect the number of
 structures found per patient.
 
 ``` r
+
 allIslets |>
     st_drop_geometry() |> # we are only interested in metadata
     group_by(patient_id) |>
@@ -239,12 +250,14 @@ function `totalShapeMetrics` to calculate a set of metrics related to
 the shape of the islets.
 
 ``` r
+
 isletMetrics <- totalShapeMetrics(allIslets)
 ```
 
 The result is a matrix. We will it to our simple feature collection.
 
 ``` r
+
 # specify factor levels
 lv <- c("Non-diabetic", "Onset", "Long-duration")
 
@@ -261,6 +274,7 @@ We use PCA to get an overview of the different features. Each dot
 represents one structure.
 
 ``` r
+
 autoplot(
     prcomp(t(isletMetrics), scale. = TRUE),
     x = 1,
@@ -297,6 +311,7 @@ the PCA plot. Note that the boxplots don’t reveal patient specific
 effects.
 
 ``` r
+
 allIslets |>
     sf::st_drop_geometry() |>
     select(patient_stage, rownames(isletMetrics)) |>
@@ -320,6 +335,7 @@ transformation. Let’s have a look at the transformed area of the islets
 faceted by patient first.
 
 ``` r
+
 allIslets |>
     sf::st_drop_geometry() |>
     select(patient_stage, patient_id, rownames(isletMetrics)) |>
@@ -351,11 +367,12 @@ for the patient and the individual slides (`image_name`). We will use
 the *[lme4](https://CRAN.R-project.org/package=lme4)* package for
 fitting linear mixed effects models (Bates et al. 2015) and
 *[lmerTest](https://CRAN.R-project.org/package=lmerTest)* for p-value
-calculation (Kuznetsova, Brockhoff, and Christensen 2017).
+calculation (Kuznetsova et al. 2017).
 
 We can model differences between the patient stages as follows.
 
 ``` r
+
 mod <- lmer(
     (Area)^(1/6) ~ patient_stage +
         (1 | patient_id) + (1 | image_name),
@@ -369,6 +386,7 @@ Let’s have a look at the model diagnostics. First plot the residuals
 vs. the fitted values, colored by the patients.
 
 ``` r
+
 plot(
     mod,
     resid(., scaled = TRUE) ~ fitted(.),
@@ -386,6 +404,7 @@ Next, we’ll have a look at the Q-Q plot. The residuals seem to be
 approximately normally distributed with small deviations in the tails.
 
 ``` r
+
 qqnorm(resid(mod), pch = 16)
 qqline(resid(mod))
 ```
@@ -393,6 +412,7 @@ qqline(resid(mod))
 ![](ImcDiabetesIsletsVignette_files/figure-html/unnamed-chunk-17-1.png)
 
 ``` r
+
 summary(mod)
 #> Linear mixed model fit by REML. t-tests use Satterthwaite's method [
 #> lmerModLmerTest]
@@ -439,6 +459,7 @@ calculation was performed on a random subset of the patient slides only.
 ## Session Info
 
 ``` r
+
 sessionInfo()
 #> R version 4.6.0 (2026-04-24)
 #> Platform: x86_64-pc-linux-gnu
@@ -463,58 +484,58 @@ sessionInfo()
 #> 
 #> other attached packages:
 #>  [1] ggfortify_0.4.19            tidyr_1.3.2                
-#>  [3] sosta_1.5.0                 SpatialExperiment_1.21.0   
-#>  [5] SingleCellExperiment_1.33.2 SummarizedExperiment_1.41.1
-#>  [7] Biobase_2.71.0              GenomicRanges_1.63.2       
-#>  [9] Seqinfo_1.1.0               IRanges_2.45.0             
-#> [11] S4Vectors_0.49.3            MatrixGenerics_1.23.0      
-#> [13] matrixStats_1.5.0           sf_1.1-0                   
+#>  [3] sosta_1.5.1                 SpatialExperiment_1.22.0   
+#>  [5] SingleCellExperiment_1.34.0 SummarizedExperiment_1.42.0
+#>  [7] Biobase_2.72.0              GenomicRanges_1.64.0       
+#>  [9] Seqinfo_1.2.0               IRanges_2.46.0             
+#> [11] S4Vectors_0.50.1            MatrixGenerics_1.24.0      
+#> [13] matrixStats_1.5.0           sf_1.1-1                   
 #> [15] lmerTest_3.2-1              lme4_2.0-1                 
 #> [17] Matrix_1.7-5                ggplot2_4.0.3              
-#> [19] ExperimentHub_3.1.0         AnnotationHub_4.1.0        
-#> [21] BiocFileCache_3.1.0         dbplyr_2.5.2               
-#> [23] BiocGenerics_0.57.1         generics_0.1.4             
-#> [25] dplyr_1.2.1                 BiocStyle_2.39.0           
+#> [19] ExperimentHub_3.2.0         AnnotationHub_4.2.0        
+#> [21] BiocFileCache_3.2.0         dbplyr_2.5.2               
+#> [23] BiocGenerics_0.58.1         generics_0.1.4             
+#> [25] dplyr_1.2.1                 BiocStyle_2.40.0           
 #> 
 #> loaded via a namespace (and not attached):
 #>   [1] RColorBrewer_1.1-3     jsonlite_2.0.0         magrittr_2.0.5        
-#>   [4] spatstat.utils_3.2-2   magick_2.9.1           farver_2.1.2          
+#>   [4] spatstat.utils_3.2-3   magick_2.9.1           farver_2.1.2          
 #>   [7] nloptr_2.2.1           rmarkdown_2.31         fs_2.1.0              
 #>  [10] ragg_1.5.2             vctrs_0.7.3            memoise_2.0.1         
-#>  [13] minqa_1.2.8            spatstat.explore_3.8-0 RCurl_1.98-1.18       
-#>  [16] terra_1.9-11           htmltools_0.5.9        S4Arrays_1.11.1       
-#>  [19] curl_7.1.0             SparseArray_1.11.13    sass_0.4.10           
-#>  [22] KernSmooth_2.23-26     bslib_0.10.0           htmlwidgets_1.6.4     
+#>  [13] minqa_1.2.8            spatstat.explore_3.8-1 RCurl_1.98-1.18       
+#>  [16] terra_1.9-27           htmltools_0.5.9        S4Arrays_1.12.0       
+#>  [19] curl_7.1.0             SparseArray_1.12.2     sass_0.4.10           
+#>  [22] KernSmooth_2.23-26     bslib_0.11.0           htmlwidgets_1.6.4     
 #>  [25] desc_1.4.3             httr2_1.2.2            cachem_1.1.0          
 #>  [28] lifecycle_1.0.5        pkgconfig_2.0.3        R6_2.6.1              
 #>  [31] fastmap_1.2.0          rbibutils_2.4.1        digest_0.6.39         
-#>  [34] numDeriv_2016.8-1.1    patchwork_1.3.2        AnnotationDbi_1.73.1  
-#>  [37] tensor_1.5.1           textshaping_1.0.5      RSQLite_2.4.6         
-#>  [40] labeling_0.4.3         filelock_1.0.3         spatstat.sparse_3.1-0 
+#>  [34] numDeriv_2016.8-1.1    patchwork_1.3.2        AnnotationDbi_1.74.0  
+#>  [37] tensor_1.5.1           textshaping_1.0.5      RSQLite_3.53.1        
+#>  [40] labeling_0.4.3         filelock_1.0.3         spatstat.sparse_3.2-0 
 #>  [43] httr_1.4.8             polyclip_1.10-7        abind_1.4-8           
-#>  [46] compiler_4.6.0         proxy_0.4-29           bit64_4.8.0           
+#>  [46] compiler_4.6.0         proxy_0.4-29           bit64_4.8.2           
 #>  [49] withr_3.0.2            S7_0.2.2               tiff_0.1-12           
 #>  [52] DBI_1.3.0              MASS_7.3-65            rappdirs_0.3.4        
-#>  [55] DelayedArray_0.37.1    rjson_0.2.23           classInt_0.4-11       
+#>  [55] DelayedArray_0.38.2    rjson_0.2.23           classInt_0.4-11       
 #>  [58] tools_4.6.0            units_1.0-1            goftest_1.2-3         
-#>  [61] glue_1.8.1             nlme_3.1-169           EBImage_4.53.0        
+#>  [61] glue_1.8.1             nlme_3.1-169           EBImage_4.54.0        
 #>  [64] grid_4.6.0             gtable_0.3.6           spatstat.data_3.1-9   
-#>  [67] class_7.3-23           XVector_0.51.0         spatstat.geom_3.7-3   
+#>  [67] class_7.3-23           XVector_0.52.0         spatstat.geom_3.8-1   
 #>  [70] stringr_1.6.0          BiocVersion_3.23.1     pillar_1.11.1         
 #>  [73] splines_4.6.0          lattice_0.22-9         bit_4.6.0             
 #>  [76] deldir_2.0-4           tidyselect_1.2.1       locfit_1.5-9.12       
-#>  [79] Biostrings_2.79.5      knitr_1.51             reformulas_0.4.4      
-#>  [82] gridExtra_2.3          bookdown_0.46          xfun_0.57             
-#>  [85] smoothr_1.2.1          stringi_1.8.7          fftwtools_0.9-11      
+#>  [79] Biostrings_2.80.1      knitr_1.51             reformulas_0.4.4      
+#>  [82] gridExtra_2.3          bookdown_0.46          xfun_0.58             
+#>  [85] smoothr_1.3.0          stringi_1.8.7          fftwtools_0.9-11      
 #>  [88] yaml_2.3.12            boot_1.3-32            evaluate_1.0.5        
 #>  [91] codetools_0.2-20       tibble_3.3.1           BiocManager_1.30.27   
 #>  [94] cli_3.6.6              systemfonts_1.3.2      Rdpack_2.6.6          
-#>  [97] jquerylib_0.1.4        Rcpp_1.1.1-1.1         spatstat.random_3.4-5 
-#> [100] png_0.1-9              spatstat.univar_3.1-7  parallel_4.6.0        
+#>  [97] jquerylib_0.1.4        Rcpp_1.1.1-1.1         spatstat.random_3.5-0 
+#> [100] png_0.1-9              spatstat.univar_3.2-0  parallel_4.6.0        
 #> [103] pkgdown_2.2.0          blob_1.3.0             jpeg_0.1-11           
 #> [106] bitops_1.0-9           viridisLite_0.4.3      scales_1.4.0          
 #> [109] e1071_1.7-17           purrr_1.2.2            crayon_1.5.3          
-#> [112] rlang_1.2.0            KEGGREST_1.51.1
+#> [112] rlang_1.2.0            KEGGREST_1.52.0
 ```
 
 ## References
@@ -523,8 +544,7 @@ Bates, Douglas, Martin Mächler, Ben Bolker, and Steve Walker. 2015.
 “Fitting Linear Mixed-Effects Models Using **Lme4**.” *Journal of
 Statistical Software* 67 (1). <https://doi.org/10.18637/jss.v067.i01>.
 
-Damond, Nicolas, Stefanie Engler, Vito R. T. Zanotelli, Denis Schapiro,
-Clive H. Wasserfall, Irina Kusmartseva, Harry S. Nick, et al. 2019. “A
+Damond, Nicolas, Stefanie Engler, Vito R. T. Zanotelli, et al. 2019. “A
 Map of Human Type 1 Diabetes Progression by Imaging Mass Cytometry.”
 *Cell Metabolism* 29 (3): 755–768.e5.
 <https://doi.org/10.1016/j.cmet.2018.11.014>.

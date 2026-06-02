@@ -19,6 +19,7 @@ version](https://bioconductor.org/packages/sosta) can be done as
 follows:
 
 ``` r
+
 if (!requireNamespace("BiocManager")) {
     install.packages("BiocManager")
 }
@@ -28,6 +29,7 @@ BiocManager::install("sosta")
 You can install the development version of `sosta` from GitHub with:
 
 ``` r
+
 # install.packages("devtools")
 devtools::install_github("sgunz/sosta")
 ```
