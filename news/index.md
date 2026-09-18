@@ -1,5 +1,9 @@
 # Changelog
 
+## sosta 1.5.2
+
+- update citation
+
 ## sosta 1.3.4
 
 - removed non working GitHub actions

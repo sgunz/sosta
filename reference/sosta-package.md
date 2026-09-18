@@ -25,4 +25,7 @@ Useful links:
 
 Authors:
 
+- Samuel Gunz <samuel.gunz@uzh.ch>
+  ([ORCID](https://orcid.org/0000-0002-8909-0932))
+
 - Mark D. Robinson <mark.robinson@mls.uzh.ch> \[funder\]

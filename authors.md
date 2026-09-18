@@ -12,16 +12,19 @@
 Source:
 [`inst/CITATION`](https://github.com/sgunz/sosta/blob/devel/inst/CITATION)
 
-Gunz, Samuel, Crowell, Lucia H, Robinson, D. M (2025). “Analysis of
-anatomical multi-cellular structures from spatial omics data using
-sosta.” *bioRxiv*, 2025.10.13.682065.
-[doi:10.1101/2025.10.13.682065](https://doi.org/10.1101/2025.10.13.682065).
+Gunz S, Crowell H, Robinson M (2026). “Analysis of Multicellular
+Anatomical Structures from Spatial Omics Data Using Sosta.” *PLOS
+Computational Biology*, **22**(9), e1014551.
+[doi:10.1371/journal.pcbi.1014551](https://doi.org/10.1371/journal.pcbi.1014551).
 
     @Article{,
-      title = {Analysis of anatomical multi-cellular structures from spatial omics data using sosta},
-      author = {{Gunz} and {Samuel} and {Crowell} and Helena Lucia and {Robinson} and Mark D.},
-      journal = {bioRxiv},
-      year = {2025},
-      pages = {2025.10.13.682065},
-      doi = {10.1101/2025.10.13.682065},
+      title = {Analysis of Multicellular Anatomical Structures from Spatial Omics Data Using Sosta},
+      author = {Samuel Gunz and Helena L. Crowell and Mark D. Robinson},
+      year = {2026},
+      month = {09},
+      journal = {PLOS Computational Biology},
+      volume = {22},
+      number = {9},
+      pages = {e1014551},
+      doi = {10.1371/journal.pcbi.1014551},
     }

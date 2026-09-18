@@ -293,14 +293,6 @@ autoplot(
     scale_color_brewer(palette = "Set2") +
     theme_bw() +
     coord_fixed()
-#> Warning: `aes_string()` was deprecated in ggplot2 3.0.0.
-#> ℹ Please use tidy evaluation idioms with `aes()`.
-#> ℹ See also `vignette("ggplot2-in-packages")` for more information.
-#> ℹ The deprecated feature was likely used in the ggfortify package.
-#>   Please report the issue at <https://github.com/sinhrks/ggfortify/issues>.
-#> This warning is displayed once per session.
-#> Call `lifecycle::last_lifecycle_warnings()` to see where this warning was
-#> generated.
 ```
 
 ![](ImcDiabetesIsletsVignette_files/figure-html/unnamed-chunk-12-1.png)
@@ -461,9 +453,9 @@ calculation was performed on a random subset of the patient slides only.
 ``` r
 
 sessionInfo()
-#> R version 4.6.0 (2026-04-24)
+#> R version 4.6.1 (2026-06-24)
 #> Platform: x86_64-pc-linux-gnu
-#> Running under: Ubuntu 24.04.4 LTS
+#> Running under: Ubuntu 24.04.5 LTS
 #> 
 #> Matrix products: default
 #> BLAS:   /usr/lib/x86_64-linux-gnu/openblas-pthread/libblas.so.3 
@@ -483,59 +475,59 @@ sessionInfo()
 #> [8] base     
 #> 
 #> other attached packages:
-#>  [1] ggfortify_0.4.19            tidyr_1.3.2                
-#>  [3] sosta_1.5.1                 SpatialExperiment_1.22.0   
+#>  [1] ggfortify_0.4.23            tidyr_1.3.2                
+#>  [3] sosta_1.5.2                 SpatialExperiment_1.22.0   
 #>  [5] SingleCellExperiment_1.34.0 SummarizedExperiment_1.42.0
 #>  [7] Biobase_2.72.0              GenomicRanges_1.64.0       
 #>  [9] Seqinfo_1.2.0               IRanges_2.46.0             
-#> [11] S4Vectors_0.50.1            MatrixGenerics_1.24.0      
-#> [13] matrixStats_1.5.0           sf_1.1-1                   
-#> [15] lmerTest_3.2-1              lme4_2.0-1                 
+#> [11] S4Vectors_0.50.2            MatrixGenerics_1.24.0      
+#> [13] matrixStats_1.5.0           sf_1.1-3                   
+#> [15] lmerTest_3.2-1              lme4_2.0-6                 
 #> [17] Matrix_1.7-5                ggplot2_4.0.3              
-#> [19] ExperimentHub_3.2.0         AnnotationHub_4.2.0        
-#> [21] BiocFileCache_3.2.0         dbplyr_2.5.2               
+#> [19] ExperimentHub_3.2.2         AnnotationHub_4.2.2        
+#> [21] BiocFileCache_3.2.0         dbplyr_2.6.0               
 #> [23] BiocGenerics_0.58.1         generics_0.1.4             
 #> [25] dplyr_1.2.1                 BiocStyle_2.40.0           
 #> 
 #> loaded via a namespace (and not attached):
 #>   [1] RColorBrewer_1.1-3     jsonlite_2.0.0         magrittr_2.0.5        
-#>   [4] spatstat.utils_3.2-3   magick_2.9.1           farver_2.1.2          
-#>   [7] nloptr_2.2.1           rmarkdown_2.31         fs_2.1.0              
+#>   [4] spatstat.utils_3.2-5   magick_2.9.1           farver_2.1.2          
+#>   [7] nloptr_2.2.1           rmarkdown_2.32         fs_2.1.0              
 #>  [10] ragg_1.5.2             vctrs_0.7.3            memoise_2.0.1         
-#>  [13] minqa_1.2.8            spatstat.explore_3.8-1 RCurl_1.98-1.18       
-#>  [16] terra_1.9-27           htmltools_0.5.9        S4Arrays_1.12.0       
-#>  [19] curl_7.1.0             SparseArray_1.12.2     sass_0.4.10           
-#>  [22] KernSmooth_2.23-26     bslib_0.11.0           htmlwidgets_1.6.4     
-#>  [25] desc_1.4.3             httr2_1.2.2            cachem_1.1.0          
+#>  [13] minqa_1.2.8            spatstat.explore_3.8-2 RCurl_1.98-1.20       
+#>  [16] terra_1.9-50           htmltools_0.5.9        S4Arrays_1.12.0       
+#>  [19] curl_8.0.0             SparseArray_1.12.2     sass_0.4.10           
+#>  [22] KernSmooth_2.23-26     bslib_0.12.0           htmlwidgets_1.6.4     
+#>  [25] desc_1.4.3             httr2_1.3.0            cachem_1.1.0          
 #>  [28] lifecycle_1.0.5        pkgconfig_2.0.3        R6_2.6.1              
 #>  [31] fastmap_1.2.0          rbibutils_2.4.1        digest_0.6.39         
 #>  [34] numDeriv_2016.8-1.1    patchwork_1.3.2        AnnotationDbi_1.74.0  
-#>  [37] tensor_1.5.1           textshaping_1.0.5      RSQLite_3.53.1        
+#>  [37] tensor_1.5.1           textshaping_1.0.5      RSQLite_3.53.3        
 #>  [40] labeling_0.4.3         filelock_1.0.3         spatstat.sparse_3.2-0 
-#>  [43] httr_1.4.8             polyclip_1.10-7        abind_1.4-8           
-#>  [46] compiler_4.6.0         proxy_0.4-29           bit64_4.8.2           
-#>  [49] withr_3.0.2            S7_0.2.2               tiff_0.1-12           
+#>  [43] httr_1.4.9             polyclip_1.10-7        abind_1.4-8           
+#>  [46] compiler_4.6.1         proxy_0.4-29           bit64_4.8.6           
+#>  [49] withr_3.0.3            S7_0.2.2               tiff_0.1-12           
 #>  [52] DBI_1.3.0              MASS_7.3-65            rappdirs_0.3.4        
 #>  [55] DelayedArray_0.38.2    rjson_0.2.23           classInt_0.4-11       
-#>  [58] tools_4.6.0            units_1.0-1            goftest_1.2-3         
-#>  [61] glue_1.8.1             nlme_3.1-169           EBImage_4.54.0        
-#>  [64] grid_4.6.0             gtable_0.3.6           spatstat.data_3.1-9   
-#>  [67] class_7.3-23           XVector_0.52.0         spatstat.geom_3.8-1   
-#>  [70] stringr_1.6.0          BiocVersion_3.23.1     pillar_1.11.1         
-#>  [73] splines_4.6.0          lattice_0.22-9         bit_4.6.0             
-#>  [76] deldir_2.0-4           tidyselect_1.2.1       locfit_1.5-9.12       
-#>  [79] Biostrings_2.80.1      knitr_1.51             reformulas_0.4.4      
-#>  [82] gridExtra_2.3          bookdown_0.46          xfun_0.58             
-#>  [85] smoothr_1.3.0          stringi_1.8.7          fftwtools_0.9-11      
-#>  [88] yaml_2.3.12            boot_1.3-32            evaluate_1.0.5        
-#>  [91] codetools_0.2-20       tibble_3.3.1           BiocManager_1.30.27   
-#>  [94] cli_3.6.6              systemfonts_1.3.2      Rdpack_2.6.6          
-#>  [97] jquerylib_0.1.4        Rcpp_1.1.1-1.1         spatstat.random_3.5-0 
-#> [100] png_0.1-9              spatstat.univar_3.2-0  parallel_4.6.0        
-#> [103] pkgdown_2.2.0          blob_1.3.0             jpeg_0.1-11           
-#> [106] bitops_1.0-9           viridisLite_0.4.3      scales_1.4.0          
-#> [109] e1071_1.7-17           purrr_1.2.2            crayon_1.5.3          
-#> [112] rlang_1.2.0            KEGGREST_1.52.0
+#>  [58] tools_4.6.1            units_1.0-1            otel_0.2.0            
+#>  [61] goftest_1.2-3          glue_1.8.1             nlme_3.1-169          
+#>  [64] EBImage_4.54.0         grid_4.6.1             gtable_0.3.6          
+#>  [67] spatstat.data_3.1-9    class_7.3-23           XVector_0.52.0        
+#>  [70] spatstat.geom_3.8-2    stringr_1.6.0          BiocVersion_3.23.1    
+#>  [73] pillar_1.11.1          splines_4.6.1          lattice_0.22-9        
+#>  [76] bit_4.6.0              deldir_2.0-4           tidyselect_1.2.1      
+#>  [79] locfit_1.5-9.12        Biostrings_2.80.2      knitr_1.52            
+#>  [82] gridExtra_2.3.1        reformulas_0.4.4       bookdown_0.48         
+#>  [85] xfun_0.61              smoothr_1.3.0          stringi_1.8.9         
+#>  [88] fftwtools_0.9-11       yaml_2.3.12            boot_1.3-32           
+#>  [91] evaluate_1.0.5         codetools_0.2-20       tibble_3.3.1          
+#>  [94] BiocManager_1.30.27    cli_3.6.6              systemfonts_1.3.2     
+#>  [97] Rdpack_2.6.6           jquerylib_0.1.4        Rcpp_1.1.2            
+#> [100] spatstat.random_3.5-1  png_0.1-9              spatstat.univar_3.2-0 
+#> [103] parallel_4.6.1         pkgdown_2.2.1          blob_1.3.0            
+#> [106] jpeg_0.1-11            bitops_1.1-0           viridisLite_0.4.3     
+#> [109] scales_1.4.0           e1071_1.7-17           purrr_1.2.2           
+#> [112] crayon_1.5.3           rlang_1.3.0            KEGGREST_1.52.2
 ```
 
 ## References
