@@ -1,9 +1,16 @@
 bibentry(
   bibtype = "Article",
-  title = "Analysis of anatomical multi-cellular structures from spatial omics data using sosta",
-  author = "Gunz, Samuel and Crowell, Helena Lucia and Robinson, Mark D.",
-  journal = "bioRxiv",
-  year = 2025,
-  pages = "2025.10.13.682065",
-  doi = "10.1101/2025.10.13.682065"
+  title = "Analysis of Multicellular Anatomical Structures from Spatial Omics Data Using Sosta",
+  author = c(
+    person("Samuel", "Gunz"),
+    person("Helena L.", "Crowell"),
+    person("Mark D.", "Robinson")
+  ),
+  year = "2026",
+  month = "09",
+  journal = "PLOS Computational Biology",
+  volume = "22",
+  number = "9",
+  pages = "e1014551",
+  doi = "10.1371/journal.pcbi.1014551"
 )

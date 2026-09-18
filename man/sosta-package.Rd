@@ -22,6 +22,7 @@ Useful links:
 
 Authors:
 \itemize{
+  \item Samuel Gunz \email{samuel.gunz@uzh.ch} (\href{https://orcid.org/0000-0002-8909-0932}{ORCID})
   \item Mark D. Robinson \email{mark.robinson@mls.uzh.ch} [funder]
 }
 

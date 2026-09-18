@@ -49,7 +49,6 @@ or open a issue on [GitHub](https://github.com/sgunz/sosta/issues).
 
 If you use `sosta` please consider citing:
 
-> Gunz, Samuel, Helena Lucia Crowell, and Mark D. Robinson. “Analysis of
-> Anatomical Multi-Cellular Structures from Spatial Omics Data Using
-> Sosta”, p. 2025.10.13.682065. bioRxiv, 14 Oct. 2025,
-> <https://doi.org/10.1101/2025.10.13.682065>.
+> Gunz S, Crowell HL, Robinson MD (2026) Analysis of multicellular
+> anatomical structures from spatial omics data using sosta. PLoS Comput
+> Biol 22(9): e1014551. <https://doi.org/10.1371/journal.pcbi.1014551>

@@ -97,7 +97,7 @@ reconstructShapeDensity <- function(ppp, markSelect = NULL,
 #' speeds up computation but lead to less exact reconstruction. Default = 500
 #' @return ggplot object with intensity image and histogram
 #' @importFrom ggplot2 ggplot aes_string geom_histogram theme_light geom_tile
-#' labs coord_equal theme_classic scale_color_viridis_c geom_vline theme element_text
+#'  labs coord_equal theme_classic scale_color_viridis_c geom_vline theme element_text
 #' @importFrom patchwork wrap_plots plot_annotation
 #' @importFrom dplyr filter
 #' @importFrom rlang .data
